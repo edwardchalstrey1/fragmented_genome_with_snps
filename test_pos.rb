@@ -66,4 +66,4 @@ final_positions.each{
 }
 puts final_positions.length
 puts unique_pos.length
-
+puts "hi"
