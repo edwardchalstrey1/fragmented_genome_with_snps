@@ -6,4 +6,5 @@ The SNP density across this sequence follows a normal distribution, with the mut
 The sequence is fragmented, after being created, into fragments of 50-250b length. This models typical NGS (Illumina) read sizes.
 
 
-2. Designing an algorithm that will determine the position of a phenotype altering mutant, based on SNP density of the 
+2. Designing an algorithm that will determine the position of a phenotype altering mutant, based on SNP density of the fragments described above:
+This could then be used on real sequences.
