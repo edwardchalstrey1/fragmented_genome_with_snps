@@ -87,6 +87,7 @@ frags[-1].delete_if {|i| i > 'y'}
 puts "Total nucleotides: " + (frags.flatten.join.to_s.split(//).length).to_s
 puts "There are a total of " + frags.length.to_s + " fragments"
 
+File.new("frags.json", "w")
 File.open("frags.json", "w") do |f|
 	f.write(frags.to_json)
 end

@@ -12,7 +12,9 @@ x = all.length - 17
 c[-1].delete_if {|i| i > 'o'}
 
 puts c
-#puts JSON.generate(c)
+
+File.new("test.json", "w")
+
 File.open("test.json", "w") do |f|
 	f.write(c.to_json)
 end
