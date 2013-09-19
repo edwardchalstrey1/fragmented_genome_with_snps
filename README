@@ -1,1 +1,9 @@
-"Making a fragmented genome with SNP's in Ruby, using RinRuby"
+1. Making a fragmented genome with SNP's in Ruby, using RinRuby: 
+
+This is a model of a genome/chromosome/sequence from an individual created by the out-crossing of a mutant individual with non-mutants.
+There is a high SNP density near the mutant position due to linkage.
+The SNP density across this sequence follows a normal distribution, with the mutant position being located at 100,000 - the mid-point of this 200Kb sequence.
+The sequence is fragmented, after being created, into fragments of 50-250b length. This models typical NGS (Illumina) read sizes.
+
+
+2. Designing an algorithm that will determine the position of a phenotype altering mutant, based on SNP density of the 

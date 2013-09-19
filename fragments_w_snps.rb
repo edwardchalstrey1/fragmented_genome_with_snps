@@ -2,6 +2,7 @@
 
 require "rubygems"
 require "rinruby"
+require "json"
 
 myr = RinRuby.new(echo = false)
 myr.eval "x <- rnorm(200000, 100000, 19000)"
@@ -77,8 +78,16 @@ until frags.flatten.join.to_s.split(//).length >= 200000 do #once the frags arra
 	frags_string = frags[-1].join.to_s #create a string of the most recently added fragment to slice off
 	seq_string.slice! frags_string #slice the fragment from the start of the string and... 
 	snp_seq = seq_string.split(//) #modify the sequence so it no longer contains the removed frags, then the loop can repeat
-	puts "Progress: " + (frags.flatten.join.to_s.split(//).length).to_s + "/ 200,000"
+	puts "Progress: " + ((frags.flatten.join.to_s.split(//).length)/2000).to_s + "%"
 end
+all = frags.flatten
+x = all.length - 200000
+(frags[-1])[-(x)..-1] = 'z'
+frags[-1].delete_if {|i| i > 'y'}
+puts "Total nucleotides: " + (frags.flatten.join.to_s.split(//).length).to_s
 puts "There are a total of " + frags.length.to_s + " fragments"
 
+File.open("frags.json", "w") do |f|
+	f.write(frags.to_json)
+end
 
