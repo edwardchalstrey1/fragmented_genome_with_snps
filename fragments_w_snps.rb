@@ -83,9 +83,13 @@ end
 all = frags.flatten
 x = all.length - 200000
 (frags[-1])[-(x)..-1] = 'z'
-frags[-1].delete_if {|i| i > 'y'}
+frags[-1].delete_if {|i| i > 'y'} #shorten the final fragment that has extra nucleotides due to the until >= 200Kb loop
 puts "Total nucleotides: " + (frags.flatten.join.to_s.split(//).length).to_s
 puts "There are a total of " + frags.length.to_s + " fragments"
+puts "The sequence array == the flattened fragment array: " + (snp_seq == frags.flatten).to_s
+
+#Find the positions of snps on the fragments, based on the positions in the un-fragmented sequence
+
 
 File.new("frags.json", "w")
 File.open("frags.json", "w") do |f|
