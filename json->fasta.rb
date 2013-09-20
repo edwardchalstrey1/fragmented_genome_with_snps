@@ -5,7 +5,7 @@ require "json"
 require 'fileutils'
 require 'tempfile'
 
-json = File.open('test.json').read
+json = File.open('frags.json').read
 frags = JSON.parse(json)
 
 frag_strings = []
@@ -21,10 +21,9 @@ frag_strings.each do |f|
 	frag_ids << ('>frag' + (x += 1).to_s)
 end
 fastaformat_array = frag_ids.zip(frag_strings).flatten.compact
-puts fastaformat_array
+#puts fastaformat_array
 
-y = -1
-File.new("test.fasta", "w+")
-File.open("test.fasta", "w+") do |i|
-	i.write(fastaformat_array)
+File.new("frags.fasta", "w+")
+File.open("frags.fasta", "w+") do |f|
+	fastaformat_array.each { |i| f.puts(i) }
 end
