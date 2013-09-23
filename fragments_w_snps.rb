@@ -19,9 +19,9 @@ x = Random.new
 snp_counts.each do |l| #for each count do
 	snp_breaks.each do |i| # for each break: split the breaks to get the ranges i..i+1
 		ii = i.to_i
-		iii = (i.to_i) + 9999 #THIS BIT IS STILL KINDA CHEATING
+		iii = (i.to_i) + 9999 
 		snpo = []
-		(ii..iii).each do |j| #for each range WHY ARE WE DOING 10K EACH TIME HERE?: we need to do a random no. for each position
+		(ii..iii).each do |j| #for each range we need a random no. for each position
 			newr = x.rand(1..200000) #make a random no. within range 
 			if newr <= l
 				snpo << j #add the position (j) to array if its random no. is <= count
@@ -89,9 +89,40 @@ puts "There are a total of " + frags.length.to_s + " fragments"
 puts "The sequence array == the flattened fragment array: " + (snp_seq == frags.flatten).to_s
 
 #Find the positions of snps on the fragments, based on the positions in the un-fragmented sequence
+sorted_pos = unique_pos.sort
+p_ranges = []
+frags.each do |i|
+	p_ranges << i.length + p_ranges[-1].to_i #adding the fragment lengths to get the upper bounds of ranges of positions on the original seq.
+end
+first_pos = []
+first_pos << 0
+first_pos << p_ranges[0..-2]
+first_pos = first_pos.flatten
+p = 0
+t = 0
+all_frags_pos = [] # the positions of snps on each fragment, array of arrays
+p_ranges.each do |jj| #for each of the upper ranges (j) that the positions could be in
+	each_frag_pos = []
+	while sorted_pos[t].to_i < jj && !sorted_pos[t].nil? do #make the loop quit before trying to access index of snp_pos that doesn't exist
+		each_frag_pos << sorted_pos[t].to_i 	# add all of the positions < jj to a new array for each frag
+		t += 1
+	end
+	z = 0
+	y = first_pos[p].to_i
+	each_frag_pos.each do |e|   
+		each_frag_pos[z] = e - y #taking away the value at the first position of each fragment to get the true positions
+		z += 1
+	end
+	p += 1
+	all_frags_pos << each_frag_pos # add the positions for the frag to an array of the each_frag arrays
+end
+puts "The positions are separated into " + (all_frags_pos.length).to_s + " fragments"
+puts "There are " + (all_frags_pos.flatten.length).to_s + " positions containing SNPs"
 
+File.open("snp_pos.json", "w") do |ff|
+	ff.write(all_frags_pos.to_json)
+end
 
-File.new("frags.json", "w")
 File.open("frags.json", "w") do |f|
 	f.write(frags.to_json)
 end

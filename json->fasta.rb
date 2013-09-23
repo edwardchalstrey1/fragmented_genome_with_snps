@@ -10,20 +10,39 @@ frags = JSON.parse(json)
 
 frag_strings = []
 frags.each do |i|
-	j = i.join.to_s
-	frag_strings << j
+	j = i.join.to_s #create a string of each sequence
+	frag_strings << j #add these to a new array of the sequences in string format
 end
-#puts frag_strings
-
 frag_ids = []
 x = 0
-frag_strings.each do |f|
+frag_strings.each do |f| #create an id for each of the frags
 	frag_ids << ('>frag' + (x += 1).to_s)
 end
-fastaformat_array = frag_ids.zip(frag_strings).flatten.compact
-#puts fastaformat_array
+frag_lengths = []
+frags.each do |l|
+	frag_lengths << l.length
+end
 
-File.new("frags.fasta", "w+")
+json2 = File.open('snp_pos.json').read
+snp_pos = JSON.parse(json2)
+
+y = 0
+snp_pos_strings = []
+snp_pos.each do |n|
+	s = "Length: " + (frag_lengths[y]).to_s + "  SNP number: " + n.length.to_s + "  SNP positions: " + n.to_s
+	snp_pos_strings << s
+	y += 1
+end
+id_and_pos = []
+q = 0
+snp_pos_strings.each do |h|
+	one = frag_ids[q] + ", " + h
+	id_and_pos << one
+	q += 1
+end
+fastaformat_array = id_and_pos.zip(frag_strings).flatten.compact
+puts fastaformat_array
+
 File.open("frags.fasta", "w+") do |f|
 	fastaformat_array.each { |i| f.puts(i) }
 end
