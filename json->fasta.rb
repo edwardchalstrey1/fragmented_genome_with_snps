@@ -40,9 +40,14 @@ snp_pos_strings.each do |h|
 	id_and_pos << one
 	q += 1
 end
-fastaformat_array = id_and_pos.zip(frag_strings).flatten.compact
-puts fastaformat_array
+fastaformat_array = id_and_pos.zip(frag_strings)
+fastaformat_array_shuf = fastaformat_array.shuffle
+#puts fastaformat_array[0]
+#puts fastaformat_array[1]
+#puts
+puts fastaformat_array_shuf[0]
+#puts fastaformat_array_shuf[1]
 
 File.open("frags.fasta", "w+") do |f|
-	fastaformat_array.each { |i| f.puts(i) }
+	fastaformat_array_shuf.each { |i| f.puts(i) }
 end
