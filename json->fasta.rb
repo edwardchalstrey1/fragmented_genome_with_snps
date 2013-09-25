@@ -65,7 +65,7 @@ z = 0
 snp_pos.each do |j| #the snps (alt)
 	one = []
 	j.each do |i|
-		one << frags[z][i].capitalize #what nucleotide is at these positions?
+		one << frags[z][i].capitalize #what nucleotide is at these positions?  VCF requires capital nucleotides
 	end
 	alt << one
 	z += 1
@@ -80,16 +80,22 @@ snp_pos.each do |i|
 	c = "PASS"
 	filter << c
 end
+info = [] #no info
+snp_pos.each do |i|
+	c = '.'
+	info << c
+end
 puts frags.length
 puts chrom.length
 
-vcf_format = [] #each element needs to be a line, including a value from each of the fields above. DOUBLE CHECK THAT THE FIELDS ARE ALIGNED!
+vcf_format = ['##fileformat=VCFv4.1', '##source=Fake', '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO'] 
+#each element needs to be a line, including a value from each of the fields above. DOUBLE CHECK THAT THE FIELDS ARE ALIGNED!
 u = 0
 snp_pos.flatten.each do |i|
-	line = chrom[u] + '	' + i.to_s + '	' + id[u] + '	' + ref[u] + '	' + alt.flatten[u] + '	' + qual[u].to_s + '	' + filter[u]
+	line = chrom[u] + '	' + i.to_s + '	' + id[u] + '	' + ref[u] + '	' + alt.flatten[u] + '	' + qual[u].to_s + '	' + filter[u] + '	' + info[u]
 	vcf_format << line
 	u += 1
 end
-File.open("test.txt", "w+") do |f|
+File.open("snps.vcf", "w+") do |f|
 	vcf_format.each { |i| f.puts(i) }
 end
