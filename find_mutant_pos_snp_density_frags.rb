@@ -50,22 +50,15 @@ frags_by_density << ids_zero_snps #all of these frags have 0 snp density
 frags_by_density << snp_ids_density_order
 frags_by_density = frags_by_density.flatten
 
-x = 0 #the value of x will represent the position (index) in the density array
-position_each_frag_id_in_d = [] #want to get positions of the values in frag_ids in frags_by_density
-iteration = []
-fasta_ids.each do |i|
-	if frags_by_density[x] == i
-		position_each_frag_id_in_d << x #if the value at position x matches the value at i, add it to the new array
-		iteration << i
-	else
-		until frags_by_density[x] == i #otherwise increment x until they do match, and add the position
-			x +=1
-		end
-		position_each_frag_id_in_d << x
-		iteration << i
-	end
-	x = iteration.length # x should be incremented, however I cannot simply do: x += 1, as x may have been incremented by the until loop
-	puts x
-end
-puts position_each_frag_id_in_d
+position_each_frag_id_in_d = fasta_ids.map{|x| frags_by_density.index(x)}
+index_values = Array(0..(position_each_frag_id_in_d.length - 1))
+both = []
+both << position_each_frag_id_in_d
+both << index_values
+
+difference = both.transpose.map {|x| x.reduce(:-)}
+puts difference #OK SO NEED TO CHECK THIS IS DOING WHAT I WANT IT TO!!! SHOULD BE DISTANCE FROM ORIGINAL POSITION
+
+#puts index_values
+#puts position_each_frag_id_in_d.length
 
