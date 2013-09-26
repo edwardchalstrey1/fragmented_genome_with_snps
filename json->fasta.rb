@@ -27,9 +27,9 @@ frag_ids.each do |h|
 	q += 1
 end
 fastaformat_array = id_and_length.zip(frag_strings) #create the array, each element of which goes onto a new line in fasta
-fastaformat_array_shuf = fastaformat_array.shuffle #shiffle it for shits and giggles
+#fastaformat_array_shuf = fastaformat_array.shuffle #shiffle it for shits and giggles
 File.open("frags.fasta", "w+") do |f|
-	fastaformat_array_shuf.each { |i| f.puts(i) } #write the fasta
+	fastaformat_array.each { |i| f.puts(i) } #write the fasta
 end
 
 json2 = File.open('snp_pos.json').read #open the json containing the position data for the snps on each fragment - array of arrays
