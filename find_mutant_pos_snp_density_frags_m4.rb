@@ -28,6 +28,59 @@ fasta_ids.each do |id|
 	snps_per_frag << snps_hash[id] #gives 0 for keys that don't exist = good, because the frags with 0 density would otherwise be missing
 end
 #now we have an array with the number of snps per frag in the same order as the fasta array, which we can get lengths from to calculate density
+vcfs_chrom = []
+vcfs.each do |v|
+	vcfs_chrom << v.chrom
+end
+vcfs_pos = []
+vcfs.each do |v|
+	vcfs_pos << v.pos
+end
+
+pos = [] #get the positions for each frag, in an array of arrays
+n = 0
+fasta_ids.each do |i|
+	each_fr_pos = []
+	while i == vcfs_chrom[n]
+		each_fr_pos << vcfs_pos[n]
+		n+=1
+	end
+	pos << each_fr_pos
+	n = pos.flatten.length
+end
+fasta_lengths = []
+fasta.each do |i|
+	fasta_lengths << i.length
+end
+#make hash where key is frag_id and values are positions for each frag, positions array should be converted to string so they stick together
+#otherwise we have problems when flattening the array to make the hash below
+pos_strings = []
+pos.each do |s|
+	pos_strings << "#{s.join(",")}" #each position separated by a comma
+end
+pos_hash = Hash[*fasta_ids.zip(pos_strings).flatten] # fasta ids as keys and the snp position strings as values
+
+left = [] # frags with snps's mostly to the right, so should be on left of distribution
+right = [] # frags with snps's mostly to the left, so should be on right of distribution
+d = 0
+fasta_ids.each do |x| # for each of the fragments
+	temp = []
+	(pos_hash[x].split(",").map { |s| s.to_i }).each do |i| # adding each of the positions associated with that frag/key to temporaray array
+		temp << i
+	end
+	sum = temp.inject(:+) # summing the positions
+	if sum != nil # ignoring the fragments with 0 snps, which have no postions, so sum = nil
+		lxnp = (fasta_lengths[d]*temp.length)/2 # then working out half the length of the fragment, multiplied by the number of positions
+		if sum < lxnp # if the sum of the positions is < half the length of the fragment, multiplied by the number of positions
+			# this is equivalent to working out the average position and checking it against half the length
+			right << x
+		else
+			left << x
+		end
+	end
+	d+=1 
+end
+
 densities = []
 ids_w_snps = []
 ids_zero_snps = []
@@ -56,31 +109,48 @@ frags_by_density << ids_zero_snps_end
 frags_by_density << snp_ids_density_order
 frags_by_density = frags_by_density.flatten #all the frag ids now ranked by density with all the zero's at the start
 
-### METHOD 1: frags_by_density SCORE: 385,572	density order
-### METHOD 2: rearranged       SCORE: 520,762	even/odd method
-### METHOD 3: rearranged2      SCORE: 166,972	somehow worse - better, was using shuffled fasta before
+### METHOD 1: frags_by_density   SCORE: 385,572	density order
+### METHOD 2: rearranged         SCORE: 520,762	even/odd method
+### METHOD 3: rearranged2        SCORE: 166,972	somehow worse - better, was using shuffled fasta before
+### METHOD 4: left_right_method  SCORE: 155,496	SHOULD REARRANGE THE LEFT AND RIGHT BY DENSITY!!
+### METHOD 5: left_right_method2 SCORE: 168,178 surprisingly worse
 
-rearranged = frags_by_density.values_at(* frags_by_density.each_index.select {|i| i.even?}) #the even numbers first half
-rl = frags_by_density.values_at(* frags_by_density.each_index.select {|i| i.odd?}) #the odd numbers reversed second half
-rl.reverse_each do |i|
-	rearranged << i        #THIS METHOD OF REARRANGEMENT IS SHIT, mostly because we know that a lot of the 0 density frags are in order
+#make array of order 0,left,right,0end
+left_right_method = []
+left_right_method << ids_zero_snps
+left_right_method << left
+left_right_method << right
+left_right_method << ids_zero_snps_end
+left_right_method = left_right_method.flatten
+#puts left_right_method.length
+
+aa = ids_w_snps.zip(densities)
+aa_hash = Hash[*aa.flatten]
+left_densities = []
+left.each do |i|
+	left_densities << aa_hash[i] #finding the densities associated with the frags in left
 end
-puts rearranged.length
+right_densities = []
+right.each do |i|
+	right_densities << aa_hash[i] #finding the densities associated with the frags in right
+end
+ll = left_densities.zip(left) # getting the 'left' and 'right' frags into density order
+left_density_order = ll.sort.flatten.values_at(* ll.sort.flatten.each_index.select {|i| i.odd?})
+rr = right_densities.zip(right)
+right_density_order = rr.sort.flatten.values_at(* rr.sort.flatten.each_index.select {|i| i.odd?})
+right_density_order.reverse! # the order of the 'right' frags needs to be density descending
 
-#rearranged2 = ids_zero_snps
-#lrs = snp_ids_density_order.values_at(* snp_ids_density_order.each_index.select {|i| i.even?})
-#rls = snp_ids_density_order.values_at(* snp_ids_density_order.each_index.select {|i| i.odd?})
-#rearranged2 << rls
-#lrs.reverse_each do |i|
-#	rearranged2 << i
-#end
-#rearranged2 << ids_zero_snps_end
-#rearranged2 = rearranged2.flatten
-#puts rearranged2.length
+left_right_method2 = []
+left_right_method2 << ids_zero_snps
+left_right_method2 << left_density_order
+left_right_method2 << right_density_order
+left_right_method2 << ids_zero_snps_end
+left_right_method2 = left_right_method2.flatten
+#puts left_right_method2.length
 
 ###ALL THE CODE BELOW USED TO DETERMINE SIMILARITY BETWEEN ORIGINAL AND REARRANGED FRAGS
 ###THIS WORKS BECAUSE THE FRAGS IN THE FASTA ARE IN ORDER! #will need to make a version that doesn't rely on this eventually
-position_each_frag_id_in_d = fasta_ids.map{|x| frags_by_density.index(x)} #works out the index of fasta_id values in frags_by_density
+position_each_frag_id_in_d = fasta_ids.map{|x| left_right_method2.index(x)} #works out the index of fasta_id values in frags_by_density
 index_values = Array(0..(fasta_ids.length - 1)) # index values that fasta_ids originally at
 both = []
 both << position_each_frag_id_in_d
