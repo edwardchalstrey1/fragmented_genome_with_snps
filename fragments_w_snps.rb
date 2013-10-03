@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require "rubygems"
 require "rinruby"
 require "json"
@@ -11,58 +9,37 @@ myr.eval "b <- h$breaks"
 myr.eval "c <- h$counts"
 snp_counts = myr.pull "c"
 snp_breaks = myr.pull "b"
-#puts snp_counts#.length
-
-snp_pos_length = []
-snp_pos = []
+#puts snp_counts.length # 18 counts because split into 20 lots of 10kb for 200kb sequence, 2 counts have 0 snps (one at either end of dist.)
+#puts snp_breaks.length # 19 breaks because these are the breaks between the 20 'bars' of the histogram
+snp_pos = [] #each of the ranges between each of our 'breaks' (between bars of the histogram) needs a proportion of snps
 x = Random.new
+i = 0
 snp_counts.each do |l| #for each count do
-	snp_breaks.each do |i| # for each break: split the breaks to get the ranges i..i+1
-		ii = i.to_i
-		iii = (i.to_i) + 9999 
-		snpo = []
-		(ii..iii).each do |j| #for each range we need a random no. for each position
-			newr = x.rand(1..200000) #make a random no. within range 
-			if newr <= l
-				snpo << j #add the position (j) to array if its random no. is <= count
-			end 
-		end #snpo is now an array of snp positions for the range i to i+1
-		snp_pos << snpo #snp_pos is now an array snpo arrays for each i
+	(snp_breaks[i].to_i..snp_breaks[i+1].to_i).each do |j| #for each range we need a random no. for each position (ranges in this case are 10k)
+		newr = x.rand(1..200000) #make a random no. within range 
+		if newr <= l
+			snp_pos << j #add the position (j) to array if its random no. (newr) is <= count. 
+			#count is frequency, so there should be count/200k snp positions in each range
+		end
 	end
-	snp_pos_length << snp_pos.length # because of loop, length increases, making array of each new length for each iteration
-end #snp_pos now contains (the snpo arrays for each i)*l 
-length_index = (1..snp_pos_length.length).to_a
-a = [length_index, snp_pos_length] 
-snpo_positions = a.transpose.map {|x| x.reduce(:+)} 
-#adding the snp_pos lengths to their indices(+1), to find the relevant snpo's. for each count(l), 
-#we need the lth snpo in snp_pos, as this contains the positions for the break range associated with that count:
-snpo_positions.delete_at(-1) #last element needs to be removed, all the others contain the snpo position of relevance
-actual_pos = []
-actual_pos << snp_pos[0] #adding the 0th snpo, the snp positions for l=0 i=0.
-snpo_positions.each do |c| # then adding the rest, so only the ones at the specified positions: l=x i=x
-	actual_pos << snp_pos[c]
+	i+=1
 end
-all_snp_positions = actual_pos.flatten
-#puts all_snp_positions.length
-myr.assign "pos_l", all_snp_positions
+myr.assign "pos_l", snp_pos #take 1000 snps (still normally distributed) to use
 myr.eval "pos_s <- sample(pos_l, 1000)"
 final_positions = myr.pull "pos_s"
-
 unique_pos = []
-final_positions.each{
-	|q|
-	
+final_positions.each do |q|
 	if unique_pos.include? q
 		next
 	else
 		unique_pos << q
 	end
-}
+end
 puts "There are " + final_positions.length.to_s + " SNP\'s"
 puts unique_pos.length.to_s + " of the SNP positions are unique" #this proves each snp position is unique
 puts
 #Create sequence with SNPs at designated positions
-a = ['a', 'g', 't', 'g', 'a']
+a = ['a', 'g', 't', 'g', 'a'] #This step is actually unecessary, though it shows later on when creating a vcf file that all works.
 snp_seq = a*200000
 unique_pos.each{
 	|i|
@@ -86,7 +63,6 @@ x = all.length - 200000
 frags[-1].delete_if {|i| i > 'y'} #shorten the final fragment that has extra nucleotides due to the until >= 200Kb loop
 puts "Total nucleotides: " + (frags.flatten.join.to_s.split(//).length).to_s
 puts "There are a total of " + frags.length.to_s + " fragments"
-puts "The sequence array == the flattened fragment array: " + (snp_seq == frags.flatten).to_s
 
 #Find the positions of snps on the fragments, based on the positions in the un-fragmented sequence
 sorted_pos = unique_pos.sort
@@ -94,7 +70,7 @@ p_ranges = []
 frags.each do |i|
 	p_ranges << i.length + p_ranges[-1].to_i #adding the fragment lengths to get the upper bounds of ranges of positions on the original seq.
 end
-first_pos = []
+first_pos = [] #then, to work out the first position of each fragment
 first_pos << 0
 first_pos << p_ranges[0..-2]
 first_pos = first_pos.flatten
@@ -119,8 +95,8 @@ end
 puts "The positions are separated into " + (all_frags_pos.length).to_s + " fragments"
 puts "There are " + (all_frags_pos.flatten.length).to_s + " positions containing SNPs"
 
-File.open("snp_pos.json", "w") do |ff|
-	ff.write(all_frags_pos.to_json)
+File.open("snp_pos.json", "w") do |f|
+	f.write(all_frags_pos.to_json)
 end
 
 File.open("frags.json", "w") do |f|
