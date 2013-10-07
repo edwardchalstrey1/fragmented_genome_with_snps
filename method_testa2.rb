@@ -52,8 +52,7 @@ def unique? (snp_pos) #This method is an experiment/test to show that the previo
 end
 
 def make_snp_seq (snp_pos)
-	a = ['a', 'g', 't', 'g', 'a'] #This step is actually unecessary, though it shows later on when creating a vcf file that all works.
-	snp_seq = a*200000
+	snp_seq = ['a', 'g', 't', 'g', 'a']*40000 #This step is actually unecessary, though it shows later on when creating a vcf file that all works.
 	snp_pos.each do |i|
 		snp_seq[i] = 'c' #replacing the slots at the snp positions with snp's (always c for simplicity)
 	end
@@ -66,19 +65,102 @@ def get_frags (seq, snp_pos)
 	while rt < seq.length
 		frag_length = rand(200) + 50
 		frag = seq[rt..(rt+frag_length)]
-		pos = snp_pos.select{|x| x>rt and x<(rt+frag_length)}
+		pos = snp_pos.select{|x| x>=rt and x<(rt+frag_length)}
 		rt = rt+frag_length
 		frags << frag
 		all_frags_pos << pos
 	end
-	return frags
+	return frags, all_frags_pos
+end
+def remove_extra_frags (frags)
+	x = frags.flatten.length - 200000
+	y = frags[-1].length
+	c = 2
+	while y < x
+		y = y + frags[-c].length
+		c+=1
+	end
+	frags2 = frags - frags[-c..-1]
+	leftover = frags.flatten.length - frags2.flatten.length
+	leftover2 = frags.flatten.length - 200000
+	final_frag = ['a']*(leftover - leftover2)
+	frags2 << final_frag
+	return frags2
+end
+#def pos_each_frag (all_frags_pos, frags)
+#	first_pos = [0]
+#	frags.each do |i|
+#		first_pos << i.length + first_pos[-1]
+#	end
+#	first_pos.delete_at(-1)
+#
+#	positions_each = []								#WHY DOESN'T THIS METHOD WORK???
+#	x = 0
+#	all_frags_pos.each do |one|
+#		each_frag = []
+#		one.each do |j|
+#			each_frag << (j - first_pos[x])
+#		end
+#		positions_each << each_frag
+#		x+=1
+#	end
+#	return positions_each
+#end
+
+snp_pos = normal_dist #make a normal distribution of snp positions
+#unique?(snp_pos) #are the positions generated unique?
+
+y = make_snp_seq(snp_pos) #make a sequence with snps at the positions^
+x = get_frags(y, snp_pos) #get an array of fragments, and an array of each of the positions associated with each fragment
+xx = get_frags(y, snp_pos)[0]
+positions = x[1]
+
+frags = remove_extra_frags(xx)
+#positions_each = pos_each_frag(positions, frags)
+
+#############################################################################################################################################
+sorted_pos = snp_pos.sort
+p_ranges = []
+frags.each do |i|
+	p_ranges << i.length + p_ranges[-1].to_i #adding the fragment lengths to get the upper bounds of ranges of positions on the original seq.
+end
+first_pos = [] #then, to work out the first position of each fragment
+first_pos << 0
+first_pos << p_ranges[0..-2]
+first_pos = first_pos.flatten
+p = 0
+t = 0
+all_frags_pos = [] # the positions of snps on each fragment, array of arrays
+p_ranges.each do |jj| #for each of the upper ranges (j) that the positions could be in
+	each_frag_pos = []
+	while sorted_pos[t].to_i < jj && !sorted_pos[t].nil? do #make the loop quit before trying to access index of snp_pos that doesn't exist
+		each_frag_pos << sorted_pos[t].to_i 	# add all of the positions < jj to a new array for each frag
+		t += 1
+	end
+	z = 0
+	y = first_pos[p].to_i
+	each_frag_pos.each do |e|   
+		each_frag_pos[z] = e - y #taking away the value at the first position of each fragment to get the true positions
+		z += 1
+	end
+	p += 1
+	all_frags_pos << each_frag_pos # add the positions for the frag to an array of the each_frag arrays
+end
+#############################################################################################################################################
+
+frags_with_positions = []
+x = 0
+frags.each do |i|
+	frag_pos_hash = {}
+	frag_pos_hash[:frag] = i.join.to_s
+	frag_pos_hash[:pos] = all_frags_pos[x] #for some reason the snp positions are not in the same order as the frags
+	frags_with_positions << frag_pos_hash  #so ideally i would use the hashed pos_each_frag method above, but for some reason dnt work
+	x+=1
 end
 
-snp_pos = normal_dist
-unique_test = unique?(snp_pos)
-y = make_snp_seq(snp_pos)
-x = get_frags(y, snp_pos)
-puts x.flatten.length
+puts frags_with_positions[650]
+
+
 
 
 
