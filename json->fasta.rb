@@ -1,104 +1,73 @@
 require "rubygems"
 require "json"
 
-json = File.open('frags.json').read #open the json containing an array of frags, each frag is an array of nucleotides
-frags = JSON.parse(json)
-frag_strings = [] #sequences
-frags.each do |i|
-	j = i.join.to_s #create a string of each sequence
-	frag_strings << j #add these to a new array of the sequences in string format
-end
-frag_ids = [] #create an id for each of the frags
-x = 0
-frag_strings.each do |f| 
-	frag_ids << ('>frag' + (x += 1).to_s)
-end
-frag_lengths = [] #lengths
-frags.each do |l|
-	frag_lengths << l.length
-end
-id_and_length = [] #id and length wanted for description lines of fasta
-q = 0
-frag_ids.each do |h|
-	one = h + "  Length = " + frag_lengths[q].to_s
-	id_and_length << one
-	q += 1
-end
-fastaformat_array = id_and_length.zip(frag_strings) #create the array, each element of which goes onto a new line in fasta
-
-File.open("frags.fasta", "w+") do |f|
-	fastaformat_array.each { |i| f.puts(i) } #write the fasta
+def fasta_array (json)
+	frags = JSON.parse(File.open(json).read) #open the json containing an array of frags, each frag is an array of nucleotides
+	frag_strings = [] #sequences
+	id_and_length = [] 
+	frag_ids = [] #create an id for each of the frags
+	x = 0
+	frags.each do |i|
+		frag_strings << i.join.to_s #add these to a new array of the sequences in string format
+		frag_ids << ('>frag' + (x+1).to_s)
+		id_and_length << (('>frag' + (x+1).to_s) + "  Length = " + i.length.to_s)
+		x+=1
+	end
+	fastaformat_array = id_and_length.zip(frag_strings) #create the array, each element of which goes onto a new line in fasta
+	return fastaformat_array, frags
 end
 
-fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it for shits and giggles
-File.open("frags_shuffled.fasta", "w+") do |f|
-	fastaformat_array_shuf.each { |i| f.puts(i) } 
-end
-
-json2 = File.open('snp_pos.json').read #open the json containing the position data for the snps on each fragment - array of arrays
-snp_pos = JSON.parse(json2)
-ids = []
-frag_ids.each do |i| #getting the ids - removing the '>'
-	i.slice! '>'
-	ids << i
-end
-####VCF fields
-chrom = []
-q = 0
-snp_pos.each do |h|
-	if h.to_s != '[]' #all of the fragments that contain at least one snp, TESTED = 100, so correct
-		h.length.times do
-			chrom << ids[q]#*no. of snps?
+def vcf_array (frags)
+	snp_pos = JSON.parse(File.open('snp_pos.json').read)#open the json containing the position data for the snps on each fragment - array of arrays
+	ids = []
+	x = 0
+	frags.each do |i| #getting the ids - removing the '>'
+		ids << ('frag' + (x+1).to_s)
+		x+=1
+	end
+	chrom = []
+	alt = []
+	q = 0
+	snp_pos.each do |h|
+		if h.to_s != '[]' #all of the fragments that contain at least one snp, TESTED = 100, so correct
+			h.length.times do #*no. of snps
+				chrom << ids[q]
+			end
 		end
+		h.each do |i|
+			alt << frags[q][i].capitalize #what nucleotide is at these positions?  VCF requires capital nucleotides
+		end
+		q += 1
 	end
-	q += 1
-end
-id = []
-snp_pos.each do |i| #id's blank, not real sequences
-	c = "."
-	id << c
-end
-ref = []
-snp_pos.each do |i| #no reference sequence
-	c = "."
-	ref << c
-end
-alt = []
-z = 0
-snp_pos.each do |j| #the snps (alt)
-	one = []
-	j.each do |i|
-		one << frags[z][i].capitalize #what nucleotide is at these positions?  VCF requires capital nucleotides
+	vcf_format = ['##fileformat=VCFv4.1', '##source=Fake', '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO'] 
+	u = 0
+	snp_pos.flatten.each do |i|
+		line = chrom[u] + '	' + i.to_s + '	' + '.' + '	' + '.' + '	' + alt[u] + '	' + '100' + '	' + 'PASS' + '	' + '.'
+		vcf_format << line
+		u += 1
 	end
-	alt << one
-	z += 1
+	return vcf_format
 end
-qual = [] # the quality can just all be 100
-snp_pos.each do |i|
-	c = 100
-	qual << c
-end
-filter = [] #all pass filter (obviously theres no filter)
-snp_pos.each do |i|
-	c = "PASS"
-	filter << c
-end
-info = [] #no info
-snp_pos.each do |i|
-	c = '.'
-	info << c
-end
-puts frags.length
-puts chrom.length
 
-vcf_format = ['##fileformat=VCFv4.1', '##source=Fake', '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO'] 
-#each element needs to be a line, including a value from each of the fields above. DOUBLE CHECK THAT THE FIELDS ARE ALIGNED!
-u = 0
-snp_pos.flatten.each do |i|
-	line = chrom[u] + '	' + i.to_s + '	' + id[u] + '	' + ref[u] + '	' + alt.flatten[u] + '	' + qual[u].to_s + '	' + filter[u] + '	' + info[u]
-	vcf_format << line
-	u += 1
+def write_fasta (array, file)
+	File.open(file, "w+") do |f|
+		array.each { |i| f.puts(i) } #write the fasta
+	end
 end
-File.open("snps.vcf", "w+") do |f|
-	vcf_format.each { |i| f.puts(i) }
+
+def write_vcf (array, file)
+	File.open(file, "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
 end
+
+fasta_and_frags = fasta_array('frags.json')
+fastaformat_array = fasta_and_frags[0]
+#fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it for shits and giggles #YOU CAN USE THE SHUFFLED VERSION LATER ON
+frags = fasta_and_frags[1]
+vcf = vcf_array(frags)
+write_fasta(fastaformat_array, 'frags.fasta')
+write_vcf(vcf, 'snps.vcf')
+
+
+
