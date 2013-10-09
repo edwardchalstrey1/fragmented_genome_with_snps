@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bio-samtools'
 require 'bio'
+require "json"
 
 def get_snp_data (vcf_file)
 	vcfs_chrom = []
@@ -33,29 +34,6 @@ def snps_per_fasta_frag (snps_per_vcf_frag_hash, fasta_array)
 	#now we have an array with the number of snps per frag in the same order as the fasta array, which we can get lengths from to calculate density
 	return snps_per_frag_fasta_order
 end
-def get_positions (fasta_array, vcfs_chrom, vcfs_pos)
-	pos = [] #get the snp positions for each frag, in an array of arrays
-	n = 0
-	fasta_array.each do |frag|
-		each_fr_pos = []
-		while frag.entry_id == vcfs_chrom[n]
-			each_fr_pos << vcfs_pos[n]
-			n+=1
-		end
-		pos << each_fr_pos #this gives empty arrays for frags with out snps, and a list of the positions of those with
-		n = pos.flatten.length
-	end
-	return pos
-end
-def associate_fasta_ids_snp_pos (pos, fasta_ids)
-	#make hash where key is frag_id and values are positions for each frag, positions array should be converted to string so they stick together
-	#otherwise we have problems when flattening the array to make the hash below
-	pos_strings = []
-	pos.each do |s|
-		pos_strings << "#{s.join(",")}" #each position separated by a comma
-	end
-	return Hash[*fasta_ids.zip(pos_strings).flatten] # fasta ids as keys and the snp position strings as values
-end
 def calculate_densities (fasta, snps_per_frag) #argument arrays must be in "same order" - each fasta frag corresponds to the equivalent number of snps at the same index in snps_per_frag
 	densities = []
 	x = 0
@@ -78,23 +56,63 @@ def density_order_ids (densities, fasta_ids) #must be in same order
 	# the frags with zero snps are sorted by their id, this doesn't matter, we assume they are in a random unknowable order
 	return frags_by_density
 end
+def get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag)
+	pos = [] #get the snp positions for each frag, in an array of arrays
+	n = 0
+	fasta.each do |frag|
+		x = 0
+		each_fr_pos = []
+		snps_per_frag[n].times do |j|
+			if frag.entry_id == vcfs_chrom[x] #this assumes that frag_id == vcf.chrom then continues to for the number of snps (for that frag)
+				each_fr_pos << vcfs_pos[x]
+				x+=1
+			else
+				while frag.entry_id != vcfs_chrom[x]
+					x+=1
+				end
+				each_fr_pos << vcfs_pos[x]
+				x+=1
+			end
+		end
+		pos << each_fr_pos #this gives empty arrays for frags with out snps, and a list of the positions of those with
+		n+=1
+	end
+	return pos
+end
+def associate_fasta_ids_snp_pos (pos, fasta_ids)
+	#make hash where key is frag_id and values are positions for each frag, positions array should be converted to string so they stick together
+	#otherwise we have problems when flattening the array to make the hash below
+	pos_strings = []
+	pos.each do |s|
+		pos_strings << "#{s.join(",")}" #each position separated by a comma
+	end
+	return Hash[*fasta_ids.zip(pos_strings).flatten] # fasta ids as keys and the snp position strings as values
+end
+def write_json (array, json)
+	File.open(json, "w") do |f|
+		f.write(array.to_json)
+	end
+end
 
 snp_data = get_snp_data('snps.vcf')
 vcfs_chrom = snp_data[0] #array of vcf frag ids
 vcfs_pos = snp_data[1] #array of all the snp positions (fragments with snps)
 snps_hash = snp_data[2] #hash of each fragment from vcf, and it's number of snps
 
-fasta_data = fasta_array('frags.fasta') #array of fasta format fragments, and entry_ids
+fasta_data = fasta_array('frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
 fasta = fasta_data[0]
 fasta_ids = fasta_data[1]
 
 snps_per_frag = snps_per_fasta_frag(snps_hash, fasta) #array of no. of snps per frag in same order as fasta
 
-pos = get_positions(fasta, vcfs_chrom, vcfs_pos) #get snp positions for each frag in array of arrays
-
-pos_hash = associate_fasta_ids_snp_pos(pos, fasta_ids) #associate frag ids with a string of the positions it has THIS IS FOR THE LEFT/RIGHT METHOD
-
 densities = calculate_densities(fasta, snps_per_frag)
 
 frags_by_density = density_order_ids(densities, fasta_ids)
-puts frags_by_density
+write_json(frags_by_density, 'frags_by_density.json')
+
+
+pos = get_positions(fasta, vcfs_chrom, vcfs_pos, snps_per_frag) #get snp positions for each frag in array of arrays
+
+pos_hash = associate_fasta_ids_snp_pos(pos, fasta_ids) #associate frag ids with a string of the positions it has THIS IS FOR THE LEFT/RIGHT METHOD
+write_json(pos_hash, 'pos_hash.json')
+
