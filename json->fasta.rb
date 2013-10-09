@@ -11,14 +11,17 @@ def extract_json (json)
 	return frags, snp_pos
 end
 def fasta_array (frags)
+	frag_ids = []
 	id_and_length = [] 
 	x = 0
 	frags.each do |i|
-		id_and_length << (('>frag' + (x+1).to_s) + "  Length = " + i.length.to_s)
+		id = ('>frag' + (x+1).to_s)
+		id_and_length << (id + "  Length = " + i.length.to_s)
+		frag_ids << id
 		x+=1
 	end
 	fastaformat_array = id_and_length.zip(frags) #create the array, each element of which goes onto a new line in fasta
-	return fastaformat_array
+	return fastaformat_array, frag_ids
 end
 def vcf_array (frags, snp_pos)
 	x = 0
@@ -68,18 +71,27 @@ def write_vcf (array, file)
 		array.each { |i| f.puts(i) }
 	end
 end
+def write_json (array, json)
+	File.open(json, "w") do |f|
+		f.write(array.to_json)
+	end
+end
 
 data = extract_json('frags_with_positions.json')
 frags = data[0]
 snp_pos = data[1]
 
-fastaformat_array = fasta_array(frags)
-#fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it for shits and giggles #YOU CAN USE THE SHUFFLED VERSION LATER ON
+fasta_n_ids = fasta_array(frags)
+fastaformat_array = fasta_n_ids[0]
+frag_ids = fasta_n_ids[1]
 
 vcf = vcf_array(frags, snp_pos)
 
 write_fasta(fastaformat_array, 'frags.fasta')
 write_vcf(vcf, 'snps.vcf')
 
+fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it to show that the order doesn't need to be conserved when working out density later on
+write_fasta(fastaformat_array_shuf, 'frags_shuffled.fasta')
 
+write_json(frag_ids, 'frag_ids_original_order.json')
 

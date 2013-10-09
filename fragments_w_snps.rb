@@ -126,7 +126,6 @@ def storage (frags, pos)
 	end
 	return frags_with_positions
 end
-
 def write_json (array)
 	File.open("frags_with_positions.json", "w") do |f|
 		f.write(array.to_json)
