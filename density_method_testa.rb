@@ -20,11 +20,13 @@ end
 def fasta_array (fasta_file)
 	ids = []
 	fasta = [] #we have the lengths of each fasta, but the frags are different to those of the vcf/hash(this only has the frags w snps)
+	lengths = []
 	Bio::FastaFormat.open(fasta_file).each do |i| #get array of fasta format frags
 		fasta << i
 		ids << i.entry_id
+		lengths << i.length
 	end
-	return fasta, ids
+	return fasta, ids, lengths
 end
 def snps_per_fasta_frag (snps_per_vcf_frag_hash, fasta_array)
 	snps_per_frag_fasta_order = [] #use the id to identify the number of snps for that frag using the keys of snps_hash
@@ -102,6 +104,7 @@ snps_hash = snp_data[2] #hash of each fragment from vcf, and it's number of snps
 fasta_data = fasta_array('frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
 fasta = fasta_data[0]
 fasta_ids = fasta_data[1]
+fasta_lengths = fasta_data[2]
 
 snps_per_frag = snps_per_fasta_frag(snps_hash, fasta) #array of no. of snps per frag in same order as fasta
 
@@ -115,4 +118,5 @@ pos = get_positions(fasta, vcfs_chrom, vcfs_pos, snps_per_frag) #get snp positio
 
 pos_hash = associate_fasta_ids_snp_pos(pos, fasta_ids) #associate frag ids with a string of the positions it has THIS IS FOR THE LEFT/RIGHT METHOD
 write_json(pos_hash, 'pos_hash.json')
+write_json(fasta_lengths, 'fasta_lengths.json') #the lengths of the frags in the same order as the fasta file and hence pos_hash
 
