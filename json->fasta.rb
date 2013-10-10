@@ -17,6 +17,7 @@ def fasta_array (frags)
 	frags.each do |i|
 		id = ('>frag' + (x+1).to_s)
 		id_and_length << (id + "  Length = " + i.length.to_s)
+		id.slice!('>')
 		frag_ids << id
 		x+=1
 	end
