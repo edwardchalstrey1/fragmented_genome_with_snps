@@ -27,6 +27,22 @@ end
 def evens (array)
 	return array.values_at(*array.each_index.select {|i| i.even?})
 end
+def two_a_to_h (keys_array, values_array)
+	return Hash[*keys_array.zip(values_array).flatten]
+end
+
+def density_order (frags_by_density, fasta_lengths, id_pos_hash) #get fasta lengths array and id/positions hash in SNP density order
+	d_lengths = []
+	d_pos = []
+	length_hash = two_a_to_h(id_pos_hash.keys, fasta_lengths) #make hash of ids in fasta file order with lengths
+	frags_by_density.each do |id|
+		d_pos << id_pos_hash[id]
+		d_lengths << length_hash[id] #the lengths of each fragment in the same order as frags_by_density (SNP density order)
+	end
+	d_id_pos_hash = two_a_to_h(frags_by_density, d_pos) #an id/positions hash where the ids are in SNP density order
+	return d_id_pos_hash, d_lengths
+end
+
 # Rearrangement Methods
 # ---------------------
 
@@ -82,7 +98,8 @@ def left_right (id_pos_hash, fasta_lengths)
 	return left, right
 end
 
-
+def lr2
+end
 
 
 frags_original_order = extract_json('frag_ids_original_order.json')
@@ -91,8 +108,12 @@ frags_by_density = extract_json('frags_by_density.json')
 id_pos_hash = extract_json('pos_hash.json') #remember the fragments are in a random order here - the order they were in in the fasta
 fasta_lengths = extract_json('fasta_lengths.json') #also in the order from the fasta file
 
+density_order_data = density_order(frags_by_density, fasta_lengths, id_pos_hash)
+d_id_pos_hash = density_order_data[0]
+d_lengths = density_order_data[1]
+
 #puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
 #puts 'Random Score: ' + (random_score(frags_original_order, frags_by_density)).to_s
-puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
-puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
-puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
+#puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
+#puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
+#puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
