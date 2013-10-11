@@ -7,6 +7,16 @@ The SNP density across this sequence follows a normal distribution, with the mut
 The sequence is fragmented, after being created, into fragments of 50-250b length. These model varying contig sizes.
 A contig is a set of overlapping DNA segments that together represent a consensus region of DNA. My fragments are contigs, if they were real data, they would be formed by assembly of smaller overlapping reads.
 
+Working files: 
+
+- fragments_w_snps.rb
+- json->fasta.rb
+- density_method_testa.rb
+- rearrangement_methods.rb
+- rearrangement_methods.md
+
+Ignore all other files, they're just test files.
+
 ###Making a fragmented genome with SNP's in Ruby:
 
 1. fragments_w_snps.rb - This generates the fragments described above. JSON files are created: one contains the fragments, another the SNP positions for each fragment.
@@ -20,4 +30,5 @@ A contig is a set of overlapping DNA segments that together represent a consensu
 
 2. Getting the fragments back into the correct order based on SNP density:
 
+- rearrangement_methods.rb contains rearrangement methods
 - see rearrangement_methods.md for details
