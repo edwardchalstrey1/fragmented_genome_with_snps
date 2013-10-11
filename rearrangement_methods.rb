@@ -97,8 +97,12 @@ def left_right (id_pos_hash, fasta_lengths)
 	end
 	return left, right
 end
-
-def lr2
+def lr_d (d_id_pos_hash, d_lengths)
+	lnr = left_right(d_id_pos_hash, d_lengths) #get the left/right arrays for density ordered frags so both arrays are still ordered by density
+	left = lnr[0]
+	right = lnr[1]
+	left << right.reverse # reverse the right array into descending density order
+	return left.flatten
 end
 
 
@@ -117,3 +121,4 @@ d_lengths = density_order_data[1]
 #puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
 #puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
 #puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
+puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(d_id_pos_hash, d_lengths)))).to_s
