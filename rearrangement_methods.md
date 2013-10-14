@@ -88,7 +88,6 @@ barplot(scores, main = "Comparison of Methods for Rearrangement of SNP Density O
 
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
 
-![Image](?raw=true)
 
 >### Discuss
 
