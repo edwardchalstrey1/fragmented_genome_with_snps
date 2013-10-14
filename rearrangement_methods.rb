@@ -105,8 +105,13 @@ def lr_d (d_id_pos_hash, d_lengths)
 	return left.flatten
 end
 
+def max_score (original_order)
+end
+
+
 
 frags_original_order = extract_json('frag_ids_original_order.json')
+frags_reverse_order = frags_original_order.reverse
 frags_by_density = extract_json('frags_by_density.json')
 
 id_pos_hash = extract_json('pos_hash.json') #remember the fragments are in a random order here - the order they were in in the fasta
@@ -121,4 +126,5 @@ d_lengths = density_order_data[1]
 #puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
 #puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
 #puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
-puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(d_id_pos_hash, d_lengths)))).to_s
+#puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(d_id_pos_hash, d_lengths)))).to_s
+puts score(frags_reverse_order, frags_original_order)
