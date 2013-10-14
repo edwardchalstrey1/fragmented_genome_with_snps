@@ -58,6 +58,10 @@ Methods
 
 > I expect this version of the L/R Method to perform better than the previous version (Method 2a), as I am now using the SNP density information to decide where each frag should be placed in the "Left" and "Right" arrays, where previously this was based on the position of the fragments within the fasta file (which is random). I do however also expect this method to have a high ordinal similarity score. Whilst I am as yet unsure of how well the "skew" of SNP positions within a fragment can be used to tell which side of the sequence it is from (due to the normal distribution), I am still using the "Even Odd Method" to place the fragments with 0 SNPs in the "Left" or "Right". Since the order of the fragments with 0 SNPs is essentially random, the Even Odd Method does not neccesarily put them on the correct end of the rearranged order, let alone in the correct position.
 
+>### Method 2c: Another l/r method idea
+
+> Another idea I had was to run method 2a, then re-order each of the left and right lists individually according to SNP density. I decided this would not be worth the time it took to code, as the rearrangement it produces should logically be identical to the order of the fragments from Method 2b.
+
 Results
 -------
 
@@ -84,7 +88,7 @@ barplot(scores, main = "Comparison of Methods for Rearrangement of SNP Density O
 
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
 
-
+![Image](?raw=true)
 
 >### Discuss
 
