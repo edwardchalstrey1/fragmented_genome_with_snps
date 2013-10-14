@@ -88,6 +88,7 @@ barplot(scores, main = "Comparison of Methods for Rearrangement of SNP Density O
 
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
 
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/unnamed-chunk-1.png?raw=true)
 
 >### Discuss
 
