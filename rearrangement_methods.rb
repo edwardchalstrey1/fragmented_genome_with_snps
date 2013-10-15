@@ -52,7 +52,8 @@ def random_score (frags_original_order, frags_by_density)
 	100.times do |i|
 		scores << score(frags_original_order, frags_by_density.shuffle)
 	end
-	return scores.inject(:+).to_f / 100
+	av_score = scores.inject(:+).to_f / 100
+	return scores
 end
 
 # Even/odd and odd/even
@@ -104,10 +105,15 @@ def lr_d (d_id_pos_hash, d_lengths)
 	left << right.reverse # reverse the right array into descending density order
 	return left.flatten
 end
-
 def max_score (original_order)
 end
-
+def re_order_densities (id_density_hash, rearranged_ids) # get list of the densities for a rearrangement of ids (frags)
+	densities = []
+	rearranged_ids.each do |id|
+		densities << id_density_hash[id]
+	end
+	return densities
+end
 
 
 frags_original_order = extract_json('frag_ids_original_order.json')
@@ -121,10 +127,17 @@ density_order_data = density_order(frags_by_density, fasta_lengths, id_pos_hash)
 d_id_pos_hash = density_order_data[0]
 d_lengths = density_order_data[1]
 
+id_density_hash = extract_json('id_density_hash.json')
+
 #puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
 #puts 'Random Score: ' + (random_score(frags_original_order, frags_by_density)).to_s
 #puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
 #puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
 #puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
 #puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(d_id_pos_hash, d_lengths)))).to_s
-puts score(frags_reverse_order, frags_original_order)
+#puts score(frags_reverse_order, frags_original_order)
+
+
+File.open('random_scores.txt', "w+") do |f|
+	(random_score(frags_original_order, frags_by_density)).each { |i| f.puts(i) }
+end

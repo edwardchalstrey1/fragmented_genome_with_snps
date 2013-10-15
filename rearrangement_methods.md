@@ -69,7 +69,7 @@ Results
 
 >1. **C1 Density order**: 624,196 
 
->2. **C2 Random order**: 570,00 approx (571,040.44)
+>2. **C2 Random order**: 571,132.5 (standard error: 1062.454) Standard error is low so mean is accurate
 
 >3. a. **M1 a Even/Odd method**: 492,838    
 >   b. **M1 b Odd/Even method**: 490,524
