@@ -23,14 +23,16 @@ scores <- c(624196, random_mean, 492838, 490524, 570434, 491950)
 methods <- c("C1", "C2", "M1 a", "M1 b", "M2 a", "M2 b")
 
 
-barx <- barplot(scores, main="Comparison of Methods for Rearrangement of SNP Density Ordered Fragments, to The Original Sequenced Order", xlab="Methods", ylab="Ordinal Similarity Score", names.arg=methods)
+barx <- barplot(scores, main="Comparison of Methods
+                for Rearrangement of SNP Density Ordered Fragments,
+                to the Original Sequenced Order", xlab="Methods", ylab="Ordinal Similarity Score", names.arg=methods)
 
 
 
 error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
-+ if(length(x) != length(y) | length(y) !=length(lower) | length(lower) != length(upper))
-+ stop("vectors must be same length")
-+ arrows(x,y+upper, x, y-lower, angle=90, code=3, length=length, ...)
-+ }
+if(length(x) != length(y) | length(y) !=length(lower) | length(lower) != length(upper))
+stop("vectors must be same length")
+arrows(x,y+upper, x, y-lower, angle=90, code=3, length=length, ...)
+}
 
 error.bar(barx, scores, serrors)

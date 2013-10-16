@@ -30,7 +30,6 @@ end
 def two_a_to_h (keys_array, values_array)
 	return Hash[*keys_array.zip(values_array).flatten]
 end
-
 def density_order (frags_by_density, fasta_lengths, id_pos_hash) #get fasta lengths array and id/positions hash in SNP density order
 	d_lengths = []
 	d_pos = []
@@ -42,7 +41,18 @@ def density_order (frags_by_density, fasta_lengths, id_pos_hash) #get fasta leng
 	d_id_pos_hash = two_a_to_h(frags_by_density, d_pos) #an id/positions hash where the ids are in SNP density order
 	return d_id_pos_hash, d_lengths
 end
-
+def re_order_densities (id_density_hash, rearranged_ids) # get list of the densities for a rearrangement of ids (frags)
+	densities = []
+	rearranged_ids.each do |id|
+		densities << id_density_hash[id]
+	end
+	return densities
+end
+def scatta_txts (array, name_string) # write each list of ids and densities into id_n_density_txts directory, for use in scatter plots in R
+	File.open(('id_n_density_txts/'+name_string+'.txt'), "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
+end
 # Rearrangement Methods
 # ---------------------
 
@@ -102,21 +112,11 @@ def lr_d (frags_by_density, fasta_lengths, id_pos_hash)
 	d_id_pos_hash = density_order_data[0]
 	d_lengths = density_order_data[1]
 	lnr = left_right(d_id_pos_hash, d_lengths) #get the left/right arrays for density ordered frags so both arrays are still ordered by density
-	left = lnr[0]
-	right = lnr[1]
-	left << right.reverse # reverse the right array into descending density order
-	return left.flatten
-end
-def max_score (original_order)
-end
-def re_order_densities (id_density_hash, rearranged_ids) # get list of the densities for a rearrangement of ids (frags)
-	densities = []
-	rearranged_ids.each do |id|
-		densities << id_density_hash[id]
-	end
-	return densities
+	return lnr[0], lnr[1].reverse # reverse the right array into descending density order
 end
 
+def max_score (original_order)
+end
 
 frags_original_order = extract_json('frag_ids_original_order.json')
 frags_reverse_order = frags_original_order.reverse
@@ -125,52 +125,58 @@ frags_by_density = extract_json('frags_by_density.json')
 id_pos_hash = extract_json('pos_hash.json') #remember the fragments are in a random order here - the order they were in in the fasta
 fasta_lengths = extract_json('fasta_lengths.json') #also in the order from the fasta file
 
-
-
 id_density_hash = extract_json('id_density_hash.json')
 
 # Rearranged orders for ids and densities: for scatter plots
 #-----------------------------------------------------------
 
 #Density C1
-id_c1 = frags_by_density
-d_c1 = re_order_densities(id_density_hash, frags_by_density)
+scatta_txts(re_order_densities(id_density_hash, frags_by_density), 'd_c1')
 
 #Random C2 (example)
 id_c2 = frags_by_density.shuffle
-d_c2 = re_order_densities(id_density_hash, id_c2)
+scatta_txts(re_order_densities(id_density_hash, id_c2), 'd_c2')
 
 #Even Odd M1 a/b
 id_m1a = even_odd(frags_by_density, 'even')
-d_m1a = re_order_densities(id_density_hash, id_m1a)
+scatta_txts(re_order_densities(id_density_hash, id_m1a), 'd_m1a')
 
 id_m1b = even_odd(frags_by_density, 'odd')
-d_m1b = re_order_densities(id_density_hash, id_m1b)
+scatta_txts(re_order_densities(id_density_hash, id_m1b), 'd_m1b')
 
 #Left Right M2 a: l, r, both
 lnr = left_right(id_pos_hash, fasta_lengths)
 
 id_m2al = lnr[0]
-d_m2al = re_order_densities(id_density_hash, id_m2al)
+scatta_txts(re_order_densities(id_density_hash, id_m2al), 'd_m2al')
 
 id_m2ar = lnr[1]
-d_m2al = re_order_densities(id_density_hash, id_m2al)
+scatta_txts(re_order_densities(id_density_hash, id_m2ar), 'd_m2ar')
 
 id_m2a = lnr.flatten
-d_m2a = re_order_densities(id_density_hash, id_m2a)
+scatta_txts(re_order_densities(id_density_hash, id_m2a), 'd_m2a')
 
 # Left Right Density M2 b: l, r, both
-lr_d(frags_by_density, fasta_lengths, id_pos_hash)
+lnrd = lr_d(frags_by_density, fasta_lengths, id_pos_hash)
+
+id_m2bl = lnrd[0]
+scatta_txts(re_order_densities(id_density_hash, id_m2bl), 'd_m2bl')
+
+id_m2br = lnrd[1]
+scatta_txts(re_order_densities(id_density_hash, id_m2br), 'd_m2br')
+
+id_m2b = lnrd.flatten
+scatta_txts(re_order_densities(id_density_hash, id_m2b), 'd_m2b')
 
 #puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
 #puts 'Random Score: ' + (random_score(frags_original_order, frags_by_density)).to_s
 #puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
 #puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
 #puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
-puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash)))).to_s
+#puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash).flatten))).to_s
 #puts score(frags_reverse_order, frags_original_order)
 
 
-File.open('random_scores.txt', "w+") do |f|
-	(random_score(frags_original_order, frags_by_density)).each { |i| f.puts(i) }
-end
+#File.open('random_scores.txt', "w+") do |f|
+#	(random_score(frags_original_order, frags_by_density)).each { |i| f.puts(i) }
+#end
