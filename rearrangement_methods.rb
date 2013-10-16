@@ -52,7 +52,6 @@ def random_score (frags_original_order, frags_by_density)
 	100.times do |i|
 		scores << score(frags_original_order, frags_by_density.shuffle)
 	end
-	av_score = scores.inject(:+).to_f / 100
 	return scores
 end
 
@@ -98,7 +97,10 @@ def left_right (id_pos_hash, fasta_lengths)
 	end
 	return left, right
 end
-def lr_d (d_id_pos_hash, d_lengths)
+def lr_d (frags_by_density, fasta_lengths, id_pos_hash)
+	density_order_data = density_order(frags_by_density, fasta_lengths, id_pos_hash)
+	d_id_pos_hash = density_order_data[0]
+	d_lengths = density_order_data[1]
 	lnr = left_right(d_id_pos_hash, d_lengths) #get the left/right arrays for density ordered frags so both arrays are still ordered by density
 	left = lnr[0]
 	right = lnr[1]
@@ -123,18 +125,49 @@ frags_by_density = extract_json('frags_by_density.json')
 id_pos_hash = extract_json('pos_hash.json') #remember the fragments are in a random order here - the order they were in in the fasta
 fasta_lengths = extract_json('fasta_lengths.json') #also in the order from the fasta file
 
-density_order_data = density_order(frags_by_density, fasta_lengths, id_pos_hash)
-d_id_pos_hash = density_order_data[0]
-d_lengths = density_order_data[1]
+
 
 id_density_hash = extract_json('id_density_hash.json')
+
+# Rearranged orders for ids and densities: for scatter plots
+#-----------------------------------------------------------
+
+#Density C1
+id_c1 = frags_by_density
+d_c1 = re_order_densities(id_density_hash, frags_by_density)
+
+#Random C2 (example)
+id_c2 = frags_by_density.shuffle
+d_c2 = re_order_densities(id_density_hash, id_c2)
+
+#Even Odd M1 a/b
+id_m1a = even_odd(frags_by_density, 'even')
+d_m1a = re_order_densities(id_density_hash, id_m1a)
+
+id_m1b = even_odd(frags_by_density, 'odd')
+d_m1b = re_order_densities(id_density_hash, id_m1b)
+
+#Left Right M2 a: l, r, both
+lnr = left_right(id_pos_hash, fasta_lengths)
+
+id_m2al = lnr[0]
+d_m2al = re_order_densities(id_density_hash, id_m2al)
+
+id_m2ar = lnr[1]
+d_m2al = re_order_densities(id_density_hash, id_m2al)
+
+id_m2a = lnr.flatten
+d_m2a = re_order_densities(id_density_hash, id_m2a)
+
+# Left Right Density M2 b: l, r, both
+lr_d(frags_by_density, fasta_lengths, id_pos_hash)
 
 #puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
 #puts 'Random Score: ' + (random_score(frags_original_order, frags_by_density)).to_s
 #puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
 #puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
 #puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
-#puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(d_id_pos_hash, d_lengths)))).to_s
+puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash)))).to_s
 #puts score(frags_reverse_order, frags_original_order)
 
 
