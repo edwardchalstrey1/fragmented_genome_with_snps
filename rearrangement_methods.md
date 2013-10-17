@@ -91,122 +91,24 @@ source("~/fragmented_genome_with_snps/random_vector_Rcode.txt")
 ## Warning: zero-length arrow is of indeterminate angle and so skipped
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
 
 ```r
 source("~/fragmented_genome_with_snps/scatter_vectors.txt")
-scatta(d_o, "Original\n       Order")
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-12.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_c1, "Control 1")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-13.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_c2, "Control 2")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-14.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m1a, "Method 1a")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-15.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m1b, "Method 1b")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-16.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m2al, "Method 2a \n       (left)")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-17.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m2ar, "Method 2a \n       (right)")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-18.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m2a, "Method 2a")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-19.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m2bl, "Method 2b \n       (left)")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-110.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m2br, "Method 2b \n       (right)")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-111.png) 
-
-```
-## NULL
-```
-
-```r
-scatta(d_m2b, "Method 2b")
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-112.png) 
-
-```
-## NULL
-```
-
-
-
-
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_o.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c2.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1b.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2al.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2ar.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2bl.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2br.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2b.png?raw=true)
 >### Discuss
 
 >1. **Density order C1**: A high score as expected

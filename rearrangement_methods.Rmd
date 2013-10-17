@@ -81,26 +81,19 @@ Results
 ```{r}
 source("~/fragmented_genome_with_snps/random_vector_Rcode.txt")
 source("~/fragmented_genome_with_snps/scatter_vectors.txt")
-scatta(d_o, "Original
-       Order")
-scatta(d_c1, "Control 1")
-scatta(d_c2, "Control 2")
-scatta(d_m1a, "Method 1a")
-scatta(d_m1b, "Method 1b")
-scatta(d_m2al, "Method 2a 
-       (left)")
-scatta(d_m2ar, "Method 2a 
-       (right)")
-scatta(d_m2a, "Method 2a")
-scatta(d_m2bl, "Method 2b 
-       (left)")
-scatta(d_m2br, "Method 2b 
-       (right)")
-scatta(d_m2b, "Method 2b")
 ```
-
-
-
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_o.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c2.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1b.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2al.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2ar.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2bl.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2br.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2b.png?raw=true)
 >### Discuss
 
 >1. **Density order C1**: A high score as expected
