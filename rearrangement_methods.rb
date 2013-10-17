@@ -127,8 +127,11 @@ fasta_lengths = extract_json('fasta_lengths.json') #also in the order from the f
 
 id_density_hash = extract_json('id_density_hash.json')
 
-# Rearranged orders for ids and densities: for scatter plots
+# Rearranged orders of densities: for scatter plots
 #-----------------------------------------------------------
+
+#Original order
+scatta_txts(re_order_densities(id_density_hash, frags_original_order), 'd_o')
 
 #Density C1
 scatta_txts(re_order_densities(id_density_hash, frags_by_density), 'd_c1')

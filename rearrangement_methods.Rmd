@@ -80,18 +80,35 @@ Results
 
 ```{r}
 source("~/fragmented_genome_with_snps/random_vector_Rcode.txt")
+source("~/fragmented_genome_with_snps/scatter_vectors.txt")
+scatta(d_o, "Original
+       Order")
+scatta(d_c1, "Control 1")
+scatta(d_c2, "Control 2")
+scatta(d_m1a, "Method 1a")
+scatta(d_m1b, "Method 1b")
+scatta(d_m2al, "Method 2a 
+       (left)")
+scatta(d_m2ar, "Method 2a 
+       (right)")
+scatta(d_m2a, "Method 2a")
+scatta(d_m2bl, "Method 2b 
+       (left)")
+scatta(d_m2br, "Method 2b 
+       (right)")
+scatta(d_m2b, "Method 2b")
 ```
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
+
 
 >### Discuss
 
->1. **Density order**: A high score as expected
+>1. **Density order C1**: A high score as expected
 
->2. **Random order**: The average score of 100 random arragements generated using the shuffle method of the Array Class in ruby. Conversion of integer to float for division (to get average) is the reason for the float score. Calling this multiple times gave scores roughly from 570,000 to 574,000. A more consistent "average random score" could be ascertained with a higher repeat number than 100, but is not neccesary (would increase the running time of the method). 
+>2. **Random order C2**: The average score of 100 random arragements generated using the shuffle method of the Array Class in ruby. Conversion of integer to float for division (to get average) is the reason for the float score. Calling this multiple times gave scores roughly from 570,000 to 574,000. A more consistent "average random score" could be ascertained with a higher repeat number than 100, but is not neccesary (would increase the running time of the method). 
 
->3. **Even Odd Method**: As expected this method performed better than the controls, but still had a very high score. I have run it twice, with even indexes of the density order first, then odd indexes reversed and vice versa. The method gives a similar score whichever way around you do it: this is an important thing to note, as I use this method within later methods i.e. there is no need to always test even/odd AND odd/even. This method is flawed because whether or not a fragment is on an even index in the density ordered array has no bearing on that fragments' position in the original order.
+>3. **Even Odd Method M1**: As expected this method performed better than the controls, but still had a very high score. I have run it twice, with even indexes of the density order first, then odd indexes reversed and vice versa. The method gives a similar score whichever way around you do it: this is an important thing to note, as I use this method within later methods i.e. there is no need to always test even/odd AND odd/even. This method is flawed because whether or not a fragment is on an even index in the density ordered array has no bearing on that fragments' position in the original order.
 
->4. **Left Right Method**: As expected this method performed poorly. However, with a score similar to the average random order, it may not be likely that the "skew" of SNP positions is a good indicator of it's position in the original order.
+>4. **Left Right Method M2a**: As expected this method performed poorly. However, with a score similar to the average random order, it may not be likely that the "skew" of SNP positions is a good indicator of it's position in the original order.
 
->5. **Left Right Density Method**: This method has a similar ordinal similarity score to the Even Odd Method. What this may suggest is that the "skew" of the SNP positions on a fragment is no better an indicator of the "side"" of the sequence (where the centre of the normal distribution of SNPs is in the middle) than picking the side at random, as in the Even Odd method (whether a fragment is on an even or odd index in the density ordered array has no bearing on that fragments' position in the original order). However, similar scores between the two methods could be because quite a large proportion of the fragments are still being ordered by the Even Odd method, in the Left Right Density Method (the fragments with 0 SNPs).
+>5. **Left Right Density Method M2b**: This method has a similar ordinal similarity score to the Even Odd Method. What this may suggest is that the "skew" of the SNP positions on a fragment is no better an indicator of the "side"" of the sequence (where the centre of the normal distribution of SNPs is in the middle) than picking the side at random, as in the Even Odd method (whether a fragment is on an even or odd index in the density ordered array has no bearing on that fragments' position in the original order). However, similar scores between the two methods could be because quite a large proportion of the fragments are still being ordered by the Even Odd method, in the Left Right Density Method (the fragments with 0 SNPs).

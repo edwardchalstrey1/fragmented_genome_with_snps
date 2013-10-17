@@ -1,3 +1,6 @@
+d_o <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/id_n_density_txts/d_o.txt", quote="\"")))
+
+
 d_c1 <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/id_n_density_txts/d_c1.txt", quote="\"")))
 
 
@@ -21,3 +24,12 @@ d_m2bl <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/id_n_den
 d_m2br <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/id_n_density_txts/d_m2br.txt", quote="\"")))
 
 d_m2b <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/id_n_density_txts/d_m2b.txt", quote="\"")))
+
+scatta <- function(y, method_name){
+x <- (1:length(y))
+title <- paste("Graph to show SNP densities for fragments ordered by: ", method_name, sep="")
+graph <- (plot(x, y, main=title, xlab="Fragments", ylab="SNP Density (SNPs/Kb)"))
+lo <- loess(y~x)
+lines(predict(lo), col="red", lwd=4)
+return(graph)
+}
