@@ -18,7 +18,7 @@ d_m2b <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/id_n_dens
 scatta <- function(y, method_name, method_id){
 x <- (1:length(y))
 title <- paste("Graph to show SNP densities for fragments ordered by: ", method_name, sep="")
-png(paste(method_id, ".png", sep=""))
+png(paste("~/fragmented_genome_with_snps/"method_id, ".png", sep=""))
 graph <- (plot(x, y, main=title, xlab="Fragments", ylab="SNP Density (SNPs/Kb)"))
 lo <- loess(y~x)
 lines(predict(lo), col="red", lwd=4)
@@ -42,3 +42,4 @@ scatta(d_m2bl, "Method 2b
 scatta(d_m2br, "Method 2b 
        (right)", "d_m2br")
 scatta(d_m2b, "Method 2b", "d_m2b")
+#yes
