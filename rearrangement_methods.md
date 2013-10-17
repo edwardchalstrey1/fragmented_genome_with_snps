@@ -78,25 +78,6 @@ Results
 
 >5. **M2 b Left Right Density Method**: 491,950
 
-
-```r
-source("~/fragmented_genome_with_snps/random_vector_Rcode.txt")
-```
-
-```
-## Warning: zero-length arrow is of indeterminate angle and so skipped
-## Warning: zero-length arrow is of indeterminate angle and so skipped
-## Warning: zero-length arrow is of indeterminate angle and so skipped
-## Warning: zero-length arrow is of indeterminate angle and so skipped
-## Warning: zero-length arrow is of indeterminate angle and so skipped
-```
-
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1.png) 
-
-```r
-source("~/fragmented_genome_with_snps/scatter_vectors.txt")
-```
-
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_o.png?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c1.png?raw=true)
