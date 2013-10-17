@@ -10,7 +10,7 @@ random_vector <- as.vector(random_matrix)
 st_err <- function(x) sd(x)/sqrt(length(x))
 
 
-# So then do...
+# So then do....
 
 random_st <- st_err(random_vector)
 
@@ -36,3 +36,5 @@ arrows(x,y+upper, x, y-lower, angle=90, code=3, length=length, ...)
 }
 
 error.bar(barx, scores, serrors)
+
+png("~/fragmented_genome_with_snps/rearrangement_methods.png")
