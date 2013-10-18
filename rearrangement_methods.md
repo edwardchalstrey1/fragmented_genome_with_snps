@@ -25,6 +25,8 @@ I have come up with a way of giving each rearrangement method a "Score". See the
 
 Mathematically the ordinal similarity can be defined as follows:
 
+### Fig.1
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/ordinal_similarity.png?raw=true)
 
 The highest value of ordinal similarity for my fragments is X... because...
@@ -80,23 +82,35 @@ Results
 
 >5. **M2 b Left Right Density Method**: 491,950
 
+### Fig.2
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
+### Fig.3
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_o.png?raw=true)
+### Fig.4
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c1.png?raw=true)
+### Fig.5
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c2.png?raw=true)
+### Fig.6
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1a.png?raw=true)
+### Fig.7
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1b.png?raw=true)
+### Fig.8
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2al.png?raw=true)
+### Fig.9
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2ar.png?raw=true)
+### Fig.10
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2a.png?raw=true)
+### Fig.11
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2bl.png?raw=true)
+### Fig.12
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2br.png?raw=true)
+### Fig.13
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2b.png?raw=true)
 >### Discuss
 
 >1. **Density order C1**: A high score as expected
 
->2. **Random order C2**: The average score of 100 random arragements generated using the shuffle method of the Array Class in ruby. Conversion of integer to float for division (to get average) is the reason for the float score. Calling this multiple times gave scores roughly from 570,000 to 574,000. A more consistent "average random score" could be ascertained with a higher repeat number than 100, but is not neccesary (would increase the running time of the method). 
+>2. **Random order C2**: The average score of 100 random arragements generated using the shuffle method of the Array Class in ruby. Conversion of integer to float for division (to get average) is the reason for the float score. Calling this multiple times gave scores roughly from 570,000 to 574,000. A more consistent "average random score" could be ascertained with a higher repeat number than 100, but is not neccesary (would increase the running time of the method). The
 
 >3. **Even Odd Method M1**: As expected this method performed better than the controls, but still had a very high score. I have run it twice, with even indexes of the density order first, then odd indexes reversed and vice versa. The method gives a similar score whichever way around you do it: this is an important thing to note, as I use this method within later methods i.e. there is no need to always test even/odd AND odd/even. This method is flawed because whether or not a fragment is on an even index in the density ordered array has no bearing on that fragments' position in the original order.
 
