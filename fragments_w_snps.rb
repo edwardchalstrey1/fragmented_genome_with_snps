@@ -144,8 +144,7 @@ positions_each = pos_each_frag(snp_pos, frags)
 
 frags_with_positions = storage(frags, positions_each)
 write_json(frags_with_positions)
-
-
-
-
+File.open("snp_pos.txt", "w+") do |f|
+	snp_pos.each { |i| f.puts(i) }
+end
 
