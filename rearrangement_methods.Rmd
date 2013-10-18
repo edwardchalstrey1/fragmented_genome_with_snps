@@ -23,7 +23,9 @@ Ranking the rearrangement methods
 
 I have come up with a way of giving each rearrangement method a "Score". See the ruby method: score, in rearrangement_methods.rb. A simple way of defining what this method does is: taking away the index of each fragment in the original order, from it's new index in the rearranged list - this gives the "distance"" that the fragment has moved when re-ordered (as an absolute value) - these "distances" are then summed to give an overall score, which mathematically can be described as the ordinal similarity between the two arrangements. The higher the value of ordinal similarity, the less similar the two orders are. A perfect score would be 0, where the two orders are identical.
 
-Mathematically the ordinal similarity can be defined as...
+Mathematically the ordinal similarity can be defined as follows:
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/ordinal_similarity.png?raw=true)
 
 The highest value of ordinal similarity for my fragments is X... because...
 
