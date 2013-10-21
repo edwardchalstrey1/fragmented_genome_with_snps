@@ -21,7 +21,7 @@ What I am trying to acheive:
 Ranking the rearrangement methods
 ---------------------------------
 
-I have come up with a way of giving each rearrangement method a "Score". See the ruby method: score, in rearrangement_methods.rb. A simple way of defining what this method does is: taking away the index of each fragment in the original order, from it's new index in the rearranged list - this gives the "distance"" that the fragment has moved when re-ordered (as an absolute value) - these "distances" are then summed to give an overall score, which mathematically can be described as the ordinal similarity between the two arrangements. The higher the value of ordinal similarity, the less similar the two orders are. A perfect score would be 0, where the two orders are identical.
+I have come up with a way of giving each rearrangement method a "Score". See the ruby method: score, in rearrangement_methods.rb. A simple way of defining what this method does is: taking away the index of each fragment in the original order, from it's new index in the rearranged list - this gives the "distance"" that the fragment has moved when re-ordered (as an absolute value) - these "distances" are then summed to give an overall score, which mathematically can be described as the ordinal similarity between the two arrangements. The higher the value of the score, the lower the ordinal similarity (the less similar the two orders are). A perfect score would be 0, where the two orders are identical.
 
 Mathematically the ordinal similarity can be defined as follows:
 
@@ -29,7 +29,23 @@ Mathematically the ordinal similarity can be defined as follows:
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/ordinal_similarity.png?raw=true)
 
-The highest value of ordinal similarity for my fragments is X... because...
+### The maximum score
+
+**The max score will be achieved by comparing the original fragment order to a an arrangement that minimizes the ordinal similarity.**
+
+The highest score for my fragments is 858,050. This is the score given when the rearranged fragment order is simply the reverse of the original order. I know that reversing the order should give the minimum ordinal similarity vs the original order because of the following:
+
+Determining the maximum value for the score can be shown as an assignment problem, which is a type of linear programming. Each fragment from the original order must be assigned a new position. Each of these new positions can be thought of as a "task" that must be assigned to one of the fragments. The cost of each assignment varies depending on the fragment's original position, and the new position it has been assigned to. Figure 2 below, demonstrates what I mean by constructing a cost matrix for a sequence of four fragments (A, B, C and D).
+
+### Fig.2
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/cost_matrix.png?raw=true)
+
+The costs shown in fig.2 are equivalent to: the "distance" a fragment has moved from it's original position as a minus number, plus a constant. The constant is a number, high enough that the lowest cost is >= 0 (the cost associated with a fragment being as far as possible from it's original position). In this case the constant is 3.
+
+This results in a matrix that attributes similarity or "closeness" between the original and task position with a high cost. An algorithm that works out the minimum cost for an assignment problem, will now be useful in determining the fragment order that gives the minimum ordinal similarity (max score). One such algorithm is the Hungarian (or Kuhn-Munkres) algorithm. Using the ruby gem Munkres, I can input the cost matrix from fig.2, and receive an output in the terminal that tells me the positions at which each fragment should go in a rearrangement to minimize the cost (and therefore the ordinal similarity).
+
+For the fragments in the example (fig.2), the order that mimimises the ordinal similarity when compared to the original order is: D, C, B, A. This is the reverse of A, B, C, D, and as such proves that reversing the original order of my fragments will maximize the score. See munkres_test.rb for details.
 
 Methods
 -------
@@ -69,48 +85,51 @@ Methods
 Results
 -------
 
->### Ordinal Similarity Scores
+### Ordinal Similarity Scores
 
->1. **C1 Density order**: 624,196 
+0. **Highest Possible Score**: 858,050
 
->2. **C2 Random order**: 571,132.5 (standard error: 1062.454) Standard error is low so mean is accurate
+1. **C1 Density order**: 624,196 
 
->3. a. **M1 a Even/Odd method**: 492,838    
->   b. **M1 b Odd/Even method**: 490,524
+2. **C2 Random order**: 571,132.5 (standard error: 1062.454) Standard error is low so mean is accurate
 
->4. **M2 a Left Right Method**: 570,434
+3. a. **M1 a Even/Odd method**: 492,838    
+   b. **M1 b Odd/Even method**: 490,524
 
->5. **M2 b Left Right Density Method**: 491,950
+4. **M2 a Left Right Method**: 570,434
 
-### Fig.2
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
+5. **M2 b Left Right Density Method**: 491,950
+
 ### Fig.3
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_o.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
 ### Fig.4
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_o.png?raw=true)
 ### Fig.5
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c2.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c1.png?raw=true)
 ### Fig.6
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c2.png?raw=true)
 ### Fig.7
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1b.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1a.png?raw=true)
 ### Fig.8
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2al.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1b.png?raw=true)
 ### Fig.9
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2ar.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2al.png?raw=true)
 ### Fig.10
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2ar.png?raw=true)
 ### Fig.11
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2bl.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2a.png?raw=true)
 ### Fig.12
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2br.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2bl.png?raw=true)
 ### Fig.13
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2br.png?raw=true)
+### Fig.14
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2b.png?raw=true)
+
 >### Discuss
 
 >1. **Density order C1**: A high score as expected
 
->2. **Random order C2**: The average score of 100 random arragements generated using the shuffle method of the Array Class in ruby. Conversion of integer to float for division (to get average) is the reason for the float score. Calling this multiple times gave scores roughly from 570,000 to 574,000. A more consistent "average random score" could be ascertained with a higher repeat number than 100, but is not neccesary (would increase the running time of the method). The
+>2. **Random order C2**: The average score of 100 random arragements generated using the shuffle method of the Array Class in ruby. Conversion of integer to float for division (to get average) is the reason for the float score. Calling this multiple times gave scores roughly from 570,000 to 574,000. A more consistent "average random score" could be ascertained with a higher repeat number than 100, but is not neccesary (would increase the running time of the method). Error bars are shown on fig.2 for Control 2; these show very clearly that there is a low standard error, and that the score for random rearrangements does not vary greatly from the mean.
 
 >3. **Even Odd Method M1**: As expected this method performed better than the controls, but still had a very high score. I have run it twice, with even indexes of the density order first, then odd indexes reversed and vice versa. The method gives a similar score whichever way around you do it: this is an important thing to note, as I use this method within later methods i.e. there is no need to always test even/odd AND odd/even. This method is flawed because whether or not a fragment is on an even index in the density ordered array has no bearing on that fragments' position in the original order.
 

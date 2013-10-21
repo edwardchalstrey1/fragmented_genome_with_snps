@@ -171,15 +171,16 @@ scatta_txts(re_order_densities(id_density_hash, id_m2br), 'd_m2br')
 id_m2b = lnrd.flatten
 scatta_txts(re_order_densities(id_density_hash, id_m2b), 'd_m2b')
 
-#puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
-#puts 'Random Score: ' + (random_score(frags_original_order, frags_by_density)).to_s
-#puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
-#puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
-#puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
-#puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash).flatten))).to_s
-#puts score(frags_reverse_order, frags_original_order)
+puts 'Highest possible score: ' + (score(frags_reverse_order, frags_original_order)).to_s
+puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
+random_scores = random_score(frags_original_order, frags_by_density)
+puts 'Random Score: ' + (random_scores.inject(:+)/random_scores.length).to_s
+puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
+puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
+puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
+puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash).flatten))).to_s
 
 
-#File.open('random_scores.txt', "w+") do |f|
-#	(random_score(frags_original_order, frags_by_density)).each { |i| f.puts(i) }
-#end
+File.open('random_scores.txt', "w+") do |f|
+	(random_score(frags_original_order, frags_by_density)).each { |i| f.puts(i) } # get random scores for error bar creation
+end
