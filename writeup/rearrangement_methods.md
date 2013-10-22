@@ -27,7 +27,7 @@ Mathematically the ordinal similarity can be defined as follows:
 
 ### Fig.1
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/ordinal_similarity.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/ordinal_similarity.png?raw=true)
 
 ### The maximum score
 
@@ -39,7 +39,7 @@ Determining the maximum value for the score can be shown as an assignment proble
 
 ### Fig.2
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/cost_matrix.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/cost_matrix.png?raw=true)
 
 The costs shown in fig.2 are equivalent to: the "distance" a fragment has moved from it's original position as a minus number, plus a constant. The constant is a number, high enough that the lowest cost is >= 0 (the cost associated with a fragment being as far as possible from it's original position). In this case the constant is 3.
 
@@ -101,29 +101,29 @@ Results
 5. **M2 b Left Right Density Method**: 491,950
 
 ### Fig.3
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/rearrangement_methods.png?raw=true)
 ### Fig.4
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_o.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_o.png?raw=true)
 ### Fig.5
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_c1.png?raw=true)
 ### Fig.6
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_c2.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_c2.png?raw=true)
 ### Fig.7
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m1a.png?raw=true)
 ### Fig.8
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m1b.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m1b.png?raw=true)
 ### Fig.9
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2al.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2al.png?raw=true)
 ### Fig.10
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2ar.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2ar.png?raw=true)
 ### Fig.11
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2a.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2a.png?raw=true)
 ### Fig.12
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2bl.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2bl.png?raw=true)
 ### Fig.13
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2br.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2br.png?raw=true)
 ### Fig.14
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/d_m2b.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2b.png?raw=true)
 
 >### Discuss
 
