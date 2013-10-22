@@ -33,7 +33,7 @@ Mathematically the ordinal similarity can be defined as follows:
 
 **The max score will be achieved by comparing the original fragment order to a an arrangement that minimizes the ordinal similarity.**
 
-The highest score for my fragments is 858,050. This is the score given when the rearranged fragment order is simply the reverse of the original order. I know that reversing the order should give the minimum ordinal similarity vs the original order because of the following:
+The highest score for my fragments is 858,050 (for 1310 fragments). This is the score given when the rearranged fragment order is simply the reverse of the original order. I know that reversing the order should give the minimum ordinal similarity vs the original order because of the following:
 
 Determining the maximum value for the score can be shown as an assignment problem, which is a type of linear programming. Each fragment from the original order must be assigned a new position. Each of these new positions can be thought of as a "task" that must be assigned to one of the fragments. The cost of each assignment varies depending on the fragment's original position, and the new position it has been assigned to. Figure 2 below, demonstrates what I mean by constructing a cost matrix for a sequence of four fragments (A, B, C and D).
 
