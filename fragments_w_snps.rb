@@ -7,11 +7,13 @@ def generate_positions (breaks, counts)
 	x = Random.new
 	i = 0
 	counts.each do |l| #for each count do
-		(breaks[i].to_i..breaks[i+1].to_i).each do |j| #for each range we need a random no. for each position (ranges in this case are 10k)
-			newr = x.rand(1..200000) #make a random no. within range 
-			if newr <= l
-				snp_pos << j #add the position (j) to array if its random no. (newr) is <= count. 
-				#count is frequency, so there should be count/200k snp positions in each range
+		if l != nil
+			(breaks[i].to_i..breaks[i+1].to_i).each do |j| #for each range we need a random no. for each position (ranges in this case are 10k)
+				newr = x.rand(1..200000) #the upper bound is the length of the sequence, where l is the frequency (if we multiply each frequency by the same constant...)
+				if newr <= l*21
+					snp_pos << j #add the position (j) to array if its random no. (newr) is <= count. 
+					#count is frequency, so there should be count/200k snp positions in each range
+				end
 			end
 		end
 		i+=1
@@ -27,13 +29,13 @@ end
 def normal_dist
 	myr = RinRuby.new(echo = false)
 	myr.eval "x <- rnorm(200000, 100000, 19000)"
-	myr.eval "h <- hist(x, plot = FALSE)"
+	myr.eval "h <- hist(x, breaks = 4000, plot = FALSE)"
 	myr.eval "b <- h$breaks"
 	myr.eval "c <- h$counts"
 	c = myr.pull "c"
 	b = myr.pull "b"
-	#puts snp_counts.length # 18 counts because split into 20 lots of 10kb for 200kb sequence, 2 counts have 0 snps (one at either end of dist.)
-	#puts snp_breaks.length # 19 breaks because these are the breaks between the 20 'bars' of the histogram
+	#puts c.length # counts (except ones that have 0 frequency)
+	#puts b.length # these are the breaks between the bars of the histogram
 	snp_pos = generate_positions(b, c)
 	s = sample(snp_pos, myr)
 	return s
