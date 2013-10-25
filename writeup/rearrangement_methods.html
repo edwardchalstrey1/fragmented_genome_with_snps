@@ -163,13 +163,19 @@ hr {
 
 <h2>Ranking the rearrangement methods</h2>
 
-<p>I have come up with a way of giving each rearrangement method a score. See the ruby method: score, in <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb">rearrangement_methods.rb</a>. A simple way of defining what this method does is: taking away the index of each fragment in the original order, from it&#39;s new index in the rearranged list - this gives the &ldquo;distance&rdquo;&ldquo; that the fragment has moved when re-ordered (as an absolute value) - these &quot;distances&rdquo; are then summed to give an overall score, which mathematically can be described as the ordinal similarity between the two arrangements. The higher the value of the score, the lower the ordinal similarity (the less similar the two orders are). A perfect score would be 0, where the two orders are identical.</p>
-
-<p>Mathematically the ordinal similarity can be defined as follows:</p>
+<p>I have come up with a way of giving each rearrangement method a score. See the ruby method: <strong>score</strong>, in <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb">rearrangement_methods.rb</a>. A simple way of defining what this method does is: taking away the index of each fragment in the original order, from it&#39;s new index in the rearranged list - this gives the &ldquo;distance&rdquo;&ldquo; that the fragment has moved when re-ordered (as an absolute value) - these &quot;distances&rdquo; are then summed to give an overall score, which mathematically can be described as the ordinal similarity between the two arrangements. The higher the value of the score, the lower the ordinal similarity (the less similar the two orders are). A perfect score would be 0, where the two orders are identical.</p>
 
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/ordinal_similarity.png?raw=true" alt="Image"/></p>
 
-<p>Figure[1] + link</p>
+<p><a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/ordinal_similarity.png">Figure1</a></p>
+
+<p>where:</p>
+
+<ul>
+<li>a = (1&hellip;n)</li>
+<li>i = each element of a</li>
+<li>F = the function used to generate the rearranged order (i.e. the method)</li>
+</ul>
 
 <p><strong>The max score will be achieved by comparing the original fragment order to a an arrangement that minimizes the ordinal similarity.</strong></p>
 
