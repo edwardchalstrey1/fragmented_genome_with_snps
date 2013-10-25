@@ -1,8 +1,6 @@
 Rearrangement Methods
 ========================================================
 
-See [rearrangement_methods.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb) for the code behind each method.
-
 What I am trying to acheive:
 ---------------------------
 
@@ -16,7 +14,18 @@ What I am trying to acheive:
 
 - Once I have several methods to compare, I can plot an effectiveness score for each arrangement. The scores of the density order and random rearrangements can be used as controls
 
-- After I have created a working rearrangement method, I can use it to determine the likely position of a phenotype altering mutant SNP, based on the distribution of SNPs in the sequence: see the repository [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md) for more information.
+- The aim is to create a rearrangement method which can later be used to determine the likely position of a phenotype altering mutant SNP, based on the distribution of SNPs in the sequence: see the repository [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md) for more information.
+
+- I have set up my model genome so that the mutant is at the mid-point (100,000) of a 200Kb sequence, around which a normal ditribution of SNPs are centred
+
+- Once I have a rearrangement method that is succesful at determining the mutant position in my model genome, I can modify that method for models with different mutant positions, by varying the midpoint the method uses to distribute the fragments around.
+
+- Then I will write a method to be used with real data, that will determine the mutant position. This will perform the succesful rearrangement method from before multiple times, with different midpoints, in order to find the most likely true mutant position.
+
+Data used
+---------
+
+I used data held in [this VCF](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/fasta_vcf/snps.vcf) and [this fasta](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/fasta_vcf/frags_shuffled.fasta) file, which are generated from my model genome (see [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md)). The information neccesary for the rearrangement methods below was extracted from the fasta and VCF in [density_method_testa.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/density_method_testa.rb), and the rearrangement methods themselves can be found in [rearrangement_methods.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb).
 
 Ranking the rearrangement methods
 ---------------------------------
@@ -25,11 +34,9 @@ I have come up with a way of giving each rearrangement method a score. See the r
 
 Mathematically the ordinal similarity can be defined as follows:
 
-### Fig.1
-
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/ordinal_similarity.png?raw=true)
 
-### The maximum score
+Figure[1] + link
 
 **The max score will be achieved by comparing the original fragment order to a an arrangement that minimizes the ordinal similarity.**
 
@@ -37,15 +44,15 @@ The highest score for my fragments is 858,050 (for 1310 fragments). This is the 
 
 Determining the maximum value for the score can be shown as an assignment problem, which is a type of linear programming. Each fragment from the original order must be assigned a new position. Each of these new positions can be thought of as a "task" that must be assigned to one of the fragments. The cost of each assignment varies depending on the fragment's original position, and the new position it has been assigned to. Figure 2 below, demonstrates what I mean by constructing a cost matrix for a sequence of four fragments (A, B, C and D).
 
-### Fig.2
-
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/cost_matrix.png?raw=true)
 
-The costs shown in fig.2 are equivalent to: the "distance" a fragment has moved from it's original position as a minus number, plus a constant. The constant is a number, high enough that the lowest cost is >= 0 (the cost associated with a fragment being as far as possible from it's original position). In this case the constant is 3.
+[Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/cost_matrix.png)
 
-This results in a matrix that attributes similarity or "closeness" between the original and task position with a high cost. An algorithm that works out the minimum cost for an assignment problem, will now be useful in determining the fragment order that gives the minimum ordinal similarity (max score). One such algorithm is the Hungarian (or Kuhn-Munkres) algorithm. Using the ruby gem Munkres, I can input the cost matrix from fig.2, and receive an output in the terminal that tells me the positions at which each fragment should go in a rearrangement to minimize the cost (and therefore the ordinal similarity).
+The costs shown in [fig.2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/cost_matrix.png) are equivalent to: the "distance" a fragment has moved from it's original position as a negative number, plus a constant. The constant is a number, high enough that the lowest cost is >= 0 (the cost associated with a fragment being as far as possible from it's original position). In this case the constant is 3.
 
-For the fragments in the example (fig.2), the order that mimimises the ordinal similarity when compared to the original order is: D, C, B, A. This is the reverse of A, B, C, D, and as such proves that reversing the original order of my fragments will maximize the score. See munkres_test.rb for details.
+This results in a matrix that attributes similarity or "closeness" between the original and assigned position with a high cost. An algorithm that works out the minimum cost for an assignment problem, will now be useful in determining the fragment order that gives the minimum ordinal similarity (max score). One such algorithm is the [Hungarian algorithm](http://en.wikipedia.org/wiki/Hungarian_algorithm) (or Kuhn-Munkres). Using the ruby gem [Munkres](https://github.com/pdamer/munkres), I can input the cost matrix from fig.2, and receive an output in the terminal that tells me the positions at which each fragment should go in a rearrangement to minimize the cost (and therefore the ordinal similarity).
+
+For the fragments in the example ([fig.2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/cost_matrix.png)), the order that mimimises the ordinal similarity when compared to the original order is: D, C, B, A. This is the reverse of A, B, C, D, and as such proves that reversing the original order of my fragments will maximize the score. See [munkres_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/munkres_test.rb) for details.
 
 Methods
 -------
@@ -66,7 +73,9 @@ Methods
 
 >### Method 2a: Left Right Method
 
-> Here I use information derived directly from the fasta and VCF files rather than the SNP densities. I use the SNP position data for each of the fragments, to work out whether the positions are "skewed" to the left or right of each fragment. My hypothesis being that fragments with more SNPs on the "left hand side", are likely to be from the "right side" of the sequence due to the normal distibution of SNPs (and vice versa). The way I work out the "skew": If the sum of the positions is < half of the value produced by multiplying half the length of a fragment by the number of positions it has, this indicates a left skew and I add this fragment to a list of the fragments that should go on the right - and vice versa. I use the Even/Odd Method to add the fragments with 0 SNPs into either the "left" or "right" list. I then add both "left" and "right" into a super-array that is flattened to give the new fragment order. 
+> Here I use information derived directly from the fasta and VCF files rather than the SNP densities. I use the SNP position data for each of the fragments, to work out whether the positions are "skewed" to the left or right of each fragment. My hypothesis being that fragments with more SNPs on the "left hand side", are likely to be from the "right side" of the sequence due to the normal distibution of SNPs (and vice versa). Fragments with a skew of SNPs to the left side are likely to be from a location downstream of the phenotype causing mutant, which is positioned in the region of highest SNP density (the centre of the normal distribution). Conversely, fragments with a right skew are likely to be from a location upstream of the mutant position. In both cases, each fragment's skew is relative to the direction in which the mutant is to be found, due to the sequence having a normal distribution of SNPs (which for now I am assuming is centred around the mid-point of the sequence).
+
+> The way I work out the "skew": If the sum of the positions is < half of the value produced by multiplying half the length of a fragment by the number of positions it has, this indicates a left skew and I add this fragment to a list of the fragments that should go on the right - and vice versa. I use the Even/Odd Method to add the fragments with 0 SNPs into either the "left" or "right" list. I then add both "left" and "right" into a super-array that is flattened to give the new fragment order. 
 
 > I don't expect this method to perform well, as I have not re-ordered the fragments within the "left" and "right" sub-arrays, which are based on the order that the frags were found in the fasta file (and so are random). It should however perform better than the controls, assuming the "skew" of SNP positions can be used as an indication to the "side" of the normal distribution that a fragment is from.
 
@@ -100,30 +109,41 @@ Results
 
 5. **M2 b Left Right Density Method**: 491,950
 
-### Fig.3
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/rearrangement_methods.png?raw=true)
-### Fig.4
+[Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/rearrangement_methods.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_o.png?raw=true)
-### Fig.5
+[Figure 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_o.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_c1.png?raw=true)
-### Fig.6
+[Figure 5](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_c1.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_c2.png?raw=true)
-### Fig.7
+[Figure 6](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_c2.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m1a.png?raw=true)
-### Fig.8
+[Figure 7](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m1a.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m1b.png?raw=true)
-### Fig.9
+[Figure 8](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m1b.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2al.png?raw=true)
-### Fig.10
+[Figure 9](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2al.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2ar.png?raw=true)
-### Fig.11
+[Figure 10](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2ar.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2a.png?raw=true)
-### Fig.12
+[Figure 11](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2a.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2bl.png?raw=true)
-### Fig.13
+[Figure 12](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2bl.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2br.png?raw=true)
-### Fig.14
+[Figure 13](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2br.png)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2b.png?raw=true)
+[Figure 14](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/d_m2b.png)
 
 >### Discuss
 
