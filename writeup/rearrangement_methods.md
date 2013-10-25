@@ -1,7 +1,7 @@
 Rearrangement Methods
 ========================================================
 
-See rearrangement_methods.rb for the code behind each method.
+See [rearrangement_methods.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb) for the code behind each method.
 
 What I am trying to acheive:
 ---------------------------
@@ -10,18 +10,18 @@ What I am trying to acheive:
 
 - With real data, the frags would be assigned ids before being put into a fasta file. With my data the ids are named according to the original sequence order, and I have shuffled them before creating a fasta file, so the original order is not simply the same as the order in the fasta file.
 
-- I need to design an algorithm that will rearrange the density ordered frags into their original order, based on SNP density/position data
+- I need to design an algorithm that will rearrange the disordered frags into their proper order, based on SNP density/position data
 
 - This hasn't been done before, so I will need to test a variety of rearrangement methods and I will need a way of ranking them by their effectiveness
 
-- Once I have several methods to compare, I can plot their effectiveness scores. The scores of the density order and random rearrangements can be used as controls
+- Once I have several methods to compare, I can plot an effectiveness score for each arrangement. The scores of the density order and random rearrangements can be used as controls
 
-- After I have created a working rearrangement method, I can use it to determine the likely position of a phenotype altering mutant SNP, based on the distribution of SNPs in the sequence: see the repository README for more information.
+- After I have created a working rearrangement method, I can use it to determine the likely position of a phenotype altering mutant SNP, based on the distribution of SNPs in the sequence: see the repository [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md) for more information.
 
 Ranking the rearrangement methods
 ---------------------------------
 
-I have come up with a way of giving each rearrangement method a "Score". See the ruby method: score, in rearrangement_methods.rb. A simple way of defining what this method does is: taking away the index of each fragment in the original order, from it's new index in the rearranged list - this gives the "distance"" that the fragment has moved when re-ordered (as an absolute value) - these "distances" are then summed to give an overall score, which mathematically can be described as the ordinal similarity between the two arrangements. The higher the value of the score, the lower the ordinal similarity (the less similar the two orders are). A perfect score would be 0, where the two orders are identical.
+I have come up with a way of giving each rearrangement method a score. See the ruby method: score, in [rearrangement_methods.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb). A simple way of defining what this method does is: taking away the index of each fragment in the original order, from it's new index in the rearranged list - this gives the "distance"" that the fragment has moved when re-ordered (as an absolute value) - these "distances" are then summed to give an overall score, which mathematically can be described as the ordinal similarity between the two arrangements. The higher the value of the score, the lower the ordinal similarity (the less similar the two orders are). A perfect score would be 0, where the two orders are identical.
 
 Mathematically the ordinal similarity can be defined as follows:
 
