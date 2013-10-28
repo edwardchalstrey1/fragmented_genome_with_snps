@@ -49,5 +49,5 @@ The test shows that for both datasets, we **don't** reject the null hypothesis t
 The p-value for dataset_2 is close to double that of dataset_1. This shows that the SNP positions in dataset_2 follow a normal curve much more closely than those from dataset_1.
 
 
-[The results of fragment rearrangement with dataset_2]()
+[The results of fragment rearrangement with dataset_2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md)
 --------------------------------------------------------
