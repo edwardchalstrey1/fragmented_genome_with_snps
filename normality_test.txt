@@ -1,3 +1,7 @@
 snp_pos <- read.table("~/fragmented_genome_with_snps/snp_pos.txt", quote="\"")
 a <- as.matrix(snp_pos)
-snp_pos <- as.vector(a)
+dataset_2 <- as.vector(a)
+
+snp_pos <- read.table("~/fragmented_genome_with_snps/snp_pos_d1.txt", quote="\"")
+a <- as.matrix(snp_pos)
+dataset_1 <- as.vector(a)
