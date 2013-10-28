@@ -11,4 +11,4 @@ Below are a list of the methods used in [rearrangement_methods.md](https://githu
 Highest possible score (C0), Density order Score (C1), Random Score (C2), Even Odd Method Score (M1a), Odd Even Method Score (M1b), Left Right Method Score (M2a), Left Right Density Method Score (M2b)
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/dataset_scores_table.png)
-[Figure 1](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/dataset_scores_table.png)
+[Figure 1](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/dataset_scores_table.png?raw=true)
