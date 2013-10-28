@@ -10,7 +10,7 @@ def generate_positions (breaks, counts)
 		if l != nil
 			(breaks[i].to_i..breaks[i+1].to_i).each do |j| #for each range we need a random no. for each position (ranges in this case are 10k)
 				newr = x.rand(1..200000) #the upper bound is the length of the sequence, where l is the frequency (if we multiply each frequency by the same constant...)
-				if newr <= l*21
+				if newr <= l*50
 					snp_pos << j #add the position (j) to array if its random no. (newr) is <= count. 
 					#count is frequency, so there should be count/200k snp positions in each range
 				end
@@ -29,14 +29,13 @@ end
 def normal_dist
 	myr = RinRuby.new(echo = false)
 	myr.eval "x <- rnorm(200000, 100000, 19000)"
-	myr.eval "h <- hist(x, breaks = 4000, plot = FALSE)"
+	myr.eval "h <- hist(x, breaks = 8000, plot = FALSE)" # The larger the number of breaks, the closer to a normal distribution the snp positions will be see generate positions^
 	myr.eval "b <- h$breaks"
 	myr.eval "c <- h$counts"
 	c = myr.pull "c"
 	b = myr.pull "b"
-	#puts c.length # counts (except ones that have 0 frequency)
-	#puts b.length # these are the breaks between the bars of the histogram
 	snp_pos = generate_positions(b, c)
+	puts "The 1000 SNPs are sampled from "+snp_pos.length.to_s+" normally distributed positions"
 	s = sample(snp_pos, myr)
 	return s
 end
@@ -57,19 +56,17 @@ def make_snp_seq (snp_pos)
 	snp_seq = ['a', 'g', 't', 'g', 'c']*40000 #This step is actually unecessary, though it shows later on when creating a vcf file that all works.
 	return snp_seq
 end
-def get_frags (seq, snp_pos)
+def get_frags (seq)
 	frags = []
 	all_frags_pos = []
 	rt = 0
 	while rt < seq.length
 		frag_length = rand(200) + 50
 		frag = seq[rt..(rt+frag_length)]
-		#pos = snp_pos.select{|x| x>=rt and x<(rt+frag_length)}
 		rt = rt+frag_length
 		frags << frag
-		#all_frags_pos << pos
 	end
-	return frags#, all_frags_pos
+	return frags
 end
 def remove_extra_frags (frags)
 	x = frags.flatten.length - 200000
@@ -138,14 +135,15 @@ snp_pos = normal_dist #make a normal distribution of snp positions
 unique?(snp_pos) #are the positions generated unique?
 
 snp_seq = make_snp_seq(snp_pos) #make a sequence with snps at the positions^
-frags_n_pos = get_frags(snp_seq, snp_pos) #get an array of fragments, and an array of each of the positions associated with each fragment
+frags_plus = get_frags(snp_seq) #get an array of fragments
 
-frags = remove_extra_frags(frags_n_pos)
-#positions = frags_n_pos[1]
+frags = remove_extra_frags(frags_plus)
+
 positions_each = pos_each_frag(snp_pos, frags)
 
 frags_with_positions = storage(frags, positions_each)
 write_json(frags_with_positions)
+
 File.open("snp_pos.txt", "w+") do |f|
 	snp_pos.each { |i| f.puts(i) }
 end
