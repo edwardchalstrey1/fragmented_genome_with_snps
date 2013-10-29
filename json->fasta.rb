@@ -77,6 +77,11 @@ def write_json (array, json)
 		f.write(array.to_json)
 	end
 end
+def write_txt (filename, array)
+	File.open(filename, "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
+end
 
 data = extract_json('frags_with_positions.json')
 frags = data[0]
@@ -92,7 +97,32 @@ write_fasta(fastaformat_array, 'frags.fasta')
 write_vcf(vcf, 'snps.vcf')
 
 fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it to show that the order doesn't need to be conserved when working out density later on
-write_fasta(fastaformat_array_shuf, 'frags_shuffled.fasta')
+#write_fasta(fastaformat_array_shuf, 'frags_shuffled.fasta')
 
 write_json(frag_ids, 'frag_ids_original_order.json')
 
+################### method for getting 0's and 1's (and lengths)
+lengths = []
+x = 0
+frags.each do |frag|
+	lengths << frag.length
+	f = []
+	if snp_pos[x] != nil
+		frag.length.times do |j| # for each base (of the frag) we want to add a zero or a 1, a 1 if this base is a snp
+			snp_pos[x].length.times do |p|
+				if j == p
+					f << 1
+				else
+					f << 0
+				end
+			end
+		end
+	else
+		frag.length.times do {f << 0}
+	end
+
+end
+##############
+
+write_txt('ex_snp_pos.txt', snp_pos) #need positions and lengths of each fragment for super skew scatter
+write_txt('ex_fasta_lengths.txt', lengths)

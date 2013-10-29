@@ -106,6 +106,7 @@ def two_a_to_h (keys_array, values_array)
 	return Hash[*keys_array.zip(values_array).flatten]
 end
 
+
 snp_data = get_snp_data('snps.vcf')
 vcfs_chrom = snp_data[0] #array of vcf frag ids
 vcfs_pos = snp_data[1] #array of all the snp positions (fragments with snps)
@@ -133,3 +134,5 @@ write_json(fasta_lengths, 'fasta_lengths.json') #the lengths of the frags in the
 
 id_density_hash = two_a_to_h(frags_by_density, sorted_frags_densities[1]) #the frags with associated densities sorted
 write_json(id_density_hash, 'id_density_hash.json')
+
+
