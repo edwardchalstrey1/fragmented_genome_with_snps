@@ -130,6 +130,7 @@ snp_n_lengths = snp_y_n(frags, snp_pos)
 lengths = snp_n_lengths[0]
 each_nuc_snp = snp_n_lengths[1]
 
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/skew_scatter"))
 x=1
 each_nuc_snp.each do |frag|
 	write_txt('skew_scatter/snps'+x.to_s+'.txt', frag) #need positions and lengths of each fragment for super skew scatter
