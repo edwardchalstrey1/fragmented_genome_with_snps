@@ -15,4 +15,14 @@ Highest possible score (C0), Density order Score (C1), Random Score (C2), Even O
 
 As you can see from Figure 1, for each rearrangement method, the ordinal similarity score is similar in both datasets (and slightly higher for dataset 2 in most cases, probably due to the larger number of fragments). This was what I expected for the controls and method 1 (odd/even), since the change in the model genome was aimed at maximising the potential of method 2b (left right density), see [dataset2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md). This method relies on the skew of SNPs to determine each fragments position in the rearranged order, see [rearrangement_methods.md](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/rearrangement_methods.md).
 
-Figure 1 also shows that method 2b has a similar ordinal similarity score for both datasets. What this may suggest is that the skew of SNPs on a fragment is in fact not a good indicator of its position in the genome. However, it could be that the current skew method (2b) is simply incorrect in its placing of the fragments. 
+Figure 1 also shows that method 2b has a similar ordinal similarity score for both datasets. What this may suggest is that the skew of SNPs on a fragment is in fact not a good indicator of its position in the genome. However, it could be that the current skew method (2b) is simply incorrect in its placing of the fragments.
+
+To investigate how each fragments' skew relates to it's position in the proper order, I have plotted a graph of the "SNP gradient" for each fragment.
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png?raw=true)
+[Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png)
+
+The R script used to create figure 2 can be found [here](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/skew_scatta.R). The "SNP gradients" are determined by creating plots of the nucleotides against the number of SNPs for each fragment, where the number of SNPs is a value of 0 or 1.
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png?raw=true)
+[Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png)
