@@ -22,7 +22,7 @@ scores <- c(624196, random_mean, 492838, 490524, 570434, 491950)
 
 methods <- c("C1", "C2", "M1 a", "M1 b", "M2 a", "M2 b")
 
-
+png("~/fragmented_genome_with_snps/rearrangement_methods.png")
 barx <- barplot(scores, main="Comparison of Methods
                 for Rearrangement of SNP Density Ordered Fragments,
                 to the Original Sequenced Order", xlab="Methods", ylab="Ordinal Similarity Score", names.arg=methods)
@@ -37,4 +37,4 @@ arrows(x,y+upper, x, y-lower, angle=90, code=3, length=length, ...)
 
 error.bar(barx, scores, serrors)
 
-png("~/fragmented_genome_with_snps/rearrangement_methods.png")
+dev.off()
