@@ -19,10 +19,9 @@ Figure 1 also shows that method 2b has a similar ordinal similarity score for bo
 
 To investigate how each fragments' skew relates to it's position in the proper order, I have plotted a graph of the "SNP gradient" for each fragment.
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png?raw=true)
-[Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png?raw=true) [Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png) ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png?raw=true)
+ [Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png)
 
 The R script used to create figure 2 can be found [here](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/skew_scatta.R). The "SNP gradients" are determined by creating plots of the nucleotides against the number of SNPs for each fragment, where the number of SNPs is a value of 0 or 1.
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png?raw=true)
-[Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png)
+Figure 3 shows an example plot, where the gradient of the blue line (a linear model fitted to the data), is the gradient for that fragment plotted in figure 2. For each fragment, the skew of SNPs to either side of the fragment produces a positive (right skew) or negative gradient (left skew, as with fragment629 in figure 2). Calculating the skew in a way that could be quantified was important, to be able to plot figure 2.
