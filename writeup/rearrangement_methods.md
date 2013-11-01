@@ -16,7 +16,7 @@ What I am trying to acheive:
 
 - The aim is to create a rearrangement method which can later be used to determine the likely position of a phenotype altering mutant SNP, based on the distribution of SNPs in the sequence: see the repository [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md) for more information.
 
-- I have set up my model genome so that the mutant is at the mid-point (100,000) of a 200Kb sequence, around which a normal ditribution of SNPs are centred
+- I have set up my model genome so that the mutant is at the mid-point (100,000) of a 200Kb sequence, around which a normal ditribution of SNPs are centred: For all the results in this document, the model genome was split into 1310 fragments of 50-250bp length
 
 - Once I have a rearrangement method that is succesful at determining the mutant position in my model genome, I can modify that method for models with different mutant positions, by varying the midpoint the method uses to distribute the fragments around.
 
@@ -41,7 +41,7 @@ where:
 - i = each element of a
 - F = the function used to generate the rearranged order (i.e. the method)
 
-**The max score will be achieved by comparing the original fragment order to a an arrangement that minimizes the ordinal similarity.**
+**The max score will be achieved by comparing the original fragment order to an arrangement that minimizes the ordinal similarity.**
 
 The highest score for my fragments is 858,050 (for 1310 fragments). This is the score given when the rearranged fragment order is simply the reverse of the original order. I know that reversing the order should give the minimum ordinal similarity vs the original order because of the following:
 
@@ -159,3 +159,5 @@ Results
 >4. **Left Right Method M2a**: As expected this method performed poorly. However, with a score similar to the average random order, it may not be likely that the "skew" of SNP positions is a good indicator of it's position in the original order.
 
 >5. **Left Right Density Method M2b**: This method has a similar ordinal similarity score to the Even Odd Method. What this may suggest is that the "skew" of the SNP positions on a fragment is no better an indicator of the "side"" of the sequence (where the centre of the normal distribution of SNPs is in the middle) than picking the side at random, as in the Even Odd method (whether a fragment is on an even or odd index in the density ordered array has no bearing on that fragments' position in the original order). However, similar scores between the two methods could be because quite a large proportion of the fragments are still being ordered by the Even Odd method, in the Left Right Density Method (the fragments with 0 SNPs).
+
+### See [dataset 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md), then [rearrangement methods part2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md) for continuation

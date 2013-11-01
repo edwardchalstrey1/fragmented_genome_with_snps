@@ -152,7 +152,7 @@ hr {
 <li><p>This hasn&#39;t been done before, so I will need to test a variety of rearrangement methods and I will need a way of ranking them by their effectiveness</p></li>
 <li><p>Once I have several methods to compare, I can plot an effectiveness score for each arrangement. The scores of the density order and random rearrangements can be used as controls</p></li>
 <li><p>The aim is to create a rearrangement method which can later be used to determine the likely position of a phenotype altering mutant SNP, based on the distribution of SNPs in the sequence: see the repository <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md">README</a> for more information.</p></li>
-<li><p>I have set up my model genome so that the mutant is at the mid-point (100,000) of a 200Kb sequence, around which a normal ditribution of SNPs are centred</p></li>
+<li><p>I have set up my model genome so that the mutant is at the mid-point (100,000) of a 200Kb sequence, around which a normal ditribution of SNPs are centred: For all the results in this document, the model genome was split into 1310 fragments of 50-250bp length</p></li>
 <li><p>Once I have a rearrangement method that is succesful at determining the mutant position in my model genome, I can modify that method for models with different mutant positions, by varying the midpoint the method uses to distribute the fragments around.</p></li>
 <li><p>Then I will write a method to be used with real data, that will determine the mutant position. This will perform the succesful rearrangement method from before multiple times, with different midpoints, in order to find the most likely true mutant position.</p></li>
 </ul>
@@ -177,7 +177,7 @@ hr {
 <li>F = the function used to generate the rearranged order (i.e. the method)</li>
 </ul>
 
-<p><strong>The max score will be achieved by comparing the original fragment order to a an arrangement that minimizes the ordinal similarity.</strong></p>
+<p><strong>The max score will be achieved by comparing the original fragment order to an arrangement that minimizes the ordinal similarity.</strong></p>
 
 <p>The highest score for my fragments is 858,050 (for 1310 fragments). This is the score given when the rearranged fragment order is simply the reverse of the original order. I know that reversing the order should give the minimum ordinal similarity vs the original order because of the following:</p>
 
@@ -292,6 +292,8 @@ b. <strong>M1 b Odd/Even method</strong>: 490,524</p></li>
 <li><p><strong>Left Right Density Method M2b</strong>: This method has a similar ordinal similarity score to the Even Odd Method. What this may suggest is that the &ldquo;skew&rdquo; of the SNP positions on a fragment is no better an indicator of the &ldquo;side&rdquo;&ldquo; of the sequence (where the centre of the normal distribution of SNPs is in the middle) than picking the side at random, as in the Even Odd method (whether a fragment is on an even or odd index in the density ordered array has no bearing on that fragments&#39; position in the original order). However, similar scores between the two methods could be because quite a large proportion of the fragments are still being ordered by the Even Odd method, in the Left Right Density Method (the fragments with 0 SNPs).</p></li>
 </ol>
 </blockquote>
+
+<h3>See <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md">dataset 2</a>, then <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md">rearrangement methods part2</a> for continuation</h3>
 
 </body>
 

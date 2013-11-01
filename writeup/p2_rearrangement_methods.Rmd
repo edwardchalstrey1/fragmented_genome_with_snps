@@ -17,11 +17,32 @@ As you can see from Figure 1, for each rearrangement method, the ordinal similar
 
 Figure 1 also shows that method 2b has a similar ordinal similarity score for both datasets. What this may suggest is that the skew of SNPs on a fragment is in fact not a good indicator of its position in the genome. However, it could be that the current skew method (2b) is simply incorrect in its placing of the fragments.
 
-To investigate how each fragments' skew relates to it's position in the proper order, I have plotted a graph of the "SNP gradient" for each fragment.
+For SNP density plots from dataset 2 (and bar plot of scores) see [dataset 2 plots.](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/figures/figures_d2)
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png?raw=true) [Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/skew_scatter.png) ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png?raw=true)
- [Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/example_gradient_f629.png)
+To investigate how each fragments' skew relates to it's position in the proper order, I have plotted graphs of the "SNP gradient" for each fragment. The R script used to create figure 2, 3 and 4 can be found [here](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/skew_scatta.R). 
+My prediction was that the gradients of frags would show a similar pattern to the normal distribution of SNPs, with the gradients being higher towards the midpoint of the model genome (where the mutation is), and lower at either end. However, I also thought that some of the fragments right in the centre of the genome might have a lower gradient, due to their having many SNPs across their lengths (i.e. on either side, reducing the skew). In figure 2 below, I use an absolute value of gradient. It will also be useful to show the difference between the positive and negative gradient values,  to determine whether the gradient (and skew) can be used to tell the side of the model genome (either side of the mutant point) that a fragment is from (figure 4).
 
-The R script used to create figure 2 can be found [here](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/skew_scatta.R). The "SNP gradients" are determined by creating plots of the nucleotides against the number of SNPs for each fragment, where the number of SNPs is a value of 0 or 1.
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/skew_scatter.png?raw=true)
+[Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/skew_scatter.png)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/skew_scatter2.png?raw=true)
+[Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/skew_scatter2.png)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/example_gradient_f629.png?raw=true)
+[Figure 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/example_gradient_f629.png)
 
-Figure 3 shows an example plot, where the gradient of the blue line (a linear model fitted to the data), is the gradient for that fragment plotted in figure 2. For each fragment, the skew of SNPs to either side of the fragment produces a positive (right skew) or negative gradient (left skew, as with fragment629 in figure 2). Calculating the skew in a way that could be quantified was important, to be able to plot figure 2.
+Figures 2 and 3 are plots of each fragment in their proper order, against their gradients. In figure 2 the gradients used are the absolute values of the gradients used in figure 3. 
+
+The "SNP gradients" are determined by creating plots of the nucleotides against the number of SNPs for each fragment, where the number of SNPs is a value of 0 or 1.
+Figure 4 shows an example plot, where the gradient of the blue line (a linear model fitted to the data), is the gradient for that fragment plotted in figure 2/3. For each fragment, the skew of SNPs to either side of the fragment produces a positive gradient (right skew) or negative gradient (left skew, as with fragment629 in figure 2). Calculating the skew in a way that could be quantified was important, in order to plot figure 2/3.
+
+Interpreting what figure 2 and 3 show about the SNP gradient/skew of fragments is difficult, because of the large number of fragments that have a gradient of zero (or close to zero). As you can see, the loess smoothing lines (red) for figure 2 and 3 are drawn across value zero of gradient. The reason for this is that many of the fragments have either 0 SNPs (which gives them a gradient of exactly zero) or 1 SNP, or another low number of SNPs. 
+
+This is another problem with my model genome that I have identified; the gradients and skew may reveal more about the position of fragments if a larger number of SNPs is used. Fragments with just 1 SNP (or any low number) are less likely to have a useful skew/gradient than fragments with a larger number of SNPs. If the SNPs in my model genome are not very concentrated with regard to the fragment size, the position of SNPs on individual fragments could be a lot more arbitrary. If the fragments were larger (in proportion to the genome size) and/or the genome had a higher number of SNPs around the mutant position, the fragments may exhibit a much clearer skew, that is related to their position in the genome. Figure 5 below illustrates this point.
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/example_gradient_f321.png?raw=true)
+[Figure 5](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/figures/figures_d2/example_gradient_f321.png)
+
+Working out the gradient in the way I have done may not be useful for fragment rearrangement. However, it does show that the skew method (method 2b) is not likely to be effective with the model genome used to create datasets 1 and 2.
+
+Dataset 1 and 2 are from a model genome of 200Kb in length with 1000 SNPs normally distributed around the mutant position 100,000, and fragment sizes of 50-250b.
+I will create a 3rd dataset.
+
