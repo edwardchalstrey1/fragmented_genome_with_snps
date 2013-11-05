@@ -60,7 +60,7 @@ def vcf_array (frags, snp_pos)
 		vcf_format << line
 		u += 1
 	end
-	return vcf_format
+	return vcf_format, chrom.uniq
 end
 def write_fasta (array, file)
 	File.open(file, "w+") do |f|
@@ -91,7 +91,9 @@ fasta_n_ids = fasta_array(frags)
 fastaformat_array = fasta_n_ids[0]
 frag_ids = fasta_n_ids[1]
 
-vcf = vcf_array(frags, snp_pos)
+vcf_n_chrom = vcf_array(frags, snp_pos)
+vcf = vcf_n_chrom[0]
+chrom = vcf_n_chrom[1]
 
 write_fasta(fastaformat_array, 'frags.fasta')
 write_vcf(vcf, 'snps.vcf')
@@ -100,40 +102,21 @@ fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it to show that the 
 write_fasta(fastaformat_array_shuf, 'frags_shuffled.fasta')
 
 write_json(frag_ids, 'frag_ids_original_order.json')
-
-################### method for getting 0's and 1's (and lengths)
-def snp_y_n (frags, snp_pos)
-	lengths = []
-	each_nuc_snp = []
-	x = 0
-	frags.each do |frag| # for each base (of each frag) we want to add a zero or a 1, a 1 if this base is a snp
-		lengths << frag.length
-		nuc_snp = []
-		if snp_pos[x] != nil
-			y = 0
-			until snp_pos[x][y] == nil
-				(snp_pos[x][y]-1-nuc_snp.length).times {nuc_snp << 0}
-				nuc_snp << 1
-				y+=1
-			end
-			(frag.length-nuc_snp.length).times {nuc_snp << 0}
-		else
-			frag.length.times {nuc_snp << 0} # for fragments with no snps, each nucleotide has the zero value
-		end
-		each_nuc_snp << nuc_snp
-		x+=1
-	end
-	return lengths, each_nuc_snp
+################################################################
+lengths = []
+frags.each do |frag| 
+	lengths << frag.length
 end
-
-snp_n_lengths = snp_y_n(frags, snp_pos)
-lengths = snp_n_lengths[0]
-each_nuc_snp = snp_n_lengths[1]
-
+frags_w_snps = []
+chrom.each do |id|
+	id.slice!("frag")
+	frags_w_snps << id.to_i
+end
 Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/skew_scatter"))
-x=1
-each_nuc_snp.each do |frag|
-	write_txt('skew_scatter/snps'+x.to_s+'.txt', frag) #need positions and lengths of each fragment for super skew scatter
-	x+=1
+lengths_fws = []
+frags_w_snps.each do |id|
+	write_txt('skew_scatter/snps'+id.to_s+'.txt', snp_pos[id-1]) #need positions and lengths of each fragment for super skew scatter
+	lengths_fws << lengths[id-1]
 end
-write_txt('skew_scatter/ex_fasta_lengths.txt', lengths)
+write_txt('skew_scatter/ex_fasta_lengths.txt', lengths_fws)
+write_txt('skew_scatter/ex_ids_w_snps.txt', frags_w_snps)
