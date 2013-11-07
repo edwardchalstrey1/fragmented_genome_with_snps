@@ -44,4 +44,5 @@ This is another problem with my model genome that I have identified; the gradien
 Working out the gradient in the way I have done may not be useful for fragment rearrangement. However, it does show that the skew method (method 2b) is not likely to be effective with the model genome used to create datasets 1 and 2.
 
 Dataset 1 and 2 are from a model genome of 200Kb in length with 1000 SNPs normally distributed around the mutant position 100,000, and fragment sizes of 50-250b.
+I will create a 3rd dataset.
 
