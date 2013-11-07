@@ -58,7 +58,6 @@ def make_snp_seq (snp_pos)
 end
 def get_frags (seq)
 	frags = []
-	all_frags_pos = []
 	rt = 0
 	while rt < seq.length
 		frag_length = rand(200) + 50
@@ -120,7 +119,7 @@ def storage (frags, pos)
 		frag_pos_hash = {}
 		frag_pos_hash[:frag] = i.join.to_s
 		frag_pos_hash[:pos] = pos[x]
-		frags_with_positions << frag_pos_hash  #so ideally i would use the hashed pos_each_frag method above, but for some reason dnt work
+		frags_with_positions << frag_pos_hash 
 		x+=1
 	end
 	return frags_with_positions
