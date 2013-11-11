@@ -33,8 +33,14 @@ def snp_seq (seq, snp_pos)
 	snp_pos.each do |i|
 		if seq[i] == 'A'
 			seq[i] = 'T'
-		else
+		elsif seq[i] == 'T'
 			seq[i] = 'A'
+		elsif seq[i] == 'C'
+			seq[i] = 'G'
+		elsif seq[i] == 'G'
+			seq[i] = 'C'
+		elsif seq[i] == 'N'
+			seq[i] = 'R'
 		end
 	end
 	return seq
@@ -79,7 +85,7 @@ def storage_json (frags, pos, dataset)
 		frags_with_positions << frag_pos_hash 
 		x+=1
 	end
-	File.open("arabidopsis_datasets/"+dataset.to_s+"_fwp.json", "w") do |f|
+	File.open("arabidopsis_datasets/"+dataset.to_s+"/"+dataset.to_s+"_fwp.json", "w") do |f|
 		f.write(frags_with_positions.to_json)
 	end
 end
@@ -93,5 +99,6 @@ puts "Arabidopsis chr4 length: "+arabidopsis_c4.length.to_s+" bases"
 puts "Fragmented seq   length: "+frags.join.length.to_s+ " = close enough? You decide."
 puts "You have created "+frags.length.to_s+" fragments of sizes 10-20Kb"
 pos_on_frags = pos_each_frag(snp_pos, frags)
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s))
 storage_json(frags, pos_on_frags, ARGV[0])
 

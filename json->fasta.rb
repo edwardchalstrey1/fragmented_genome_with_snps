@@ -1,10 +1,10 @@
 require "rubygems"
 require "json"
 
-def extract_json (json)
+def extract_json (dataset)
 	snp_pos = []
 	frags = []
-	JSON.parse(File.open(json).read).each do |hash|
+	JSON.parse(File.open("arabidopsis_datasets/"+dataset.to_s+"/"+dataset.to_s+"_fwp.json").read).each do |hash|
 		frags << hash["frag"]
 		snp_pos << hash["pos"]
 	end
@@ -41,7 +41,7 @@ def vcf_array (frags, snp_pos)
 			end
 		end
 		h.each do |i|
-			alt << frags[q][i].capitalize #what nucleotide is at these positions?  VCF requires capital nucleotides
+			alt << frags[q][i] #what nucleotide is at these positions?
 		end
 		q += 1
 	end
@@ -49,8 +49,14 @@ def vcf_array (frags, snp_pos)
 	alt.each do |base|
 		if base == 'A'
 			ref << 'T'
-		else
+		elsif base == 'T'
 			ref << 'A'
+		elsif base == 'C'
+			ref << 'G'
+		elsif base == 'G'
+			ref << 'C'
+		elsif base == 'R'
+			ref << 'N'
 		end
 	end
 	vcf_format = ['##fileformat=VCFv4.1', '##source=Fake', '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO'] 
@@ -62,18 +68,13 @@ def vcf_array (frags, snp_pos)
 	end
 	return vcf_format, chrom.uniq
 end
-def write_fasta (array, file)
-	File.open(file, "w+") do |f|
-		array.each { |i| f.puts(i) } #write the fasta
+def write_data (array, file, dataset)
+	File.open("arabidopsis_datasets/"+dataset.to_s+"/"+file, "w+") do |f|
+		array.each { |i| f.puts(i) } #write the fasta/vcf
 	end
 end
-def write_vcf (array, file)
-	File.open(file, "w+") do |f|
-		array.each { |i| f.puts(i) }
-	end
-end
-def write_json (array, json)
-	File.open(json, "w") do |f|
+def write_json (array, file, dataset)
+	File.open("arabidopsis_datasets/"+dataset.to_s+"/"+file, "w+") do |f|
 		f.write(array.to_json)
 	end
 end
@@ -83,7 +84,7 @@ def write_txt (filename, array)
 	end
 end
 
-data = extract_json('frags_with_positions.json')
+data = extract_json(ARGV[0])
 frags = data[0]
 snp_pos = data[1]
 
@@ -95,14 +96,14 @@ vcf_n_chrom = vcf_array(frags, snp_pos)
 vcf = vcf_n_chrom[0]
 chrom = vcf_n_chrom[1]
 
-write_fasta(fastaformat_array, 'frags.fasta')
-write_vcf(vcf, 'snps.vcf')
+write_data(fastaformat_array, 'frags.fasta', ARGV[0])
+write_data(vcf, 'snps.vcf', ARGV[0])
 
 fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it to show that the order doesn't need to be conserved when working out density later on
-write_fasta(fastaformat_array_shuf, 'frags_shuffled.fasta')
+write_data(fastaformat_array_shuf, 'frags_shuffled.fasta', ARGV[0])
 
-write_json(frag_ids, 'frag_ids_original_order.json')
-################################################################
+write_json(frag_ids, 'frag_ids_original_order.json', ARGV[0])
+################################################################ Everything below for skew scatter graph
 lengths = []
 frags.each do |frag| 
 	lengths << frag.length
@@ -112,11 +113,11 @@ chrom.each do |id|
 	id.slice!("frag")
 	frags_w_snps << id.to_i
 end
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/skew_scatter"))
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter"))
 lengths_fws = []
 frags_w_snps.each do |id|
-	write_txt('skew_scatter/snps'+id.to_s+'.txt', snp_pos[id-1]) #need positions and lengths of each fragment for super skew scatter
+	write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter/snps"+id.to_s+".txt", snp_pos[id-1]) #need positions and lengths of each fragment for super skew scatter
 	lengths_fws << lengths[id-1]
 end
-write_txt('skew_scatter/ex_fasta_lengths.txt', lengths_fws)
-write_txt('skew_scatter/ex_ids_w_snps.txt', frags_w_snps)
+write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/ex_fasta_lengths.txt', lengths_fws)
+write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/ex_ids_w_snps.txt', frags_w_snps)
