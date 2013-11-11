@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title><em>Arabidopsis thaliana</em> chromosome 4, with SNPs</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1><em>Arabidopsis thaliana</em> chromosome 4, with SNPs</h1>
+
+<h2>A more realistic model genome</h2>
+
+<p>To better evaluate the effectiveness of the skew method (method 2b) of fragment rearrangement (see <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/rearrangement_methods.md">rearrangement methods</a>), I have created a new model genome (<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb">arabidopsis_c4_w_snps.rb</a>), from <em>Arabidopsis thaliana</em> chromosome 4 data available <a href="ftp://ftp.arabidopsis.org/Sequences/whole_chromosomes/">here</a> (TAIR10_chr4.fas). I have given the chromosome 70,000 SNPs normally distributed about a causative mutation (so 70,001 total), which is located at position 10,000,000 of the 18,585,056 base chromosome (golden path length). The standard deviation of the distribution is 2,000,000. 70,000 was the chosen number of SNPs: searching online and finding <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3290786/">this paper</a> which describes the number of SNPs between two ecotypes of <em>Arabidopsis</em> as around 350,000, and dividing by 5 (the number of chromosomes). The exact number of SNPs doesn&#39;t matter for this model genome, but this working was just to get the order of magnitude appropriate.</p>
+
+<p>I have updated <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb">arabidopsis_c4_w_snps.rb</a> and <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/json-%3Efasta.rb">json-&gt;fasta.rb</a>, so that new datasets (new fasta and vcf files) for the arabidopsis chromosome with SNPs can be generated relatively quickly, with different SNP positions each time, but the same number of SNPs and the same causative mutation.
+For this model genome I cannot perform the shapiro wilk test normailty because the test uses a maximum 5K sample size. This no longer matters because the SNP positions are taken directly from the rnorm function in R, and therefore definitely follow a normal distribution. See <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb">arabidopsis_c4_w_snps.rb</a> normal_dist method for details.</p>
+
+<p>It is difficult to say at this stage how <em>realistic</em> this version of the model genome is, but it should provide me with a better basis for testing methods of fragment re-arrangement, and eventually causative mutation location.</p>
+
+<p>For more information, and what I mean by <em>realistic</em> see the repository README - ADD LINK!!!</p>
+
+</body>
+
+</html>
+

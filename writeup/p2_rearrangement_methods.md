@@ -45,5 +45,5 @@ Working out the gradient in the way I have done may not be useful for fragment r
 
 Dataset 1 and 2 are from a model genome of 200Kb in length with 1000 SNPs normally distributed around the mutant position 100,000, and fragment sizes of 50-250b.
 
-At this stage, I have decided to create a more realistic model genome based on *Arabidopsis thaliana* chromosome 4, see [here](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset3_arabidopsis.md) for details.
+At this stage, I have decided to create a more realistic model genome based on *Arabidopsis thaliana* chromosome 4, see [here](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/arabidopsis_chromosome4.md) for details.
 

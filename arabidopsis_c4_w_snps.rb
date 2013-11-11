@@ -91,7 +91,7 @@ def storage_json (frags, pos, dataset)
 end
 
 snp_pos = normal_dist
-puts snp_pos.uniq.length.to_s+" of 70K SNPs are unique"
+puts snp_pos.uniq.length.to_s+" of 70,001 SNPs are unique"
 arabidopsis_c4 = fasta2char_array("TAIR10_chr4.fasta")
 snp_sequence = snp_seq(arabidopsis_c4, snp_pos)
 frags = get_frags(snp_sequence)
