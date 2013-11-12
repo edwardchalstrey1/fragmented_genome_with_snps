@@ -29,7 +29,7 @@ The mutant position is located at position 100,000 in [dataset 1](https://github
  
 2. When running [arabidopsis_c4_w_snps.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb) and [json->fasta.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/json-%3Efasta.rb), do as follows for a named dataset e.g. datasetX
  - ruby "" datasetX
- - the name of the dataset entered into the command line saves it in an appropriate location
+ - the name of the dataset entered into the command line saves the outputted files in an appropriate location
 
 ### Designing an algorithm that will determine the position of a phenotype altering mutation:
 
