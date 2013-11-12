@@ -11,7 +11,7 @@ For this model genome I cannot perform the shapiro wilk test normailty because t
 
 It is difficult to say at this stage how *realistic* this version of the model genome is, but it should provide me with a better basis for testing methods of fragment re-arrangement, and eventually causative mutation location.
 
-For more information, and what I mean by *realistic* see the repository README - ADD LINK!!!
+For more information, and what I mean by *realistic* see the repository [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md)
 
 
 
