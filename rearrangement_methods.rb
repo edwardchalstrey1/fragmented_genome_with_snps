@@ -49,10 +49,11 @@ def re_order_densities (id_density_hash, rearranged_ids) # get list of the densi
 	return densities
 end
 def scatta_txts (array, name_string) # write each list of ids and densities into id_n_density_txts directory, for use in scatter plots in R
-	File.open(('id_n_density_txts/'+name_string+'.txt'), "w+") do |f|
+	File.open(('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/id_n_density_txts/'+name_string+'.txt'), "w+") do |f|
 		array.each { |i| f.puts(i) }
 	end
 end
+
 # Rearrangement Methods
 # ---------------------
 
@@ -115,20 +116,30 @@ def lr_d (frags_by_density, fasta_lengths, id_pos_hash)
 	return lnr[0], lnr[1].reverse # reverse the right array into descending density order
 end
 
-def max_score (original_order)
-end
-
-frags_original_order = extract_json('frag_ids_original_order.json')
+frags_original_order = extract_json('arabidopsis_datasets/'+ARGV[0].to_s+'/frag_ids_original_order.json')
 frags_reverse_order = frags_original_order.reverse
-frags_by_density = extract_json('frags_by_density.json')
+frags_by_density = extract_json('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/frags_by_density.json')
 
-id_pos_hash = extract_json('pos_hash.json') #remember the fragments are in a random order here - the order they were in in the fasta
-fasta_lengths = extract_json('fasta_lengths.json') #also in the order from the fasta file
+id_pos_hash = extract_json('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/pos_hash.json') #remember the fragments are in a random order here - the order they were in in the fasta
+fasta_lengths = extract_json('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/fasta_lengths.json') #also in the order from the fasta file
 
-id_density_hash = extract_json('id_density_hash.json')
+id_density_hash = extract_json('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/id_density_hash.json')
+
+
+puts 'Highest possible score: ' + (score(frags_reverse_order, frags_original_order)).to_s
+puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
+random_scores = random_score(frags_original_order, frags_by_density)
+puts 'Random Score: ' + (random_scores.inject(:+)/random_scores.length).to_s
+puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
+puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
+puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
+puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash).flatten))).to_s
+
 
 # Rearranged orders of densities: for scatter plots
 #-----------------------------------------------------------
+
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/re_files/id_n_density_txts"))
 
 #Original order
 scatta_txts(re_order_densities(id_density_hash, frags_original_order), 'd_o')
@@ -171,16 +182,6 @@ scatta_txts(re_order_densities(id_density_hash, id_m2br), 'd_m2br')
 id_m2b = lnrd.flatten
 scatta_txts(re_order_densities(id_density_hash, id_m2b), 'd_m2b')
 
-puts 'Highest possible score: ' + (score(frags_reverse_order, frags_original_order)).to_s
-puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
-random_scores = random_score(frags_original_order, frags_by_density)
-puts 'Random Score: ' + (random_scores.inject(:+)/random_scores.length).to_s
-puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
-puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
-puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
-puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash).flatten))).to_s
-
-
-File.open('random_scores.txt', "w+") do |f|
+File.open('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/random_scores.txt', "w+") do |f|
 	(random_score(frags_original_order, frags_by_density)).each { |i| f.puts(i) } # get random scores for error bar creation
 end

@@ -106,13 +106,12 @@ def two_a_to_h (keys_array, values_array)
 	return Hash[*keys_array.zip(values_array).flatten]
 end
 
-
-snp_data = get_snp_data('snps.vcf')
+snp_data = get_snp_data('arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf')
 vcfs_chrom = snp_data[0] #array of vcf frag ids
 vcfs_pos = snp_data[1] #array of all the snp positions (fragments with snps)
 snps_hash = snp_data[2] #hash of each fragment from vcf, and it's number of snps
 
-fasta_data = fasta_array('frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
+fasta_data = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
 fasta = fasta_data[0]
 fasta_ids = fasta_data[1]
 fasta_lengths = fasta_data[2]
@@ -123,16 +122,18 @@ densities = calculate_densities(fasta, snps_per_frag)
 
 sorted_frags_densities = density_order_ids(densities, fasta_ids)
 frags_by_density = sorted_frags_densities[0]
-write_json(frags_by_density, 'frags_by_density.json')
 
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/re_files"))
+
+write_json(frags_by_density, 'arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/frags_by_density.json')
 
 pos = get_positions(fasta, vcfs_chrom, vcfs_pos, snps_per_frag) #get snp positions for each frag in array of arrays
 
 pos_hash = associate_fasta_ids_snp_pos(pos, fasta_ids) #associate frag ids with a string of the positions it has THIS IS FOR THE LEFT/RIGHT METHOD
-write_json(pos_hash, 'pos_hash.json')
-write_json(fasta_lengths, 'fasta_lengths.json') #the lengths of the frags in the same order as the fasta file and hence pos_hash
+write_json(pos_hash, 'arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/pos_hash.json')
+write_json(fasta_lengths, 'arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/fasta_lengths.json') #the lengths of the frags in the same order as the fasta file and hence pos_hash
 
 id_density_hash = two_a_to_h(frags_by_density, sorted_frags_densities[1]) #the frags with associated densities sorted
-write_json(id_density_hash, 'id_density_hash.json')
+write_json(id_density_hash, 'arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/id_density_hash.json')
 
 
