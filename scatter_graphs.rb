@@ -12,7 +12,7 @@ def scatta (dataset, method_name_string, filename_string)
 	myr.assign "dataset", dataset.to_s
 	myr.eval 'scatta(d, method_name_string, filename_string, dataset)'
 end
-
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/figures"))
 scatta(ARGV[0], "Original
        Order", "d_o")
 scatta(ARGV[0], "Control 1", "d_c1")
