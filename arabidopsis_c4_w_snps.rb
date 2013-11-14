@@ -89,6 +89,11 @@ def storage_json (frags, pos, dataset)
 		f.write(frags_with_positions.to_json)
 	end
 end
+def write_txt (filename, array)
+	File.open(filename, "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
+end
 
 snp_pos = normal_dist
 puts snp_pos.uniq.length.to_s+" of 70,001 SNPs are unique"
@@ -101,4 +106,5 @@ puts "You have created "+frags.length.to_s+" fragments of sizes 10-20Kb"
 pos_on_frags = pos_each_frag(snp_pos, frags)
 Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s))
 storage_json(frags, pos_on_frags, ARGV[0])
-
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter"))
+write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/snp_pos.txt', snp_pos)

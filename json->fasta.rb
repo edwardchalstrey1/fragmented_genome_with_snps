@@ -113,7 +113,7 @@ chrom.each do |id|
 	id.slice!("frag")
 	frags_w_snps << id.to_i
 end
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter"))
+#Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter"))
 lengths_fws = []
 frags_w_snps.each do |id|
 	write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter/snps"+id.to_s+".txt", snp_pos[id-1]) #need positions and lengths of each fragment for super skew scatter
