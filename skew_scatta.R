@@ -35,29 +35,57 @@ for(i in lengths){ #for each fragment
 }
 
 
-png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter.png")
-plot(nu_ids, abs_gradients, main="The absolute gradient of SNPs for fragments with 6 or more SNPs from dataset 6", xlab="Fragments", ylab="Gradient (as an absolute)") 
+png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_abs.png")
+plot(nu_ids, abs_gradients, main="The absolute gradient of SNPs 
+	for fragments with 6 or more SNPs from dataset 6", xlab="Fragments", ylab="Gradient (as an absolute)") 
 lines(lowess(nu_ids, abs_gradients), col="red", lwd=4)
 dev.off()
 
-png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter2.png")
-plot(nu_ids, gradients, main="The gradient of SNPs for fragments with 6 or more SNPs from dataset 6", xlab="Fragments", ylab="Gradient")
+png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_grad.png")
+plot(nu_ids, gradients, main="The gradient of SNPs 
+	for fragments with 6 or more SNPs from dataset 6", xlab="Fragments", ylab="Gradient")
 lines(lowess(nu_ids, gradients), col="red", lwd=4)
 dev.off()
+
+keep <- abs_gradients < 5.0e-09
+ag <- abs_gradients[keep]
+nu <- nu_ids[keep]
+
+keep2 <- which(gradients < 5.0e-09 & gradients > -5.0e-09)
+g <- gradients[keep2]
+nu2 <- nu_ids[keep2]
+
+png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_abs_thresh.png")
+plot(nu, ag, main="The absolute gradient of SNPs 
+	for fragments with 6 or more SNPs from dataset 6, 
+	excluding those with a gradient > 5.0e-09", xlab="Fragments", ylab="Gradient (as an absolute)") 
+lines(lowess(nu, ag), col="red", lwd=4)
+dev.off()
+
+png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_grad_thresh.png")
+plot(nu2, g, main="The gradient of SNPs 
+	for fragments with 6 or more SNPs from dataset 6,
+	excluding those with a gradient > 5.0e-09 or < -5.0e-09", xlab="Fragments", ylab="Gradient")
+lines(lowess(nu2, g), col="red", lwd=4)
+dev.off()
+
 
 png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/example_gradient_f687.png")
 z <- which(687 == nu_ids)
 plot(xs[[z]], ys[[z]], main="Example of gradient determination for fragment 687 of dataset 6", xlab="Fragment", ylab="SNP density (Kernel density estimation)") 
+abline(coef=coef(lm(ys[[z]]~xs[[z]])), col="blue", lwd=4)
 dev.off()
 
 png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/example_gradient_f257.png")
 zz <- which(257 == nu_ids)
 plot(xs[[zz]], ys[[zz]], main="Example of gradient determination for fragment 257 of dataset 6", xlab="Fragment", ylab="SNP density (Kernel density estimation)")
+abline(coef=coef(lm(ys[[zz]]~xs[[zz]])), col="blue", lwd=4)
 dev.off()
 
 png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/example_gradient_f1042.png")
 zzz <- which(1042 == nu_ids)
 plot(xs[[zzz]], ys[[zzz]], main="Example of gradient determination for fragment 1042 of dataset 6", xlab="Fragment", ylab="SNP density (Kernel density estimation)")
+abline(coef=coef(lm(ys[[zzz]]~xs[[zzz]])), col="blue", lwd=4)
 dev.off()
 
 
@@ -72,5 +100,6 @@ x <- snp_dens$x[!is.na(snp_dens$x)] #removing indices that are NA
 y <- snp_dens$y[!is.na(snp_dens$y)]
 
 png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/genome_kdens_snps.png")
-plot(x, y, main="The Kernel density estimation for SNPs across the model genome (dataset 6)", xlab="Arabidopsis chromosome 4 (bases)", ylab="SNP density (Kernel density estimation)")
+plot(x, y, main="The Kernel density estimation
+ for SNPs across the model genome (dataset 6)", xlab="Arabidopsis chromosome 4 (bases)", ylab="SNP density (Kernel density estimation)")
 dev.off()
