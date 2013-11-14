@@ -53,7 +53,11 @@ def scatta_txts (array, name_string) # write each list of ids and densities into
 		array.each { |i| f.puts(i) }
 	end
 end
-
+def write_txt (filename, array)
+	File.open(filename, "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
+end
 # Rearrangement Methods
 # ---------------------
 
@@ -125,21 +129,28 @@ fasta_lengths = extract_json('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/fas
 
 id_density_hash = extract_json('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/id_density_hash.json')
 
-
-puts 'Highest possible score: ' + (score(frags_reverse_order, frags_original_order)).to_s
-puts 'Density order Score: ' + (score(frags_original_order, frags_by_density)).to_s
+hs = score(frags_reverse_order, frags_original_order)
+puts 'Highest possible score: ' + hs.to_s
+ds = score(frags_original_order, frags_by_density)
+puts 'Density order Score: ' + ds.to_s
 random_scores = random_score(frags_original_order, frags_by_density)
-puts 'Random Score: ' + (random_scores.inject(:+)/random_scores.length).to_s
-puts 'Even Odd Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'even')))).to_s
-puts 'Odd Even Method Score: ' + (score(frags_original_order, (even_odd(frags_by_density, 'odd')))).to_s
-puts 'Left Right Method Score: ' + (score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))).to_s
-puts 'Left Right Density Method Score: ' + (score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash).flatten))).to_s
+rs = random_scores.inject(:+)/random_scores.length
+puts 'Random Score: ' + rs.to_s
+eos = score(frags_original_order, (even_odd(frags_by_density, 'even')))
+puts 'Even Odd Method Score: ' + eos.to_s
+oes = score(frags_original_order, (even_odd(frags_by_density, 'odd')))
+puts 'Odd Even Method Score: ' + oes.to_s
+lrs = score(frags_original_order, (left_right(id_pos_hash, fasta_lengths).flatten))
+puts 'Left Right Method Score: ' + lrs.to_s
+lrds = score(frags_original_order, (lr_d(frags_by_density, fasta_lengths, id_pos_hash).flatten))
+puts 'Left Right Density Method Score: ' + lrds.to_s
 
+scores = [hs, ds, rs, eos, oes, lrs, lrds]
 
 # Rearranged orders of densities: for scatter plots
 #-----------------------------------------------------------
 
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/re_files/id_n_density_txts"))
+#Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/re_files/id_n_density_txts"))
 
 #Original order
 scatta_txts(re_order_densities(id_density_hash, frags_original_order), 'd_o')
@@ -182,6 +193,6 @@ scatta_txts(re_order_densities(id_density_hash, id_m2br), 'd_m2br')
 id_m2b = lnrd.flatten
 scatta_txts(re_order_densities(id_density_hash, id_m2b), 'd_m2b')
 
-File.open('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/random_scores.txt', "w+") do |f|
-	(random_score(frags_original_order, frags_by_density)).each { |i| f.puts(i) } # get random scores for error bar creation
-end
+
+write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/random_scores.txt', random_scores)
+write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/scores.txt', scores)
