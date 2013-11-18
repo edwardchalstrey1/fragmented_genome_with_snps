@@ -60,9 +60,15 @@ Figures 5-7 are examples of the gradient determination step used to generate fig
 
 
 ```r
-# snp_pos <- vector of SNP positions for a fragment kernel_density_est <-
-# density(snp_pos, n=((fragment_length)/5)) x <- kernel_density_est$x y <-
-# kernel_density_est$y gradient <- coef(lm(y ~ x))
+# snp_pos <- vector of SNP positions for a fragment
+
+# kernel_density_est <- density(snp_pos, n=((fragment_length)/5))
+
+# x <- kernel_density_est$x
+
+# y <- kernel_density_est$y
+
+# gradient <- coef(lm(y ~ x))
 ```
 
 

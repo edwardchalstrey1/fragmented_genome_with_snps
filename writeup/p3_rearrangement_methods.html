@@ -234,9 +234,15 @@ hljs.initHighlightingOnLoad();
 
 <p>Figures 5-7 are examples of the gradient determination step used to generate figures 3 and 4. One inportant consideration here is that I have only included fragments with 6 or more SNPs. Fragments with a low number of SNPs are less likely to have a useful skew/gradient than fragments with a larger number of SNPs. This is because the position of SNPs could be a lot more arbitrary, and less as a result of the SNP distribution across the genome. The kernel density estimate is plotted for the SNPs across each fragment, and then the coef function is used to extract the coefficient of the linear model of x and y. See the R pseusocode below for details.</p>
 
-<pre><code class="r"># snp_pos &lt;- vector of SNP positions for a fragment kernel_density_est &lt;-
-# density(snp_pos, n=((fragment_length)/5)) x &lt;- kernel_density_est$x y &lt;-
-# kernel_density_est$y gradient &lt;- coef(lm(y ~ x))
+<pre><code class="r"># snp_pos &lt;- vector of SNP positions for a fragment
+
+# kernel_density_est &lt;- density(snp_pos, n=((fragment_length)/5))
+
+# x &lt;- kernel_density_est$x
+
+# y &lt;- kernel_density_est$y
+
+# gradient &lt;- coef(lm(y ~ x))
 </code></pre>
 
 <p>In the density function, n is the number of equally spaced points at which the density is to be estimated. To make the size of the sections that this will split each fragment into consistent, I divide the fragment length by a constant, 5. This means that for each fragment, the density estimate will be determined approximately for each 5 bases. </p>
