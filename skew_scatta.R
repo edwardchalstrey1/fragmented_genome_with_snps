@@ -1,49 +1,45 @@
-skew_grad <- function(minimum_snps_per_frag){
-	lengths <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/skew_scatter/ex_fasta_lengths.txt", quote="\""))) #frags_w_snps
-	ids <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/skew_scatter/ex_ids_w_snps.txt", quote="\""))) #frags_w_snps
-	w <- length(lengths) #number of fragments with snps
-	gradients <- c()
-	abs_gradients <- c()
-	xs <- c() #make vectors of each x and y vector
-	ys <- c()
-	q <- 1
-	n <- 1
-	nu_ids <- c()
-	for(i in lengths){ #for each fragment
-		s <- as.character(ids[q])
-		p <- as.vector(as.matrix(read.table(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/skew_scatter/snps", s, ".txt", sep=""), quote="\"")))
-		if (length(p) > minimum_snps_per_frag){ # eliminating frags with less than 6 SNPs
-			nu_ids <- c(nu_ids, ids[q]) # add the id to a new vector, if it has 6 or more SNPs
-			a <- density(p, n=i/5) #dividing the length of the fragment by a constant (5) to get the number of equally spaced points at which the density is to be estimated
-			#^ whilst n varies for each fragment, the size of each section is the same for each frag
-			e <- c(which(a$x > i), which(a$x <= 0)) #vector of indices which are greater than the length or <=0. need to loop and remove each of these indices from a$x and a$y
-			for (j in e){
-				a$x[j] <- NA # making those redundant indices NA
-				a$y[j] <- NA
-			}
-			x <- a$x[!is.na(a$x)] #removing indices that are NA
-			y <- a$y[!is.na(a$y)]
+lengths <- as.vector(as.matrix(read.table(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/skew_scatter/ex_fasta_lengths.txt", sep=""), quote="\""))) #frags_w_snps
+ids <- as.vector(as.matrix(read.table(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/skew_scatter/ex_ids_w_snps.txt"), quote="\""))) #frags_w_snps
+w <- length(lengths) #number of fragments with snps
+gradients <- c()
+xs <- c() #make vectors of each x and y vector
+ys <- c()
+q <- 1
+n <- 1
+nu_ids <- c()
+for(i in lengths){ #for each fragment
+	s <- as.character(ids[q])
+	p <- as.vector(as.matrix(read.table(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/skew_scatter/snps", s, ".txt", sep=""), quote="\"")))
+	if (length(p) > min){ # eliminating frags with less than 6 SNPs
+		nu_ids <- c(nu_ids, ids[q]) # add the id to a new vector, if it has 6 or more SNPs
+		a <- density(p, n=i/5) #dividing the length of the fragment by a constant (5) to get the number of equally spaced points at which the density is to be estimated
+		#^ whilst n varies for each fragment, the size of each section is the same for each frag
+		e <- c(which(a$x > i), which(a$x <= 0)) #vector of indices which are greater than the length or <=0. need to loop and remove each of these indices from a$x and a$y
+		for (j in e){
+			a$x[j] <- NA # making those redundant indices NA
+			a$y[j] <- NA
+		}
+		x <- a$x[!is.na(a$x)] #removing indices that are NA
+		y <- a$y[!is.na(a$y)]
 
-			xs[[n]] <- x
-			ys[[n]] <- y
-			n <- n+1
+		xs[[n]] <- x
+		ys[[n]] <- y
+		n <- n+1
 
-			coeff <- coef(lm(y ~ x))
-			gradients <- c(gradients, coeff[2])
-		}	
-		q <- q+1
-	}
-	return(gradients)
+		coeff <- coef(lm(y ~ x))
+		gradients <- c(gradients, coeff[2])
+	}	
+	q <- q+1
 }
 
 
-#png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_abs50.png")
-#plot(nu_ids, abs_gradients, main="The absolute gradient of SNPs 
-#	for fragments with 50 or more SNPs from dataset 6", xlab="Fragments", ylab="Gradient (as an absolute)") 
-#lines(lowess(nu_ids, abs_gradients), col="red", lwd=4)
+#png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_abs50.png") #
+#plot(nu_ids, gradients, main="The absolute gradient of SNPs 
+#	for fragments with 50 or more SNPs from dataset 6", xlab="Fragments", ylab="Gradient (as an absolute)")
+#lines(lowess(nu_ids, gradients), col="red", lwd=4)
 #dev.off()
 
-#png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_grad50.png")
+#png("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset6/figures/skew_scatter_grad50.png") #
 #plot(nu_ids, gradients, main="The gradient of SNPs 
 #	for fragments with 50 or more SNPs from dataset 6", xlab="Fragments", ylab="Gradient")
 #lines(lowess(nu_ids, gradients), col="red", lwd=4)
