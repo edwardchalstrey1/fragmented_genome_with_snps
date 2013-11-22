@@ -1,6 +1,7 @@
 require "rubygems"
 require "rinruby"
 
+
 lengths = []
 File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_fasta_lengths.txt").each {|line| lengths << line}
 ids = []
@@ -16,6 +17,7 @@ lengths.each do |length|
 	File.open("arabidopsis_datasets/dataset5/skew_scatter/snps"+ids[q].to_s+".txt").each {|line| snp_pos << line}
 	if snp_pos.length > 6
 		nu_ids << ids[q]
+		x = density(snp_pos, length, )
 		#make x and y
 		xs << x
 		ys << y
