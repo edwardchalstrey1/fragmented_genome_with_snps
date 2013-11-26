@@ -53,8 +53,8 @@ def get_gradients (min_snps, n_div)
 			File.open("arabidopsis_datasets/dataset5/skew_scatter/snps"+ids[q].to_s+".txt").each {|line| snp_pos << line.to_i}
 			if snp_pos.length >= min_snps
 				nu_ids << ids[q]
-				x = density(snp_pos, length, n_div)
-				y = (0..length-1).to_a
+				y = density(snp_pos, length, n_div)
+				x = (0..length-1).to_a
 				xs << x
 				ys << y
 				n+=1
@@ -83,7 +83,7 @@ def scatta_dem (gradients, nu_ids, filename, grad_string, min_snps_string)
 	myr.assign "grad_string", grad_string
 	myr.assign "min_snps_string", min_snps_string
 	myr.eval 'source("~/fragmented_genome_with_snps/skew_scatter.R")'
-	myr.eval scatta(gradients, nu_ids, filename, grad_string, min_snps_string)
+	myr.eval 'scatta(gradients, nu_ids, filename, grad_string, min_snps_string)'
 	myr.quit
 end
 
@@ -96,7 +96,7 @@ def example (frag_num, xs, ys)
 	myr.assign "y", y
 	myr.assign "frag_num_string", frag_num_string
 	myr.eval 'source("~/fragmented_genome_with_snps/skew_scatter.R")'
-	myr.eval example(frag_num_string, x, y)
+	myr.eval 'example(frag_num_string, x, y)'
 	myr.quit
 end
 Signal.trap("PIPE", "IGNORE")
