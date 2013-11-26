@@ -143,20 +143,32 @@ hr {
 <body>
 <h1>Rearrangement methods part 4</h1>
 
+<h3>Testing the SNP Skew</h3>
+
+<p>Since the Kernel density estimate was not normalized for each fragment, I have come up with a new way of testing SNP skew as a method for rearranging fragments with SNPs into the correct order. See the project <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md">README</a> and parts <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/rearrangement_methods.md">1</a>, <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md">2</a> and <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p3_rearrangement_methods.md">3</a> of rearrangement methods for details.</p>
+
+<p>The new method I have used for determining SNP gradients for each of the fragments, relies on a different way of representing SNP density across the fragment, which I will refer to as the distance method. The distance method&hellip;</p>
+
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_2_10000.png?raw=true" alt="Image"/>
 <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_2_10000.png">Figure 1</a></p>
 
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_2_10000.png?raw=true" alt="Image"/>
 <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_2_10000.png">Figure 2</a></p>
 
-<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258.png?raw=true" alt="Image"/>
-<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258.png">Figure 3</a></p>
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins2.png?raw=true" alt="Image"/>
+<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins2.png">Figure 3</a></p>
 
-<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681.png?raw=true" alt="Image"/>
-<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681.png">Figure 4</a></p>
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins2.png?raw=true" alt="Image"/>
+<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins2.png">Figure 4</a></p>
 
-<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f987.png?raw=true" alt="Image"/>
-<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f987.png">Figure 4</a></p>
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_10000.png?raw=true" alt="Image"/>
+<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_10000.png">Figure 5</a></p>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_10000.png?raw=true" alt="Image"/>
+<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_10000.png">Figure 6</a></p>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30.png?raw=true" alt="Image"/>
+<a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30.png">Figure 7</a></p>
 
 </body>
 
