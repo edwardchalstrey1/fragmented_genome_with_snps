@@ -87,43 +87,43 @@ def scatta_dem (gradients, nu_ids, filename, grad_string, min_snps_string)
 	myr.quit
 end
 
-def example (frag_num, xs, ys)
-	x = xs[frag_num-1]
-	y = ys[frag_num-1]
+def example (frag_num, xs, ys, nu_ids, min_snps)
+	min_snps_string =  min_snps.to_s
+	z = nu_ids.index(frag_num)
+	x = xs[z]
+	y = ys[z]
 	frag_num_string = frag_num.to_s
 	myr = RinRuby.new(echo = false)
 	myr.assign "x", x
 	myr.assign "y", y
 	myr.assign "frag_num_string", frag_num_string
+	myr.assign "min_snps_string", min_snps_string
 	myr.eval 'source("~/fragmented_genome_with_snps/skew_scatter.R")'
-	myr.eval 'example(frag_num_string, x, y)'
+	myr.eval 'example(frag_num_string, x, y, min_snps_string)'
 	myr.quit
 end
+
+def skew_scatta (min_snps, n_div, ex1, ex2, ex3)
+	min_snps_string =  min_snps.to_s
+	n_div_string = n_div.to_s
+	gixs = get_gradients(min_snps, n_div)
+	gradients = gixs[0]
+	abs_gradients = gixs[4]
+	nu_ids = gixs[1]
+	xs = gixs[2]
+	ys = gixs[3]
+	fng = "grad_"+min_snps_string+"_"+n_div_string
+	fna = "abs_"+min_snps_string+"_"+n_div_string
+	scatta_dem(gradients, nu_ids, fng, "gradient", min_snps_string)
+	scatta_dem(abs_gradients, nu_ids, fna, "absolute gradient", min_snps_string)
+	example(ex1, xs, ys, nu_ids, min_snps)
+	example(ex2, xs, ys, nu_ids, min_snps)
+	example(ex3, xs, ys, nu_ids, min_snps)
+end
+
 Signal.trap("PIPE", "IGNORE")
-gixs = get_gradients(2, 10000)
-gradients = gixs[0]
-abs_gradients = gixs[4]
-nu_ids = gixs[1]
-xs = gixs[2]
-ys = gixs[3]
-scatta_dem(gradients, nu_ids, "grad_2_10K", "gradient", "2")
-scatta_dem(abs_gradients, nu_ids, "abs_2_10K", "absolute gradient", "2")
-example(258, xs, ys)
-example(681, xs, ys)
-example(974, xs, ys)
 
-#snp_pos = []
-#File.open("arabidopsis_datasets/dataset5/skew_scatter/snps230.txt").each {|line| snp_pos << line.to_i}
-#lengths = []
-#File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_fasta_lengths.txt").each {|line| lengths << line.to_i}
-#l = lengths[229]
-#d = (density(snp_pos, l, 10000))
-#myr = RinRuby.new(echo = false)
-#myr.assign "d", d
-#myr.eval "s <- length(d)"
-#s = myr.pull "s"
-#puts s
-
+skew_scatta(2, 10000, 258, 681, 987)
 
 
 
