@@ -1,7 +1,7 @@
 require "rubygems"
 require "rinruby"
 
-def density (snp_pos, length, n)
+def density (snp_pos, length, n, m)
 	length = (0..length-1).to_a
 	ds2 = []
 	y = 1
@@ -10,18 +10,18 @@ def density (snp_pos, length, n)
 			if x < snp_pos[0] # for bases before first SNP
 				ds2 << n/(snp_pos[0]-x).to_f # take the base position from the first SNP position
 			elsif x == snp_pos[0] # for the first SNP 
-				ds2 << n/0.5 # assign a value double that of the bases next to it
+				ds2 << n/m # assign a value double that of the bases next to it
 			elsif x < (snp_pos[y]+snp_pos[y-1]).to_f/2 # for bases less than halfway between the SNP y-1 and SNP y
 				ds2 << n/(x-snp_pos[y-1]).to_f # take SNP y-1's position from the bases position
 			elsif x < snp_pos[y] && x >= (snp_pos[y]+snp_pos[y-1]).to_f/2 # for bases more than halfway between the SNP y-1 and SNP y
 				ds2 << n/(snp_pos[y]-x).to_f # take the bases position from SNP y's position
 			elsif x == snp_pos[y] # for subsequent SNPs
-				ds2 << n/0.5 # assign a value double that of the bases next to it
+				ds2 << n/m # assign a value double that of the bases next to it
 			elsif x > snp_pos[y] # for bases higher than SNP y
 				y+=1
 				if snp_pos[y] != nil
 					if x == snp_pos[y] # if the base is equal to the next SNP (y incremented)
-						ds2 << n/0.5 # assign a value double that of the bases next to it
+						ds2 << n/m # assign a value double that of the bases next to it
 					else
 						ds2 << n/(x-snp_pos[y-1]).to_f # if not, take the SNP y-1's position from the bases position
 					end
@@ -36,7 +36,7 @@ def density (snp_pos, length, n)
 	return ds2
 end
 
-def get_gradients (min_snps, n_div)
+def get_gradients (min_snps, n_div, m)
 	lengths = []
 	File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_fasta_lengths.txt").each {|line| lengths << line.to_i}
 	ids = []
@@ -53,7 +53,7 @@ def get_gradients (min_snps, n_div)
 			File.open("arabidopsis_datasets/dataset5/skew_scatter/snps"+ids[q].to_s+".txt").each {|line| snp_pos << line.to_i}
 			if snp_pos.length >= min_snps
 				nu_ids << ids[q]
-				y = density(snp_pos, length, n_div)
+				y = density(snp_pos, length, n_div, m)
 				x = (0..length-1).to_a
 				xs << x
 				ys << y
@@ -103,10 +103,10 @@ def example (frag_num, xs, ys, nu_ids, min_snps)
 	myr.quit
 end
 
-def skew_scatta (min_snps, n_div, ex1, ex2, ex3)
+def skew_scatta (min_snps, n_div, m, ex1, ex2, ex3) # n_div = number that is divided by the values of distance to get the 'density', m = value that n_div is divided by at SNP positions
 	min_snps_string =  min_snps.to_s
 	n_div_string = n_div.to_s
-	gixs = get_gradients(min_snps, n_div)
+	gixs = get_gradients(min_snps, n_div, m)
 	gradients = gixs[0]
 	abs_gradients = gixs[4]
 	nu_ids = gixs[1]
@@ -123,8 +123,9 @@ end
 
 Signal.trap("PIPE", "IGNORE")
 
-skew_scatta(2, 10000, 258, 681, 987)
+#skew_scatta(2, 10000, 258, 681, 987)
 
+skew_scatta(30, 10000, 0.5, 587, 694, 729)
 
 
 
