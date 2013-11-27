@@ -1,23 +1,30 @@
 Rearrangement methods part 4
 ========================================================
 
-### Testing the SNP Skew
+Testing the SNP Skew
+--------
 
 Since the Kernel density estimate was not normalized for each fragment, I have come up with a new way of testing SNP skew as a method for rearranging fragments with SNPs into the correct order. See the project [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md) and parts [1](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/rearrangement_methods.md), [2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md) and [3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p3_rearrangement_methods.md) of rearrangement methods for details.
 
-The new method I have used for determining SNP gradients for each of the fragments, relies on a different way of representing SNP density across the fragment, which I will refer to as the distance method. The distance method...
+The new method I have used for determining SNP gradients for each of the fragments, relies on a different way of representing SNP density across the fragment, which I will refer to as the distance method. Figures 1 and 2 show the gradients worked out by this method, plotted for each of the fragments in one of my [*Arabidopsis* datasets](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/arabidopsis_chromosome4.md) (dataset5). The ruby script used to generate all the figures is [here](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/skew_scatta.rb); it uses an [R script](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/skew_scatter.R) and the RinRuby gem to make the plots.
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_2_10000.png?raw=true)
-[Figure 1](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_2_10000.png)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_1_10000.png?raw=true)
+[Figure 1](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_1_10000.png)
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_2_10000.png?raw=true)
-[Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_2_10000.png)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_10000.png?raw=true)
+[Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_10000.png)
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins2.png?raw=true)
-[Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins2.png)
+Comment on what they show:
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins2.png?raw=true)
-[Figure 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins2.png)
+The distance method works by measuring the distance of each base from the nearest SNP in the contig. A constant (in this case 10,000) is divided by the the distance value so that the 'density' decreases with the inverse of an increasing arithmetic progression, the further a base is from the closest SNP. The 'density' values attributed to the SNP's themselves are 2x the constant (20,000). Figures 3 and 4 are examples of gradient determination using the distance method, the gradient lines are shown in blue.
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins1_d1.png?raw=true)
+[Figure 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins1_d1.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d1.png?raw=true)
+[Figure 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d1.png)
+
+Since the causative mutation is likely to be on a fragment with a high SNP density, I have repeated the plots of figure 1 and 2 for just the fragments with 30+ SNPs (figures 5 and 6), to see if the same pattern is shown. The pattern is the same, all that figures 5 and 6 show is that the fragments with higher SNP numbers tend to be at the centre of the distribution, but I already knew that.
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_10000.png?raw=true)
 [Figure 5](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_10000.png)
@@ -25,5 +32,30 @@ The new method I have used for determining SNP gradients for each of the fragmen
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_10000.png?raw=true)
 [Figure 6](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_10000.png)
 
+Figure 7 shows that using the skew for fragment rearrangement and causative mutation detection may not be useful, since **some** of the fragments with the highest SNP densities (where the mutation is most likely to be found) have very low gradients, therefore their SNP skew is not very likely to be a useful indicator of the region of the model genome a fragment comes from.
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30.png?raw=true)
 [Figure 7](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30.png)
+
+### Distance method 2
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_1_20000_d2.png?raw=true)
+[Figure 8](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_1_20000_d2.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_20000_d2.png?raw=true)
+[Figure 9](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_20000_d2.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d2.png?raw=true)
+[Figure 10](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d2.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins1_d2.png?raw=true)
+[Figure 11](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins1_d2.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_20000_d2.png?raw=true)
+[Figure 12](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_20000_d2.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_20000_d2.png?raw=true)
+[Figure 13](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_20000_d2.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30_d2.png?raw=true)
+[Figure 14](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30_d2.png)
