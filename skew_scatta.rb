@@ -206,6 +206,40 @@ Signal.trap("PIPE", "IGNORE")
 #skew_scatta(1, 10000, 0.25, 1, 258, 681, 729)
 
 
+def how_scatta (id) # id = frag no.
+	lengths = []
+	File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_fasta_lengths.txt").each {|line| lengths << line.to_i}
+	ids = []
+	File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_ids_w_snps.txt").each {|line| ids << line.to_i}
+	z = ids.index(id)
+	length = lengths[z]
+	snp_pos = []
+	File.open("arabidopsis_datasets/dataset5/skew_scatter/snps"+id.to_s+".txt").each {|line| snp_pos << line.to_i}
+	y = []
+	snp_pos.length.times {|i| (y << 1)}
+	myr = RinRuby.new(echo=false)
+	myr.assign 'length', length
+	myr.assign 'y', y
+	myr.assign 'frag_num_string', id.to_s
+	myr.assign 'snp_pos', snp_pos
+	myr.eval 'source("~/fragmented_genome_with_snps/skew_scatter.R")'
+	myr.eval 'how_scatta(frag_num_string, snp_pos, y, length)'
+	myr.quit
+end
+
+#1234 frags
+#how_scatta(335)
+#how_scatta(658)
+#how_scatta(659)
+#how_scatta(707)
+#how_scatta(842)
+#how_scatta(1019)
+
+
+
+
+
+
 
 
 

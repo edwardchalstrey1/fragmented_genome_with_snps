@@ -13,3 +13,12 @@ example <- function(frag_num_string, x, y, min_snps_string, d, m){
 	abline(coef=coef(lm(y~x)), col="blue", lwd=4)
 	dev.off()
 }
+
+how_scatta <- function(frag_num_string, snp_pos, y, length){
+	png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/figures/how_scatta_f", frag_num_string, ".png", sep=""))
+	plot(snp_pos, y, main=paste("Example of SNP distribution for fragment ", frag_num_string, " of dataset5
+		(fragment length = ", length, ")", sep=""), xlab="SNP positions", ylab="SNP = 1")
+	dev.off()
+}
+
+#how_scatta('x', c(5,6,7,8), c(1,1,1,1))
