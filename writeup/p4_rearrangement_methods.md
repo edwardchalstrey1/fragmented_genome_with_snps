@@ -14,7 +14,7 @@ The new method I have used for determining SNP gradients for each of the fragmen
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_10000_d1_m0.5.png?raw=true)
 [Figure 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_10000_d1_m0.5.png)
 
-Comment on what they show:
+Figures 1 and 2 show that the gradients are slightly higher for fragments from the middle of the model genome, where the centre of the normal distribution of SNPs is.
 
 The distance method works by measuring the distance of each base from the nearest SNP in the contig. A constant (in this case 10,000) is divided by the the distance value so that the 'density' decreases with the inverse of an increasing arithmetic progression, the further a base is from the closest SNP. The 'density' values attributed to the SNP's themselves are 2x the constant (20,000). Figures 3 and 4 are examples of gradient determination using the distance method, the gradient lines are shown in blue.
 
@@ -24,7 +24,7 @@ The distance method works by measuring the distance of each base from the neares
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d1_m0.5.png?raw=true)
 [Figure 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d1_m0.5.png)
 
-Since the causative mutation is likely to be on a fragment with a high SNP density, I have repeated the plots of figure 1 and 2 for just the fragments with 30+ SNPs (figures 5 and 6), to see if the same pattern is shown. The pattern is the same, all that figures 5 and 6 show is that the fragments with higher SNP numbers tend to be at the centre of the distribution, but I already knew that.
+Since the causative mutation is likely to be on a fragment with a high SNP density, I have repeated the plots of figure 1 and 2 for just the fragments with 30+ SNPs (figures 5 and 6), to see if the same pattern is shown. The pattern is the same (there basically isn't one), all that figures 5 and 6 show is that the fragments with higher SNP numbers tend to be at the centre of the distribution, but I already knew that (e.g. fragments 350-950).
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_10000_d1_m0.5.png?raw=true)
 [Figure 5](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_10000_d1_m0.5.png)
@@ -38,6 +38,10 @@ Figure 7 shows that using the skew for fragment rearrangement and causative muta
 [Figure 7](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30_d1_m0.5.png)
 
 ### Distance method 2
+
+Since the results of the first distance method showed that the skew is unlikely to be useful, I took a different approach to be sure:
+
+The second distance method works by measuring the distance of each base from the nearest SNP in the contig. The distance value is taken from a constant (in this case 20,000) so that the 'density' decreases with an arithmetic progression, the further a base is from the closest SNP. The 'density' values attributed to the SNP's themselves are the constant. Figures 8 and 9 are examples of gradient determination using the distance method 2, the gradient lines are shown in blue.
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_1_20000_d2.png?raw=true)
 [Figure 8](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_1_20000_d2.png)
