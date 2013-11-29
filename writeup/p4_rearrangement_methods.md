@@ -49,11 +49,15 @@ The second distance method works by measuring the distance of each base from the
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_20000_d2.png?raw=true)
 [Figure 9](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_1_20000_d2.png)
 
+Figure 8 and 9 show that by using this density approximation method (distance method 2), all of the fragments have essentially negligible gradients, except those with a very low number of SNPs, which are found at the furthest points from the centre of the SNP distribution.
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d2_m0.5.png?raw=true)
 [Figure 10](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f258_mins1_d2_m0.5.png)
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins1_d2_m0.5.png?raw=true)
 [Figure 11](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f681_mins1_d2_m0.5.png)
+
+Figure 10 shows that this method of displaying the SNP density across a fragment (distance method 2) is more useful in determining a useable gradient than the first distance method. Figure 11 supports what was shown in figures 8 and 9, that fragments from the centre of the distribution have a small gradient.
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_20000_d2.png?raw=true)
 [Figure 12](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_abs_30_20000_d2.png)
@@ -61,8 +65,12 @@ The second distance method works by measuring the distance of each base from the
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_20000_d2.png?raw=true)
 [Figure 13](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/skew_scatter_grad_30_20000_d2.png)
 
+Figures 12 and 13 further support what was snown in figures 8 and 9; that all of the fragments have essentially negligible gradients, except those with a very low number of SNPs. In figures 12 and 13, the fragments with the lowest numbers of SNPs (less than 30) have been eliminated.
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30_d2_m0.5.png?raw=true)
 [Figure 14](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/example_gradient_f729_mins30_d2_m0.5.png)
+
+Figure 14 supports what was shown in figures 8 and 9, that fragments from the centre of the distribution have a small gradient.
 
 ### Visualizing the SNPs on fragments
 
@@ -74,3 +82,5 @@ The second distance method works by measuring the distance of each base from the
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/how_scatta_f729.png?raw=true)
 [Figure 17](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/how_scatta_f729.png)
+
+Figures 15-17 validate my conclusion that the gradient/skew will not prove useful in re-ordering un-ordered fragments (contigs) from the experiment described in [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md).
