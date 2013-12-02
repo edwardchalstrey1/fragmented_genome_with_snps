@@ -5,7 +5,7 @@ I am creating a model genome (or chromosome/sequence) from an individual created
 
 After creating a model genome based on the expected result of the out-crossing experiment detailed above, I am designing an algorithm that will locate the causative mutation, based on the distribution of SNPs. To emulate real data, I first split the genome into fragments, which model contigs assembled from high-throughput sequencing reads. My algorithm will need to rearrange these fragments into their proper order, then locate the causative mutation.
 
-For a chronological writeup of my results of algorithm development (and model genome improvements), see the files in the writeup folder in this order: [Rearrangement methods](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/rearrangement_methods.md), [model genome dataset 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md), [rearrangement methods part 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md), [model genome dataset 3 and subsequent datasets](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/arabidopsis_chromosome4.md), rearrangement methods part 3...
+For a chronological writeup of my results of algorithm development (and model genome improvements), see the files in the writeup folder in this order: [Rearrangement methods](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/rearrangement_methods.md), [model genome dataset 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md), [rearrangement methods part 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md), [model genome dataset 3 and subsequent datasets](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/arabidopsis_chromosome4.md), [rearrangement methods part 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p3_rearrangement_methods.md), [rearrangement methods part 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p4_rearrangement_methods.md).
 
 **Details of the main files in the repo are below. For a more comprehensive summary of how/why they are used, read the writeup**
 
@@ -30,6 +30,7 @@ The mutant position is located at position 100,000 in [dataset 1](https://github
 2. When running [arabidopsis_c4_w_snps.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb) and [json->fasta.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/json-%3Efasta.rb), do as follows for a named dataset e.g. datasetX
  - ruby "" datasetX
  - the name of the dataset entered into the command line saves the outputted files in an appropriate location
+ - the same command line argument can also now be used for 
 
 ### Designing an algorithm that will determine the position of a phenotype altering mutation:
 
@@ -37,7 +38,6 @@ The mutant position is located at position 100,000 in [dataset 1](https://github
 
 2. Rearranging the fragments into their original order:
  - [rearrangement_methods.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb) contains rearrangement methods
- - [see rearrangement_methods.md]() for details of methods
- - then see [dataset_2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md) and [part 2 of rearrangement methods](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md)
+ - then see the writeup in chronological order (above)
  
 3. Identifying the causative mutation
