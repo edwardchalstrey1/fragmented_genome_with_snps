@@ -15,7 +15,7 @@ def normal_dist
 	myr = RinRuby.new(echo = false)
 	myr.eval "x <- rnorm(70000, 10000000, 2000000)" #distibution about the mean, midpoint of the sequence 
 	snp_pos = myr.pull "x"
-	snp_pos << 10000000 # there must be a SNP at the causative mutation location
+	#snp_pos << 10000000 # there must be a SNP at the causative mutation location
 	return snp_pos
 end
 def get_frags (seq)
@@ -31,16 +31,18 @@ def get_frags (seq)
 end
 def snp_seq (seq, snp_pos)
 	snp_pos.each do |i|
-		if seq[i] == 'A'
-			seq[i] = 'T'
-		elsif seq[i] == 'T'
-			seq[i] = 'A'
-		elsif seq[i] == 'C'
-			seq[i] = 'G'
-		elsif seq[i] == 'G'
-			seq[i] = 'C'
-		elsif seq[i] == 'N'
-			seq[i] = 'R'
+		if i == 10000000
+			seq[9999999] = 'M'
+		elsif seq[i-1] == 'A' # -1 because ruby counts from 0
+			seq[i-1] = 'T'
+		elsif seq[i-1] == 'T'
+			seq[i-1] = 'A'
+		elsif seq[i-1] == 'C'
+			seq[i-1] = 'G'
+		elsif seq[i-1] == 'G'
+			seq[i-1] = 'C'
+		elsif seq[i-1] == 'N'
+			seq[i-1] = 'R'
 		end
 	end
 	return seq
@@ -96,7 +98,7 @@ def write_txt (filename, array)
 end
 
 snp_pos = normal_dist
-puts snp_pos.uniq.length.to_s+" of 70,001 SNPs are unique"
+puts snp_pos.uniq.length.to_s+" of "+snp_pos.length.to_s+" SNPs are unique"
 arabidopsis_c4 = fasta2char_array("TAIR10_chr4.fasta")
 snp_sequence = snp_seq(arabidopsis_c4, snp_pos)
 frags = get_frags(snp_sequence)

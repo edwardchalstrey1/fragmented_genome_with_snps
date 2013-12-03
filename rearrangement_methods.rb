@@ -150,7 +150,7 @@ scores = [hs, ds, rs, eos, oes, lrs, lrds]
 # Rearranged orders of densities: for scatter plots
 #-----------------------------------------------------------
 
-#Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/re_files/id_n_density_txts"))
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/re_files/id_n_density_txts"))
 
 #Original order
 scatta_txts(re_order_densities(id_density_hash, frags_original_order), 'd_o')

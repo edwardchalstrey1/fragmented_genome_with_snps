@@ -199,7 +199,8 @@ Signal.trap("PIPE", "IGNORE")
 #skew_scatta(1, 10000, 0.5, 1, 258, 681, 987)
 #skew_scatta(1, 20000, 0.5, 2, 258, 681, 987)
 #skew_scatta(30, 10000, 0.5, 1, 587, 694, 729)
-skew_scatta(30, 20000, 0.5, 2, 587, 694, 729)
+#skew_scatta(30, 20000, 0.5, 2, 587, 694, 729)
+skew_scatta(100, 20000, 0.5, 2, 651, 653, 654)
 
 def how_scatta (id) # id = frag no.
 	lengths = []
@@ -229,24 +230,14 @@ end
 #how_scatta(707)
 #how_scatta(842)
 #how_scatta(1019)
-how_scatta(681)
-how_scatta(258)
-how_scatta(987)
-how_scatta(729)
-how_scatta(587)
-how_scatta(694)
+#how_scatta(681)
+#how_scatta(258)
+#how_scatta(987)
+#how_scatta(729)
+#how_scatta(587)
+#how_scatta(694)
 
-#id = 588
-#lengths = []
-#File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_fasta_lengths.txt").each {|line| lengths << line.to_i}
-#ids = []
-#File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_ids_w_snps.txt").each {|line| ids << line.to_i}
-#z = ids.index(id)
-#length = lengths[z]
-#snp_pos = []
-#File.open("arabidopsis_datasets/dataset5/skew_scatter/snps"+id.to_s+".txt").each {|line| snp_pos << line.to_i}
 
-#puts (density2(snp_pos, length, 20000)).length
 
 
 

@@ -49,7 +49,7 @@ def calculate_densities (fasta, snps_per_frag) #argument arrays must be in "same
 		if snps_per_frag[x] == 0 #snps_per_frag and fasta in the same order
 			densities << 0
 			x+=1
-		else snps_per_frag[x]
+		elsif snps_per_frag[x]
 			densities << (snps_per_frag[x].to_f / frag.length.to_f)*1000 #this gives snps/Kb as density units
 			x+=1
 		end
@@ -105,6 +105,11 @@ end
 def two_a_to_h (keys_array, values_array)
 	return Hash[*keys_array.zip(values_array).flatten]
 end
+def write_txt (filename, array)
+	File.open(filename+".txt", "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
+end
 
 snp_data = get_snp_data('arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf')
 vcfs_chrom = snp_data[0] #array of vcf frag ids
@@ -122,6 +127,7 @@ densities = calculate_densities(fasta, snps_per_frag)
 
 sorted_frags_densities = density_order_ids(densities, fasta_ids)
 frags_by_density = sorted_frags_densities[0]
+sorted_densities = sorted_frags_densities[1]
 
 Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/re_files"))
 
@@ -137,3 +143,22 @@ id_density_hash = two_a_to_h(frags_by_density, sorted_frags_densities[1]) #the f
 write_json(id_density_hash, 'arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/id_density_hash.json')
 
 
+#############################################################
+### FINDING FRAG WITH CAUSATIVE MUTATION DATASET9 ONWARDS ###
+#############################################################
+if ARGV[1] == "m"
+	puts "Fragment "+frags_by_density[-1].to_s+" has the highest density: "+sorted_densities[-1].to_s
+	z = 0
+	frag_mut = []
+	fasta.each do |entry|
+		z+=1
+		if entry.seq.include?("M")
+			frag_mut << fasta_ids[z-1]
+		end
+	end
+	frag_mut = frag_mut[0]
+	puts frag_mut+" has the mutant SNP"
+	a = []
+	a <<(frags_by_density.length - frags_by_density.index(frag_mut))
+	write_txt("frag_mut_dist/"+ARGV[0].to_s, a)
+end
