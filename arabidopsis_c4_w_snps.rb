@@ -13,7 +13,7 @@ def fasta2char_array (fasta)
 end
 def normal_dist
 	myr = RinRuby.new(echo = false)
-	myr.eval "x <- rnorm(70000, 10000000, 2000000)" #distibution about the mean, midpoint of the sequence 
+	myr.eval "x <- rnorm(70000, 9292528, 2000000)" #distibution about the mean, midpoint of the sequence 
 	snp_pos = myr.pull "x"
 	#snp_pos << 10000000 # there must be a SNP at the causative mutation location
 	return snp_pos
@@ -31,8 +31,8 @@ def get_frags (seq)
 end
 def snp_seq (seq, snp_pos)
 	snp_pos.each do |i|
-		if i == 10000000
-			seq[9999999] = 'M'
+		if i == 9292528
+			seq[9292527] = 'M'
 		elsif seq[i-1] == 'A' # -1 because ruby counts from 0
 			seq[i-1] = 'T'
 		elsif seq[i-1] == 'T'
@@ -48,7 +48,7 @@ def snp_seq (seq, snp_pos)
 	return seq
 end
 def pos_each_frag (snp_pos, frags) #get the positions for snps on individual frags
-	sorted_pos = snp_pos.sort #this is needed as we have added the mutant SNP on the end
+	sorted_pos = snp_pos.sort #this is needed as rnorm puts them in a random order
 	p_ranges = []
 	frags.each do |i|
 		p_ranges << i.length + p_ranges[-1].to_i #adding the fragment lengths to get the upper bounds of ranges of positions on the original seq.
