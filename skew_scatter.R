@@ -20,5 +20,13 @@ how_scatta <- function(frag_num_string, snp_pos, y, length){
 		(fragment length = ", length, ")", sep=""), xlab="SNP positions", ylab="SNP = 1")
 	dev.off()
 }
+gg_hist <- function(frag_num_string, snp_pos, length){
+	#png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/figures/gghist_f", frag_num_string, ".png", sep=""))
+	names(snp_pos) <- c("pos")
+	g <- ggplot(snp_pos, aes(pos)) + geom_histogram() + ggtitle(quote(paste("Fragment ", frag_num_string, " of dataset5
+		(fragment length = ", length, ")" sep=""))) + scale_y_continuous() + scale_x_continuous(name=quote("SNP positions"))
+	ggsave(g, file=paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/figures/gghist_f", frag_num_string, ".png", sep="")) 
+	#dev.off()ggsave(cunt, file="~/fragmented_genome_with_snps/cunt.png")
+}
 
-#how_scatta('x', c(5,6,7,8), c(1,1,1,1))
+

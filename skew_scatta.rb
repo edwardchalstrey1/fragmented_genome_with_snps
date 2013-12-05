@@ -200,9 +200,9 @@ Signal.trap("PIPE", "IGNORE")
 #skew_scatta(1, 20000, 0.5, 2, 258, 681, 987)
 #skew_scatta(30, 10000, 0.5, 1, 587, 694, 729)
 #skew_scatta(30, 20000, 0.5, 2, 587, 694, 729)
-skew_scatta(100, 20000, 0.5, 2, 651, 653, 654)
+#skew_scatta(100, 20000, 0.5, 2, 651, 653, 654)
 
-def how_scatta (id) # id = frag no.
+def how_scatta (id, gg) # id = frag no.
 	lengths = []
 	File.open("arabidopsis_datasets/dataset5/skew_scatter/ex_fasta_lengths.txt").each {|line| lengths << line.to_i}
 	ids = []
@@ -219,21 +219,25 @@ def how_scatta (id) # id = frag no.
 	myr.assign 'frag_num_string', id.to_s
 	myr.assign 'snp_pos', snp_pos
 	myr.eval 'source("~/fragmented_genome_with_snps/skew_scatter.R")'
-	myr.eval 'how_scatta(frag_num_string, snp_pos, y, length)'
+	if gg == "y"
+		myr.eval 'gg_hist(frag_num_string, snp_pos, length)'
+	else
+		myr.eval 'how_scatta(frag_num_string, snp_pos, y, length)'
+	end
 	myr.quit
 end
 
 #1234 frags
-#how_scatta(335)
-#how_scatta(658)
+how_scatta(335, "y")
+how_scatta(658, "y")
 #how_scatta(659)
 #how_scatta(707)
 #how_scatta(842)
-#how_scatta(1019)
+how_scatta(1019, "y")
 #how_scatta(681)
 #how_scatta(258)
 #how_scatta(987)
-#how_scatta(729)
+how_scatta(729, "y")
 #how_scatta(587)
 #how_scatta(694)
 
