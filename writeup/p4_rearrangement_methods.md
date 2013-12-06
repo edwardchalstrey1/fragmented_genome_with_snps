@@ -84,3 +84,12 @@ Figure 14 supports what was shown in figures 8 and 9, that fragments from the ce
 [Figure 17](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/how_scatta_f729.png)
 
 Figures 15-17 validate my conclusion that the gradient/skew will not prove useful in re-ordering un-ordered fragments (contigs) from the experiment described in [README](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/README.md).
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/gghist_f587.png?raw=true)
+[Figure 18](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/gghist_f587.png)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/gghist_f729.png?raw=true)
+[Figure 19](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/dataset5/figures/gghist_f729.png)
+
+Histogram figures 18 and 19 more accurately show that there is very little skew across the central fragments.
+
