@@ -20,13 +20,13 @@ how_scatta <- function(frag_num_string, snp_pos, y, length){
 		(fragment length = ", length, ")", sep=""), xlab="SNP positions", ylab="SNP = 1")
 	dev.off()
 }
-gg_hist <- function(frag_num_string, snp_pos, length){
-	#png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/figures/gghist_f", frag_num_string, ".png", sep=""))
+gg_hist <- function(frag_num_string, frag_num, length){
+	snp_pos <- read.csv(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/skew_scatter/snps", frag_num, ".txt", sep="")) #snp pos is a data frame
 	names(snp_pos) <- c("pos")
-	g <- ggplot(snp_pos, aes(pos)) + geom_histogram() + ggtitle(quote(paste("Fragment ", frag_num_string, " of dataset5
-		(fragment length = ", length, ")" sep=""))) + scale_y_continuous() + scale_x_continuous(name=quote("SNP positions"))
+	title <- paste("Fragment ", frag_num_string, " of dataset5
+		(fragment length = ", length, ")", sep="")
+	g <- ggplot(snp_pos, aes(pos)) + geom_histogram() + ggtitle(title) + scale_y_continuous() + scale_x_continuous(name=("SNP positions"))
 	ggsave(g, file=paste("~/fragmented_genome_with_snps/arabidopsis_datasets/dataset5/figures/gghist_f", frag_num_string, ".png", sep="")) 
-	#dev.off()ggsave(cunt, file="~/fragmented_genome_with_snps/cunt.png")
 }
 
 

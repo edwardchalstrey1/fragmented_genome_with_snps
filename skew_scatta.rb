@@ -214,13 +214,14 @@ def how_scatta (id, gg) # id = frag no.
 	y = []
 	snp_pos.length.times {|i| (y << 1)}
 	myr = RinRuby.new(echo=false)
-	myr.assign 'length', length
+	myr.assign 'length', length.to_s
 	myr.assign 'y', y
 	myr.assign 'frag_num_string', id.to_s
 	myr.assign 'snp_pos', snp_pos
 	myr.eval 'source("~/fragmented_genome_with_snps/skew_scatter.R")'
 	if gg == "y"
-		myr.eval 'gg_hist(frag_num_string, snp_pos, length)'
+		myr.assign 'frag_num', id
+		myr.eval 'gg_hist(frag_num_string, frag_num, length)'
 	else
 		myr.eval 'how_scatta(frag_num_string, snp_pos, y, length)'
 	end
@@ -228,20 +229,18 @@ def how_scatta (id, gg) # id = frag no.
 end
 
 #1234 frags
-how_scatta(335, "y")
-how_scatta(658, "y")
+##how_scatta(335, "y")
+##how_scatta(658, "y")
 #how_scatta(659)
 #how_scatta(707)
 #how_scatta(842)
 how_scatta(1019, "y")
 #how_scatta(681)
 #how_scatta(258)
-#how_scatta(987)
+how_scatta(988, 'n')
 how_scatta(729, "y")
 #how_scatta(587)
 #how_scatta(694)
-
-
 
 
 
