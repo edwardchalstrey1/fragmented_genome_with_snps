@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Rearrangement method ideas</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>Rearrangement method ideas</h1>
+
+<h2>Machine learning</h2>
+
+<p>Learning involves giving the machine examples, then the more examples, the better the machine gets at telling how a new thing should be catagorized. For example, a machine learning system could be trained on email messages to learn to distinguish between spam and non-spam messages.</p>
+
+<h2>Hill Climbing algorithms</h2>
+
+<p>An arbitrary solution to a problem is generated, then an element of the solution is changed, if this produces a better solution, it is kept. Iteratively, the solution gets better. It can however, reach a local maxima, where changing one element cannot make a better solution, whilst the global maxima (the best possible solution) is not actually reached.</p>
+
+<h2>What to do</h2>
+
+<p>Looking at the <a href="http://bar.utoronto.ca/ngm/cgi-bin/emap.cgi">NGM website</a>, with sample data, we can see that there is a noticeable homo/hetero signal distribution around the causative mutation.</p>
+
+<p>You need to modify your model genome:</p>
+
+<ul>
+<li>Two sets of SNPs (hetero and homozygous), that will generate a normally distributed (or similar curve to NGM sample) ratio distribution</li>
+<li>They should be 2 &ldquo;chastity threads&rdquo;, i.e. values around 0.5 for hetero, and 1.0 for homozygous (and different to reference base in NGM)</li>
+<li>The ratio is maximized at the causative mutation, and distributed around it</li>
+<li>The standard deviation/ curve of the distribution is down to the kernel density. How tightly does this fit around the data? You decide: we want the distribution to look as normal as possible, as this will be what we try and regenerate when putting the fragments back together</li>
+<li>Use a qq plot to make sure the ratio is a normal distribution</li>
+<li>then use the qq plot to test the distribution of rearranged fragments&#39; hom/het ratio (score the rearrangements based on how close to the norm dist they are)</li>
+</ul>
+
+</body>
+
+</html>
+
