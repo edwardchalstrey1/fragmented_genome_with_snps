@@ -159,11 +159,56 @@ hr {
 
 <ul>
 <li>Two sets of SNPs (hetero and homozygous), that will generate a normally distributed (or similar curve to NGM sample) ratio distribution</li>
-<li>They should be 2 &ldquo;chastity threads&rdquo;, i.e. values around 0.5 for hetero, and 1.0 for homozygous (and different to reference base in NGM)</li>
 <li>The ratio is maximized at the causative mutation, and distributed around it</li>
 <li>The standard deviation/ curve of the distribution is down to the kernel density. How tightly does this fit around the data? You decide: we want the distribution to look as normal as possible, as this will be what we try and regenerate when putting the fragments back together</li>
 <li>Use a qq plot to make sure the ratio is a normal distribution</li>
-<li>then use the qq plot to test the distribution of rearranged fragments&#39; hom/het ratio (score the rearrangements based on how close to the norm dist they are)</li>
+<li>then use the qq plot to test the distribution of rearranged fragments&#39; hom/het ratio (score the rearrangements based on how close to the norm dist they are</li>
+</ul>
+
+<h1>Questions</h1>
+
+<p>Back-crossing experiment produces F2 EMS mutants, with SNPs distibuted around causative mutation.
+Sequencing and contig assembly produces fragments with SNPs at known positions.</p>
+
+<ol>
+<li><p>What will the exact function of my tool be?</p>
+
+<ul>
+<li>Locate the causative mutation by looking at the fragments</li>
+<li>The SNPs will form a homozygous/heterozygous ratio that is normally distributed about the causative mutation?</li>
+</ul></li>
+<li><p>How should I model this? </p>
+
+<ul>
+<li>If I put &ldquo;homozygous&rdquo; and &ldquo;heterozygous&rdquo; SNPs into the fasta/vcf data, how will I then re-identify them? NGM uses chastity statistic to measure the frequencies of hom and het SNPs from pooled data. But the experiment I&#39;m modelling is different? If not, then will I not just be replicating NGM?</li>
+<li>I have come up with a way of making a hom/het ratio distribution, <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/ratio.R">see ratio.R</a></li>
+<li>Once I have made new datasets for this version of the model genome, I can read off generated fasta/vcf files and put frags in correct order and write some code that can work out/display the ratio distribution. This code will be used later when rearranging randomly ordered fragments.</li>
+</ul></li>
+<li><p>How will the algorithm work?</p>
+
+<ul>
+<li>I want to read off the data e.g. fasta/vcf and regenerate the normal distributed ratio, which will be done by putting the fragments back into the correct order</li>
+<li>The fragments will be rearranged by a hill climbing algorithm: this will iteratively attempt to reorder the fragments in a way that creates a hom/het SNP ratio normal distribution (fragments with zero ratio need not be ordered correctly/ may be ignored completely)</li>
+<li>The causative mutation will be at the centre of the distribution: see figure source <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/ratio.R">see ratio.R</a>. The distribution is reformed by reading the SNP positions from the fragments, and working out their SNP position in the genome (for this fragment order). The SNP lists, hom and het, can then be used to work out the ratio distribution.</li>
+</ul></li>
+</ol>
+
+<h2>Hill Climbing</h2>
+
+<h3>A reasonable starting solution is required:</h3>
+
+<p>For my fragment rearrangement algorithm I propose using my skew/gradient method. Even if this method proves to be of equal uselessness for reforming the narrow ratio distribution, than the wider SNP distribution I have tested it on so far, It can at least split the fragments into 2 groups, and then they can be ordered by SNP density. One problem I may come across is that <strong>ordering the fragments by SNPs per nucleotide (density) won&#39;t be very useful for low SNP numbers (within the &ldquo;non-recombinant region&rdquo; where there are just homozygous SNPs)</strong>. However, the low number of SNPs does mean that the normal distribution will almost definitely only be reformed by a correct rearrangement.</p>
+
+<h3>Evaluate correctness funtion</h3>
+
+<p>This would be an extension of the code I came up with earlier that calculates the ratio distribution (for the fragment rearrangement), but would score it on how normal it is. I could use a qq plot to do this.</p>
+
+<h3>Operator to modify complete solution</h3>
+
+<p><em>Thinking about it, for this to work, we will want to deal with all of the fragments, some of them from outside the recombinant region may have a noticeable low sub-peak of ratio (i.e. bumps in the overall ratio plot). To make the model genome more realistic, you may want to add some more of these &ldquo;bumps&rdquo;.</em></p>
+
+<ul>
+<li>Hopefully the initial solution will reveal some distinct peaks</li>
 </ul>
 
 </body>
