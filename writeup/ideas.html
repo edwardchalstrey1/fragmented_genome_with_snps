@@ -165,25 +165,31 @@ hr {
 <li>then use the qq plot to test the distribution of rearranged fragments&#39; hom/het ratio (score the rearrangements based on how close to the norm dist they are</li>
 </ul>
 
-<h1>Questions</h1>
+<h1>Info</h1>
 
 <p>Back-crossing experiment produces F2 EMS mutants, with SNPs distibuted around causative mutation.
 Sequencing and contig assembly produces fragments with SNPs at known positions.</p>
 
 <ol>
-<li><p>What will the exact function of my tool be?</p>
+<li>What will the exact function of my tool be?
 
 <ul>
 <li>Locate the causative mutation by looking at the fragments</li>
-<li>The SNPs will form a homozygous/heterozygous ratio that is normally distributed about the causative mutation?</li>
+<li>The SNPs will form a homozygous/heterozygous ratio that is normally distributed about the causative mutation</li>
 </ul></li>
-<li><p>How should I model this? </p>
+</ol>
+
+<h3>How should I model this?</h3>
+
+<ol>
+<li>If I put &ldquo;homozygous&rdquo; and &ldquo;heterozygous&rdquo; SNPs into the fasta/vcf data, how will I then re-identify them? NGM uses chastity statistic to measure the frequencies of hom and het SNPs from pooled data. But the experiment I&#39;m modelling is different? If not, then will I not just be replicating NGM? No:
 
 <ul>
-<li>If I put &ldquo;homozygous&rdquo; and &ldquo;heterozygous&rdquo; SNPs into the fasta/vcf data, how will I then re-identify them? NGM uses chastity statistic to measure the frequencies of hom and het SNPs from pooled data. But the experiment I&#39;m modelling is different? If not, then will I not just be replicating NGM?</li>
 <li>I have come up with a way of making a hom/het ratio distribution, <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/ratio.R">see ratio.R</a></li>
+<li>I can use the VCF ruby module to assign hom and het SNPs different frequency values or something</li>
 <li>Once I have made new datasets for this version of the model genome, I can read off generated fasta/vcf files and put frags in correct order and write some code that can work out/display the ratio distribution. This code will be used later when rearranging randomly ordered fragments.</li>
 </ul></li>
+<li><p>It might be better to just use SNP distribution, rather than ratio distribution: however, as we have seen, the SNPs in the recombinant region aren&#39;t neccesarily normally distributed, this is why we went for ratio in the first place</p></li>
 <li><p>How will the algorithm work?</p>
 
 <ul>
@@ -212,6 +218,10 @@ Thinking about it, for this to work, we will want to deal with all of the fragme
 <h2>Most appropriate type of hill climbing algorithm</h2>
 
 <p>Hill climbing may be limited for fragment rearrangement if all I do is change one fragment&#39;s position at a time. There will be lots of local maxima rearrangement states.</p>
+
+<h3>Genetic search algorithm/ evolutionary computation - type of beam search</h3>
+
+<p>Could use multiple starting states, e.g. the current rearrangement methods, or just random ones. Their normality is determined with qq plot (or whatever). Then the most normal ones get to produce offspring rearrangements. &ldquo;Genes&rdquo; that get passed on and recombined can be X fragments, the order within each X conserved, but each time we do a &ldquo;cross&rdquo;, the value of X should be different, so wrongly ordered fragments don&#39;t get stuck together. We can also introduce random &ldquo;mutations&rdquo;, one of the &ldquo;genes&rdquo; of X fragments could be shuffled/reversed. The &ldquo;fittest&rdquo; (most normal) rearrangements should be crossed in each generation, but this should include the parents, in case all of the children are worse.</p>
 
 </body>
 

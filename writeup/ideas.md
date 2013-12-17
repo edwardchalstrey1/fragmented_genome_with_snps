@@ -24,7 +24,7 @@ You need to modify your model genome:
 - Use a qq plot to make sure the ratio is a normal distribution
 - then use the qq plot to test the distribution of rearranged fragments' hom/het ratio (score the rearrangements based on how close to the norm dist they are
 
-Questions
+Info
 ========================================================
 
 Back-crossing experiment produces F2 EMS mutants, with SNPs distibuted around causative mutation.
@@ -32,13 +32,17 @@ Sequencing and contig assembly produces fragments with SNPs at known positions.
 
 1. What will the exact function of my tool be?
  - Locate the causative mutation by looking at the fragments
- - The SNPs will form a homozygous/heterozygous ratio that is normally distributed about the causative mutation?
+ - The SNPs will form a homozygous/heterozygous ratio that is normally distributed about the causative mutation
 
-2. How should I model this? 
- - If I put "homozygous" and "heterozygous" SNPs into the fasta/vcf data, how will I then re-identify them? NGM uses chastity statistic to measure the frequencies of hom and het SNPs from pooled data. But the experiment I'm modelling is different? If not, then will I not just be replicating NGM?
+### How should I model this? 
+1. If I put "homozygous" and "heterozygous" SNPs into the fasta/vcf data, how will I then re-identify them? NGM uses chastity statistic to measure the frequencies of hom and het SNPs from pooled data. But the experiment I'm modelling is different? If not, then will I not just be replicating NGM? No:
  - I have come up with a way of making a hom/het ratio distribution, [see ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/ratio.R)
+ - I can use the VCF ruby module to assign hom and het SNPs different frequency values or something
  - Once I have made new datasets for this version of the model genome, I can read off generated fasta/vcf files and put frags in correct order and write some code that can work out/display the ratio distribution. This code will be used later when rearranging randomly ordered fragments.
- - It might be better to just use SNP distribution, rather than ratio distribution: however, as we have seen, the SNPs in the recombinant region aren't neccesarily normally distributed, this is why we went for ratio in the first place
+- It might be better to just use SNP distribution, rather than ratio distribution: however, as we have seen, the SNPs in the recombinant region aren't neccesarily normally distributed, this is why we went for ratio in the first place
+- Multiple datasets: different SNP ditributions (use the one in ratio.R first), and then also different fragment sizes (less important)
+- Try and make the SNPs as realistic as possible
+- Allele frequency = what proportion of the sample has the ALT. So for just one model genome, heterozygous SNPs AF=0.5 and homozygous AF=1.0
 
 3. How will the algorithm work?
  - I want to read off the data e.g. fasta/vcf and regenerate the normal distributed ratio, which will be done by putting the fragments back into the correct order
