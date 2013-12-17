@@ -195,21 +195,23 @@ Sequencing and contig assembly produces fragments with SNPs at known positions.<
 
 <h2>Hill Climbing</h2>
 
-<h3>A reasonable starting solution is required:</h3>
-
-<p>For my fragment rearrangement algorithm I propose using my skew/gradient method. Even if this method proves to be of equal uselessness for reforming the narrow ratio distribution, than the wider SNP distribution I have tested it on so far, It can at least split the fragments into 2 groups, and then they can be ordered by SNP density. One problem I may come across is that <strong>ordering the fragments by SNPs per nucleotide (density) won&#39;t be very useful for low SNP numbers (within the &ldquo;non-recombinant region&rdquo; where there are just homozygous SNPs)</strong>. However, the low number of SNPs does mean that the normal distribution will almost definitely only be reformed by a correct rearrangement.</p>
-
-<h3>Evaluate correctness funtion</h3>
-
-<p>This would be an extension of the code I came up with earlier that calculates the ratio distribution (for the fragment rearrangement), but would score it on how normal it is. I could use a qq plot to do this.</p>
-
-<h3>Operator to modify complete solution</h3>
-
-<p><em>Thinking about it, for this to work, we will want to deal with all of the fragments, some of them from outside the recombinant region may have a noticeable low sub-peak of ratio (i.e. bumps in the overall ratio plot). To make the model genome more realistic, you may want to add some more of these &ldquo;bumps&rdquo;.</em></p>
+<ol>
+<li><p><strong>A reasonable starting solution is required:</strong>
+For my fragment rearrangement algorithm I propose using my skew/gradient method. Even if this method proves to be of equal uselessness for reforming the narrow ratio distribution, than the wider SNP distribution I have tested it on so far, It can at least split the fragments into 2 groups, and then they can be ordered by SNP density. One problem I may come across is that ordering the fragments by SNPs per nucleotide (density) won&#39;t be very useful for low SNP numbers (within the &ldquo;non-recombinant region&rdquo; where there are just homozygous SNPs). However, the low number of SNPs does mean that the normal distribution will almost definitely only be reformed by a correct rearrangement.</p></li>
+<li><p><strong>Evaluate correctness funtion:</strong>
+This would be an extension of the code I came up with earlier that calculates the ratio distribution (for the fragment rearrangement), but would score it on how normal it is. I could use a qq plot to do this.</p></li>
+<li><p><strong>Operator to modify complete solution:</strong>
+NOT SURE YET.
+Thinking about it, for this to work, we will want to deal with all of the fragments, some of them from outside the recombinant region may have a noticeable low sub-peak of ratio (i.e. bumps in the overall ratio plot). To make the model genome more realistic, you may want to add some more of these &ldquo;bumps&rdquo;.</p></li>
+</ol>
 
 <ul>
 <li>Hopefully the initial solution will reveal some distinct peaks</li>
 </ul>
+
+<h2>Most appropriate type of hill climbing algorithm</h2>
+
+<p>Hill climbing may be limited for fragment rearrangement if all I do is change one fragment&#39;s position at a time. There will be lots of local maxima rearrangement states.</p>
 
 </body>
 

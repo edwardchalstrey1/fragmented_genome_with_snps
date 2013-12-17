@@ -38,6 +38,7 @@ Sequencing and contig assembly produces fragments with SNPs at known positions.
  - If I put "homozygous" and "heterozygous" SNPs into the fasta/vcf data, how will I then re-identify them? NGM uses chastity statistic to measure the frequencies of hom and het SNPs from pooled data. But the experiment I'm modelling is different? If not, then will I not just be replicating NGM?
  - I have come up with a way of making a hom/het ratio distribution, [see ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/ratio.R)
  - Once I have made new datasets for this version of the model genome, I can read off generated fasta/vcf files and put frags in correct order and write some code that can work out/display the ratio distribution. This code will be used later when rearranging randomly ordered fragments.
+ - It might be better to just use SNP distribution, rather than ratio distribution: however, as we have seen, the SNPs in the recombinant region aren't neccesarily normally distributed, this is why we went for ratio in the first place
 
 3. How will the algorithm work?
  - I want to read off the data e.g. fasta/vcf and regenerate the normal distributed ratio, which will be done by putting the fragments back into the correct order
@@ -48,14 +49,22 @@ Sequencing and contig assembly produces fragments with SNPs at known positions.
 Hill Climbing
 ---------
 
-### A reasonable starting solution is required:
-For my fragment rearrangement algorithm I propose using my skew/gradient method. Even if this method proves to be of equal uselessness for reforming the narrow ratio distribution, than the wider SNP distribution I have tested it on so far, It can at least split the fragments into 2 groups, and then they can be ordered by SNP density. One problem I may come across is that **ordering the fragments by SNPs per nucleotide (density) won't be very useful for low SNP numbers (within the "non-recombinant region" where there are just homozygous SNPs)**. However, the low number of SNPs does mean that the normal distribution will almost definitely only be reformed by a correct rearrangement.
+1. **A reasonable starting solution is required:**
+For my fragment rearrangement algorithm I propose using my skew/gradient method. Even if this method proves to be of equal uselessness for reforming the narrow ratio distribution, than the wider SNP distribution I have tested it on so far, It can at least split the fragments into 2 groups, and then they can be ordered by SNP density. One problem I may come across is that ordering the fragments by SNPs per nucleotide (density) won't be very useful for low SNP numbers (within the "non-recombinant region" where there are just homozygous SNPs). However, the low number of SNPs does mean that the normal distribution will almost definitely only be reformed by a correct rearrangement.
 
-### Evaluate correctness funtion
+2. **Evaluate correctness funtion:**
 This would be an extension of the code I came up with earlier that calculates the ratio distribution (for the fragment rearrangement), but would score it on how normal it is. I could use a qq plot to do this.
 
-### Operator to modify complete solution
-*Thinking about it, for this to work, we will want to deal with all of the fragments, some of them from outside the recombinant region may have a noticeable low sub-peak of ratio (i.e. bumps in the overall ratio plot). To make the model genome more realistic, you may want to add some more of these "bumps".*
+3. **Operator to modify complete solution:**
+NOT SURE YET.
+Thinking about it, for this to work, we will want to deal with all of the fragments, some of them from outside the recombinant region may have a noticeable low sub-peak of ratio (i.e. bumps in the overall ratio plot). To make the model genome more realistic, you may want to add some more of these "bumps".
 
 - Hopefully the initial solution will reveal some distinct peaks
 
+Most appropriate type of hill climbing algorithm
+-----
+
+Hill climbing may be limited for fragment rearrangement if all I do is change one fragment's position at a time. There will be lots of local maxima rearrangement states.
+
+### Genetic search algorithm/ evolutionary computation - type of beam search
+Could use multiple starting states, e.g. the current rearrangement methods, or just random ones. Their normality is determined with qq plot (or whatever). Then the most normal ones get to produce offspring rearrangements. "Genes" that get passed on and recombined can be X fragments, the order within each X conserved, but each time we do a "cross", the value of X should be different, so wrongly ordered fragments don't get stuck together. We can also introduce random "mutations", one of the "genes" of X fragments could be shuffled/reversed. The "fittest" (most normal) rearrangements should be crossed in each generation, but this should include the parents, in case all of the children are worse.
