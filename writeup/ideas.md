@@ -72,3 +72,12 @@ Hill climbing may be limited for fragment rearrangement if all I do is change on
 
 ### Genetic search algorithm/ evolutionary computation - type of beam search
 Could use multiple starting states, e.g. the current rearrangement methods, or just random ones. Their normality is determined with qq plot (or whatever). Then the most normal ones get to produce offspring rearrangements. "Genes" that get passed on and recombined can be X fragments, the order within each X conserved, but each time we do a "cross", the value of X should be different, so wrongly ordered fragments don't get stuck together. We can also introduce random "mutations", one of the "genes" of X fragments could be shuffled/reversed. The "fittest" (most normal) rearrangements should be crossed in each generation, but this should include the parents, in case all of the children are worse.
+
+Using Brute Force
+============
+
+1. If there are X fragments, how many rearrangements are there? 
+ - There will be X! permutations. See [permutations without repetition](http://www.mathsisfun.com/combinatorics/combinations-permutations.html). ! means the factorial function.
+
+2. If the number of fragments, and by extension X!, is low enough, can we compute the correct rearrangement in acceptable time?
+ - If so, this would eliminate the need for hill climbing or genetic algorithm
