@@ -13,18 +13,27 @@ def fasta2char_array (fasta)
 end
 def normal_dist
 	myr = RinRuby.new(echo = false)
-	#myr.eval "x <- rnorm(70000, 10000000 2000000)" #distibution about the mean, midpoint of the sequence 
 	myr.eval "hm <- rnorm(35, 10000000, 5000000)"
 	myr.eval "ht1a <- rnorm(1500, 5000000, 1000000)"
-	myr.eval "ht1 <- ht1a[which(ht1a < 7.5e+06)]"  #non-recombinant region = 7.5m-12.5m, don't wan het SNPs here
+	myr.eval "ht1 <- ht1a[which(ht1a < 7.5e+06)]"  #non-recombinant region = 7.5m-12.5m, don't want heterozygous SNPs here
 	myr.eval "ht2a <- rnorm(1500, 15000000, 1000000)"
 	myr.eval "ht2 <- ht2a[which(ht2a > 1.25e+07)]"
 	myr.eval "ht <- c(ht1, ht2)"
-	hm = [myr.pull "hm",10000000] # adding in the causative SNP
+	hm = myr.pull "hm"
+	unless hm.include?(10000000)
+		hm = [hm, 10000000].flatten # adding in the causative SNP, if there isn't one already at the position
+	end
 	ht = myr.pull "ht"
-	snp_pos = [ht,hm].flatten
+	hm_int = []
+	ht_int = []
+	hm.each{|i| hm_int << i.abs.to_i}
+	ht.each{|i| ht_int << i.abs.to_i}
+	snp_pos = [ht_int,hm_int].flatten
 	myr.quit
-	return snp_pos, hm, ht
+	puts snp_pos.uniq.length.to_s+" of "+snp_pos.length.to_s+" SNPs are unique"
+	puts "There are "+hm.length.to_s+" homozygous SNPs"
+	puts "There are "+ht.length.to_s+" heterozygous SNPs"
+	return snp_pos, hm_int, ht_int
 end
 def get_frags (seq)
 	frags = []
@@ -39,20 +48,26 @@ def get_frags (seq)
 end
 def snp_seq (seq, snp_pos)
 	snp_pos.each do |i|
-		if i == 10000000
-			seq[9999999] = 'M'
-		elsif seq[i-1] == 'A' # -1 because ruby counts from 0
-			seq[i-1] = 'T'
-		elsif seq[i-1] == 'T'
-			seq[i-1] = 'A'
-		elsif seq[i-1] == 'C'
-			seq[i-1] = 'G'
-		elsif seq[i-1] == 'G'
-			seq[i-1] = 'C'
-		elsif seq[i-1] == 'N'
-			seq[i-1] = 'R'
-		end
+		#if i == 10000000
+		#	seq[9999999] = 'M'
+		#	puts "hi"
+		#else
+			if seq[i-1] == 'A' # -1 because ruby counts from 0
+				seq[i-1] = 'T'
+			elsif seq[i-1] == 'T'
+				seq[i-1] = 'A'
+			elsif seq[i-1] == 'C'
+				seq[i-1] = 'G'
+			elsif seq[i-1] == 'G'
+				seq[i-1] = 'C'
+			elsif seq[i-1] == 'N'
+				seq[i-1] = 'R'
+			end
+		#end
 	end
+	#puts seq[seq[seq.index('M')+1..-1].index('M')+seq.index('M')] # FUCK M!!!
+	#seq[seq[seq.index('M')+1..-1].index('M')+seq.index('M')] = "A"
+	#puts "There is "+seq.count("M").to_s+" M. At position "+(seq.index("M")+1).to_s#+" and at "+(seq[seq.index('M')+1..-1].index('M')+seq.index('M')+1).to_s
 	return seq
 end
 def pos_each_frag (snp_pos, frags) #get the positions for snps on individual frags
@@ -68,22 +83,23 @@ def pos_each_frag (snp_pos, frags) #get the positions for snps on individual fra
 	p = 0
 	t = 0
 	all_frags_pos = [] # the positions of snps on each fragment, array of arrays
-	snp_pos_all = []
+	snp_pos_all = [] # the actual positions in the genome for each fragment
 	p_ranges.each do |jj| #for each of the upper ranges (j) that the positions could be in
 		each_frag_pos = []
+		actual_pos = []
 		while sorted_pos[t].to_i < jj && !sorted_pos[t].nil? do #make the loop quit before trying to access index of snp_pos that doesn't exist
 			each_frag_pos << sorted_pos[t].to_i 	# add all of the positions < jj to a new array for each frag
+			actual_pos << sorted_pos[t].to_i
 			t += 1
 		end
+		snp_pos_all << actual_pos 
 		z = 0
 		y = first_pos[p].to_i
-		natural_pos = each_frag_pos
 		each_frag_pos.each do |e|   
-			each_frag_pos[z] = e - y #taking away the value at the first position of each fragment to get the true positions
+			each_frag_pos[z] = e - y #taking away the value at the first position of each fragment to get the true/actual positions
 			z += 1
 		end
 		p += 1
-		snp_pos_all << natural_pos
 		all_frags_pos << each_frag_pos # add the positions for the frag to an array of the each_frag arrays
 	end
 	return all_frags_pos, snp_pos_all
@@ -116,17 +132,19 @@ def fasta_array (frags)
 	frag_ids = []
 	id_and_length = [] 
 	x = 0
+	frag_strings = []
 	frags.each do |i|
 		id = ('>frag' + (x+1).to_s)
 		id_and_length << (id + "  Length = " + i.length.to_s)
 		id.slice!('>')
 		frag_ids << id
+		frag_strings << i.join.to_s # joining all the bases in one frag array to form a string for fasta
 		x+=1
 	end
-	fastaformat_array = id_and_length.zip(frags) #create the array, each element of which goes onto a new line in fasta
+	fastaformat_array = id_and_length.zip(frag_strings) #create the array, each element of which goes onto a new line in fasta
 	return fastaformat_array, frag_ids
 end
-def vcf_array (frags, pos_on_frags, snp_pos_all)
+def vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
 	x = 0
 	ids = []
 	frags.each do |i| #getting the ids 
@@ -148,7 +166,11 @@ def vcf_array (frags, pos_on_frags, snp_pos_all)
 		q += 1
 	end
 	ref = []
+	it = 0
 	alt.each do |base|
+		if base == nil
+			alt[it] ='T'
+		end
 		if base == 'A'
 			ref << 'T'
 		elsif base == 'T'
@@ -159,17 +181,22 @@ def vcf_array (frags, pos_on_frags, snp_pos_all)
 			ref << 'C'
 		elsif base == 'R'
 			ref << 'N'
+		else
+			ref << 'A'
 		end
+		it+=1
 	end
 	vcf_format = ['##fileformat=VCFv4.1', '##source=Fake', '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO'] 
 	u = 0
-	pos_on_frags.flatten.each do |i|
+	pos_on_frags.flatten.each do |i| # trying to do: if we increment the pos_on_frags and the snp_pos_all together, we should be able to tell whether each SNP from on_frags is het/homo
 		if hm.include?(snp_pos_all.flatten[u])
-			x = 1.0
+			x = "1.0"
 		elsif ht.include?(snp_pos_all.flatten[u])
-			x = 0.5
+			x = "0.5"
+		else
+			x = "WRONG"
 		end
-		line = chrom[u] + '	' + i.to_s + '	.	' +	ref[u] + '	' + alt[u] + '	100	PASS	AF='+x.to_s
+		line = chrom[u] + '	' + i.to_s + '	.	' +	ref[u] + '	' + alt[u] + '	100	PASS	AF='+x
 		vcf_format << line
 		u += 1
 	end
@@ -186,11 +213,13 @@ def json_array (array, file, dataset)
 	end
 end
 
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s)) # make the directory to put data files into
+
 snpz = normal_dist
 snp_pos = snpz[0]
 hm = snpz[1]
 ht = snpz[2]
-puts snp_pos.uniq.length.to_s+" of "+snp_pos.length.to_s+" SNPs are unique"
+
 puts "Is there a SNP at the causative mutation position? -- "+snp_pos.include?(10000000).to_s
 
 arabidopsis_c4 = fasta2char_array("TAIR10_chr4.fasta")
@@ -204,16 +233,11 @@ pos_on_all = pos_each_frag(snp_pos, frags)
 pos_on_frags = pos_on_all[0]
 snp_pos_all = pos_on_all[1]
 
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s))
-#storage_json(frags, pos_on_frags, ARGV[0]) #storing the positions on each frag in a json hash
-#write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/homozygous_positions', hm)
-#write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/heterozygous_positions', ht)
-
 fasta_n_ids = fasta_array(frags)
 fastaformat_array = fasta_n_ids[0]
 frag_ids = fasta_n_ids[1]
 
-vcf_n_chrom = vcf_array(frags, pos_on_frags, snp_pos_all)
+vcf_n_chrom = vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
 vcf = vcf_n_chrom[0]
 chrom = vcf_n_chrom[1]
 
@@ -223,25 +247,27 @@ write_data(vcf, 'snps.vcf', ARGV[0])
 fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it to show that the order doesn't need to be conserved when working out density later on
 write_data(fastaformat_array_shuf, 'frags_shuffled.fasta', ARGV[0])
 
-json_array(frag_ids, 'frag_ids_original_order.json', ARGV[0])
-
+json_array(frag_ids, 'frag_ids_original_order.json', ARGV[0]) #can't remember why this is needed exactly
 
 ################################################################ Everything below for skew scatter graph
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter"))
-write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/snp_pos.txt', pos_on_frags)
-lengths = []
-frags.each do |frag| 
-	lengths << frag.length
+def skew_prereq (frags, chrom, pos_on_frags)
+	Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter"))
+	write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/snp_pos.txt', pos_on_frags)
+	lengths = []
+	frags.each do |frag| 
+		lengths << frag.length
+	end
+	frags_w_snps = []
+	chrom.each do |id|
+		id.slice!("frag")
+		frags_w_snps << id.to_i
+	end
+	lengths_fws = []
+	frags_w_snps.each do |id|
+		write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter/snps"+id.to_s+".txt", pos_on_frags[id-1]) #need positions and lengths of each fragment for super skew scatter
+		lengths_fws << lengths[id-1]
+	end
+	write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/ex_fasta_lengths.txt', lengths_fws)
+	write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/ex_ids_w_snps.txt', frags_w_snps)
 end
-frags_w_snps = []
-chrom.each do |id|
-	id.slice!("frag")
-	frags_w_snps << id.to_i
-end
-lengths_fws = []
-frags_w_snps.each do |id|
-	write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/skew_scatter/snps"+id.to_s+".txt", pos_on_frags[id-1]) #need positions and lengths of each fragment for super skew scatter
-	lengths_fws << lengths[id-1]
-end
-write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/ex_fasta_lengths.txt', lengths_fws)
-write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/skew_scatter/ex_ids_w_snps.txt', frags_w_snps)
+skew_prereq(frags, chrom, pos_on_frags)
