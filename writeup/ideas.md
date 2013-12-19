@@ -81,3 +81,12 @@ Using Brute Force
 
 2. If the number of fragments, and by extension X!, is low enough, can we compute the correct rearrangement in acceptable time?
  - If so, this would eliminate the need for hill climbing or genetic algorithm
+ 
+Plan of action
+===============
+
+Implementing a genetic algorithm
+--------------------
+
+### [GA package R](http://cran.r-project.org/web/packages/GA/GA.pdf)
+
