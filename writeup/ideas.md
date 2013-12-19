@@ -85,8 +85,49 @@ Using Brute Force
 Plan of action
 ===============
 
-Implementing a genetic algorithm
+QQ plot
+-------
+
+I will use a QQ plot to score the SNP ratio distribution against a random normal distribution. This will form the basis by which rearrangements are ranked, by giving each a score value.
+
+Implementing a genetic algorithm in ruby
 --------------------
 
-### [GA package R](http://cran.r-project.org/web/packages/GA/GA.pdf)
+[Potential drawback](http://www.solver.com/genetic-evolutionary-introduction) of genetic algorithm
 
+**See THE CROSSOVER page of lab book for the crossing/recombination method**
+
+Genetic algorithm in R
+---------
+
+### [GA package R](http://cran.r-project.org/web/packages/GA/GA.pdf) - [GA paper](http://www.jstatsoft.org/v53/i04/paper)
+
+**Definitions**
+
+1. Search space: all the possible solutions, each soultion is one point in the search space
+
+**Aguments**
+
+1. type: "permutation" (involves re-ordering a list)
+2. fitness: an R function, of fitness for the rearrangement/permutation, QQ plot. The function must have a string input, which represents the solution (rearrangement), and returns a number (fitness score)
+ - ... : additional arguments for fitness function, allows some variables for the fitness function to be fixed during the search
+3. min: a vector of the decision variables that give the minimum of the search space **NOT ENTIRELY SURE WHAT THIS MEANS**
+4. max:
+5. nBits: *not needed*
+6. population: R function for randomly generating a set of fragment rearrangements (initial population)
+7. selection: R function that creates a sub-population of the population, based on a threshold of the fitness (i.e. selecting those above a normality threshold)
+8. crossover: R function that crosses rearrangements. It should split the permutation into chunks of X size
+9. mutation
+10. popSize
+11. pcrossover
+12. pmutation
+13. elitism
+14. monitor
+15. maxiter
+16. run
+17. maxfitness
+18. names
+19. suggestions
+20. keepbest
+21. parallel
+22. seed

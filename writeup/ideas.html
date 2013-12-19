@@ -189,7 +189,10 @@ Sequencing and contig assembly produces fragments with SNPs at known positions.<
 <li>I can use the VCF ruby module to assign hom and het SNPs different frequency values or something</li>
 <li>Once I have made new datasets for this version of the model genome, I can read off generated fasta/vcf files and put frags in correct order and write some code that can work out/display the ratio distribution. This code will be used later when rearranging randomly ordered fragments.</li>
 </ul></li>
-<li><p>It might be better to just use SNP distribution, rather than ratio distribution: however, as we have seen, the SNPs in the recombinant region aren&#39;t neccesarily normally distributed, this is why we went for ratio in the first place</p></li>
+<li>It might be better to just use SNP distribution, rather than ratio distribution: however, as we have seen, the SNPs in the recombinant region aren&#39;t neccesarily normally distributed, this is why we went for ratio in the first place</li>
+<li>Multiple datasets: different SNP ditributions (use the one in ratio.R first), and then also different fragment sizes (less important)</li>
+<li>Try and make the SNPs as realistic as possible</li>
+<li><p>Allele frequency = what proportion of the sample has the ALT. So for just one model genome, heterozygous SNPs AF=0.5 and homozygous AF=1.0</p></li>
 <li><p>How will the algorithm work?</p>
 
 <ul>
@@ -222,6 +225,34 @@ Thinking about it, for this to work, we will want to deal with all of the fragme
 <h3>Genetic search algorithm/ evolutionary computation - type of beam search</h3>
 
 <p>Could use multiple starting states, e.g. the current rearrangement methods, or just random ones. Their normality is determined with qq plot (or whatever). Then the most normal ones get to produce offspring rearrangements. &ldquo;Genes&rdquo; that get passed on and recombined can be X fragments, the order within each X conserved, but each time we do a &ldquo;cross&rdquo;, the value of X should be different, so wrongly ordered fragments don&#39;t get stuck together. We can also introduce random &ldquo;mutations&rdquo;, one of the &ldquo;genes&rdquo; of X fragments could be shuffled/reversed. The &ldquo;fittest&rdquo; (most normal) rearrangements should be crossed in each generation, but this should include the parents, in case all of the children are worse.</p>
+
+<h1>Using Brute Force</h1>
+
+<ol>
+<li><p>If there are X fragments, how many rearrangements are there? </p>
+
+<ul>
+<li>There will be X! permutations. See <a href="http://www.mathsisfun.com/combinatorics/combinations-permutations.html">permutations without repetition</a>. ! means the factorial function.</li>
+</ul></li>
+<li><p>If the number of fragments, and by extension X!, is low enough, can we compute the correct rearrangement in acceptable time?</p>
+
+<ul>
+<li>If so, this would eliminate the need for hill climbing or genetic algorithm</li>
+</ul></li>
+</ol>
+
+<h1>Plan of action</h1>
+
+<h2>Implementing a genetic algorithm</h2>
+
+<h3><a href="http://cran.r-project.org/web/packages/GA/GA.pdf">GA package R</a></h3>
+
+<p><strong>Aguments</strong></p>
+
+<ol>
+<li>Type: &ldquo;permutation&rdquo; (involves re-ordering a list)</li>
+<li>Fitness: </li>
+</ol>
 
 </body>
 
