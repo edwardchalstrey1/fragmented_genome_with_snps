@@ -90,13 +90,6 @@ QQ plot
 
 I will use a QQ plot to score the SNP ratio distribution against a random normal distribution. This will form the basis by which rearrangements are ranked, by giving each a score value.
 
-Implementing a genetic algorithm in ruby
---------------------
-
-[Potential drawback](http://www.solver.com/genetic-evolutionary-introduction) of genetic algorithm
-
-**See THE CROSSOVER page of lab book for the crossing/recombination method**
-
 Genetic algorithm in R
 ---------
 
@@ -131,3 +124,12 @@ Genetic algorithm in R
 20. keepbest
 21. parallel
 22. seed
+
+Implementing a genetic algorithm in ruby
+--------------------
+
+[Potential drawback](http://www.solver.com/genetic-evolutionary-introduction) of genetic algorithm
+
+**See THE CROSSOVER page of lab book for the crossing/recombination method**
+
+
