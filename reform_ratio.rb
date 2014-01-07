@@ -22,8 +22,11 @@ def fasta_array (fasta_file)
 	ids = []
 	fasta = [] #we have the lengths of each fasta, but the frags are different to those of the vcf/hash(this only has the frags w snps)
 	lengths = []
-	Bio::FastaFormat.open(fasta_file).each do |i| #get array of fasta format frags
+	Bio::FastaFormat.open(fasta_file).each do |i| #get array of fasta format frags, ##  WE NEED TO REORDER THE FASTA FRAGS HERE, TO TEST DIFFERENT ARRANGEMENTS
 		fasta << i
+	end
+	fasta = reorder(fasta)
+	fasta.each do |i|
 		ids << i.entry_id
 		lengths << i.length
 	end
@@ -88,7 +91,7 @@ def het_hom (actual_pos, vcfs_info) #actual_pos in same order as VCF
 	hom = []
 	x = 0
 	actual_pos.flatten.each do |snp|
-		if vcfs_info[x] == {"AF"=>"1.0"}
+		if vcfs_info[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
 			hom << snp
 		elsif vcfs_info[x] == {"AF"=>"0.5"}
 			het << snp
@@ -102,6 +105,18 @@ def write_txt (filename, array)
 		array.each { |i| f.puts(i) }
 	end
 end
+def reorder (fasta)
+	return fasta.frags_shuffled
+end
+
+#class FastaRecombine < Array
+#	def recombine
+
+def recombine (mum, dad)
+	until x == x.to_i
+		x = (1+rand(mum.length/2)).to_f
+	end
+end
 
 snp_data = get_snp_data('arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf')
 vcfs_chrom = snp_data[0] #array of vcf frag ids
@@ -109,7 +124,7 @@ vcfs_pos = snp_data[1] #array of all the snp positions (fragments with snps)
 snps_hash = snp_data[2] #hash of each fragment from vcf, and it's number of snps
 vcfs_info = snp_data[3]
 
-fasta_data = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta') #array of fasta format fragments, and entry_ids
+fasta_data = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
 fasta = fasta_data[0]
 fasta_ids = fasta_data[1]
 fasta_lengths = fasta_data[2]
