@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bio-samtools'
 require 'bio'
+require 'rinruby'
 
 def get_snp_data (vcf_file)
 	vcfs_chrom = []
@@ -200,6 +201,14 @@ def fasta_child (fasta)
 	child = recombine(mum, dad)
 	return child
 end
+def fitness (het, hom)
+	myr = RinRuby.new(echo=false)
+	myr.assign "het_snps", het
+	myr.assign "hom_snps", hom
+	myr.eval "source('~/fragmented_genome_with_snps/ratio.R')"
+	coeff = myr.pull "cor(qqp$x,qqp$y)"
+	return coeff
+end
 
 snp_data = get_snp_data('arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf')
 vcfs_chrom = snp_data[0] #array of vcf frag ids
@@ -224,5 +233,4 @@ hom = het_hom_snps[1]
 write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/het_snps", het)
 write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/hom_snps", hom)
 
-#puts hom.to_s
-#puts het.to_s
+puts "Coefficient = "+(fitness(het, hom)).to_s
