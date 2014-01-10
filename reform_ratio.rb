@@ -5,7 +5,7 @@ require 'rinruby'
 require 'charlie'
 
 FRAGS = []
-Bio::FastaFormat.open('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta').each do |i| #get array of fasta format frags
+Bio::FastaFormat.open('arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta').each do |i| #get array of fasta format frags
 	FRAGS << i
 end
 
@@ -101,7 +101,7 @@ class FragmentArrangement < PermutationGenotype(FRAGS.size)
 		hom = []
 		x = 0
 		actual_pos.flatten.each do |snp|
-			if vcfs_info[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
+			if vcfs_info[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, ###we can change this to a range for real data###
 				hom << snp
 			elsif vcfs_info[x] == {"AF"=>"0.5"}
 				het << snp
@@ -110,103 +110,13 @@ class FragmentArrangement < PermutationGenotype(FRAGS.size)
 		end
 		return het, hom
 	end
-	def prime? (n)
-		for d in 2..(n - 1)
-			if (n % d) == 0
-	    		return false
-	    	end
-		end
-		true
-	end
-	def division (frags, prime) #number of frags
-		x = 1.5
-		if prime == "n"
-			until frags.length/x == (frags.length/x).to_i && x == x.to_i && x <= frags.length
-				x = (frags.length/10).to_f + rand(frags.length).to_f
-			end
-		elsif prime == "p"
-			until frags.length/x == (frags.length/x).to_i && x == x.to_i && x < frags.length
-				x = (frags.length/10).to_f + rand(frags.length).to_f
-			end
-		end		
-		return x
-	end
-	class << self
-	def cross (mum, dad)
-		kid = []
-		1.times do
-			mum1 = "bogey"
-			x = division(mum, "n")
-			if x == mum.length && prime?(x) == false
-				puts "redoing1..."
-				redo
-			elsif x == mum.length # to compensate for datasets with a prime number of fragments:
-				puts "we gotta prime"
-				ig = rand(mum.length)-1 # choose a random element of the fasta array to ignore
-				mig = mum[ig] # we can add these frags back at their original positions after recombination
-				dig = dad[ig]
-				mum1 = mum.dup
-				dad1 = dad.dup
-				mum1.delete_at(ig)
-				dad1.delete_at(ig)
-				x = division(mum1, "p")
-			end
-			if mum1 != "bogey"
-				mum1 = mum1.each_slice(x).to_a
-				dad1 = dad1.each_slice(x).to_a
-			else
-				mum1 = mum.each_slice(x).to_a
-				dad1 = dad.each_slice(x).to_a
-			end
-			puts "Ignored a frag? " +(ig != nil).to_s
-			# Let's say we use one chunk of the dad solution, the rest mum
-			puts "x is " +x.to_s
-			ch = rand(dad1.length)-1 # choose one of the chunks of fragments to keep from dad
-			child = mum1.dup.flatten
-			y = 0
-			pos_array = []
-			mum1[ch].each do |frag| # place each frag in the equivalent mum chunk into the position it's corresponding frag (from dad) occupies in mum
-				chunk_frag = dad1[ch][y] # the equivalent frag in the chosen dad chunk
-				pos = mum1.flatten.index(chunk_frag) # the position of the dad chunk frag in mum
-				c_pos = mum1.flatten.index(frag) # the position of the frag in mum
-				pos_array << pos
-				#puts pos
-				y+=1
-			end
-			if pos_array.include?(nil)
-				puts "redoing2..."
-				redo
-			else
-				y = 0
-				pos_array.each do |pos|
-					unless dad1[ch].include?(mum1[ch][y])
-						child[pos] = mum1[ch][y]
-						child[mum1.flatten.index(mum1[ch][y])] = dad1[ch][y] # swapping the positions of the frag and chunk frag, to give their positions in child
-					end
-					y+=1
-				end
-			end
-			puts "kid length same: "+(mum1.flatten.length == child.length).to_s
-			if ig != nil
-				if dad1[ch].include?(dig) # add the ignored fragment at it's 
-					child.insert(ig, dig)
-				else
-					child.insert(ig, mig)
-				end
-			end
-			puts "kid unique? "+(child == child.uniq).to_s
-			kid << child
-		end
-		return kid[0]
-	end
-	end
 	def fitness
 		snp_data = get_snp_data('arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf')
 		vcfs_chrom = snp_data[0] #array of vcf frag ids
 		vcfs_pos = snp_data[1] #array of all the snp positions (fragments with snps)
 		snps_hash = snp_data[2] #hash of each fragment from vcf, and it's number of snps
 		vcfs_info = snp_data[3]
-		fasta_data = fasta_array#('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta') #array of fasta format fragments, and entry_ids
+		fasta_data = fasta_array #array of fasta format fragments, and entry_ids. THIS IS IMPORTANT. NEEDS TO BE THE PERMUTATION!
 		fasta = fasta_data[0]
 		fasta_ids = fasta_data[1]
 		fasta_lengths = fasta_data[2]
@@ -221,15 +131,11 @@ class FragmentArrangement < PermutationGenotype(FRAGS.size)
 		myr.assign "hom_snps", hom
 		myr.eval "source('~/fragmented_genome_with_snps/ratio.R')"
 		coeff = myr.pull "cor(qqp$x,qqp$y)"
+		myr.quit
 		return coeff
 	end
-	#class << self
-	#	def cross (parent1, parent2)
-	#		return recombine(parent1, parent2)
-	#	end
-	#end
-	use RouletteSelection
+	use RouletteSelection, EdgeRecombinationCrossover
 end
-puts Population.new(FragmentArrangement, 20).evolve_on_console(50)
+Population.new(FragmentArrangement, 20).evolve_on_console(10)
 
 
