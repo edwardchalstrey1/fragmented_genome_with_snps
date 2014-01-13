@@ -94,6 +94,10 @@ def het_hom (actual_pos, vcfs_info) #actual_pos in same order as VCF
 	end
 	return het, hom
 end
+
+# Genetic Algorithm
+#------------------
+
 def prime? (n)
 	for d in 2..(n - 1)
 		if (n % d) == 0
@@ -182,11 +186,19 @@ def recombine (mum, dad)
 	end
 	return kid[0]
 end
-def fasta_child (fasta)
-	mum = fasta.shuffle
-	dad = fasta.shuffle
-	child = recombine(mum, dad)
-	return child
+def mutate (fasta)
+	x = 0
+	until x > 2
+		if prime?(fasta.length)
+			x = division(fasta, "p")
+		else
+			x = division(fasta, "n")
+		end
+	end
+	sliced = fasta.each_slice(x).to_a
+	e = rand(sliced.length-1).to_i
+	sliced[e] = sliced[e].shuffle
+	return sliced.flatten
 end
 def fitness (fasta, vcf)
 	fasta_ids = []
@@ -216,9 +228,6 @@ def fitness (fasta, vcf)
 	#write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/hom_snps", hom)
 	return coeff
 end
-
-### Genetic Algorithm
-
 def initial_population(fasta, size)
 	population = []
 	size.times do
@@ -233,36 +242,48 @@ def select(pop, vcf)
 		fits << fitness(sol, vcf)
 	end
 	pop_fits = fits.zip(pop).sort
-	return pop_fits[-1], pop_fits[-2]
+	return pop_fits
 end
-def new_population(parent1, parent2, size)
+def new_population(population, size, mut_num)
 	pop = []
-	size-2.times do
-		pop << recombine(parent1, parent2)
+	population[-5,5].each do |i|
+		pop << i[1]
+	end
+	x = rand(size-1)
+	for i in population[mut_num+4..-1]
+		pop << recombine(i[1], population[x][1])
+	end
+	mut_num.times do
+		pop << mutate(population[-1][1])
 	end
 	return pop
 end
-def evolve(fasta, vcf, gen, pop_size)
+def evolve(fasta, vcf, gen, pop_size, mut_num)
 	pop = initial_population(fasta, pop_size)
-	best2 = select(pop, vcf)
+	pop_fits = select(pop, vcf)
 	puts
 	puts "Gen 0"
-	puts "Coefficient 1best= "+(best2[0][0]).to_s
-	puts "Coefficient 2best= "+(best2[1][0]).to_s
+	puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
+	#puts "Coefficient 2best= "+(pop_fits[-2]).to_s
 	puts
 	y=1
 	gen.times do
-		pop = new_population(best2[0][1], best2[1][1], pop_size)
-		best2 = select(pop, vcf)
+		#prev_gen = pop_fits
+		pop = new_population(pop_fits, pop_size, mut_num)
+		pop_fits = select(pop, vcf)
+		#if best2[0][0] < prev_best[0][0]
+		#	best2 = prev_best
+		#end
 		puts "Gen"+y.to_s
-		puts "Coefficient 1best= "+(best2[0][0]).to_s
-		puts "Coefficient 2best= "+(best2[1][0]).to_s
+		puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
+		#puts "Coefficient 2best= "+(pop_fits[-2]).to_s
 		puts
 		y+=1
+		Signal.trap("PIPE", "EXIT")
 	end
 end
 
 vcf = 'arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf'
 fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
 
-evolve(fasta, vcf, 10, 20)
+evolve(fasta, vcf, 10, 100, 20) # gen, pop, mut
