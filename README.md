@@ -1,43 +1,23 @@
 Fragmented Genome with SNPs
 ===========================
 
-I am creating a model genome (or chromosome/sequence) from an individual created by the out-crossing of a mutant individual with non-mutants, where the mutation is an experimentally induced, phenotype altering SNP. Specifically what this models is the following out-crossing experiment: a beneficially mutated individual is created by experimentally inducing SNPs (e.g. using a chemical mutagen on a plant to create a disease resistance mutation). The phenotype altering SNP needs to be identified. The mutant individual is out-crossed (bred) with a non-mutant individual that has no experimentally induced SNPs. Out-crossing like this multiple times, but always selecting for progeny with the mutant phenotype, will result in an individual that has a region of high SNP density near the mutant position, due to linkage, and a much lower number of SNPs in other parts of its genome. The remaining SNPs are normally distributed around the causative mutation, because with each out-cross, the SNPs closest to mutation being selected for have a higher chance of being conserved through linkage, than SNPs further from the location of the mutation.
+I am creating a model genome (or chromosome/sequence) from an individual created by the out-crossing of a mutant individual with non-mutants, where the mutation is an experimentally induced, phenotype altering SNP. Specifically what this models is the following out-crossing experiment: a beneficially mutated Arabidopsis individual is created by experimentally inducing SNPs with EMS (e.g. a disease resistance mutation). The phenotype altering SNP needs to be identified. The mutant individual is out-crossed (bred) with a mapping line that has no experimentally induced SNPs. This mapping line is a cross between two Arabidopsis ecotypes (one of which the same ecotype as the mutant), and therefore has heterozygous SNPs across its genome. Out-crossing like this multiple times, but always selecting for progeny with the mutant phenotype, will result in an individual that has a non-recombinant region with high homozygous to heterozygous SNP ratio near the mutant position, due to linkage. The homozygous SNPs are distributed around the causative mutation, and with each out-cross, the SNPs closest to mutation being selected for have a higher chance of being conserved through linkage, than SNPs further from the location of the mutation. Plotting the homozygous/heterozygous SNP ratio should reveal the non-recombinant region with a normal distribution of homozygous/heterozygous SNP ratio, the causative SNP should be located at the peak of this ratio distribution.
 
 After creating a model genome based on the expected result of the out-crossing experiment detailed above, I am designing an algorithm that will locate the causative mutation, based on the distribution of SNPs. To emulate real data, I first split the genome into fragments, which model contigs assembled from high-throughput sequencing reads. My algorithm will need to rearrange these fragments into their proper order, then locate the causative mutation.
 
-For a chronological writeup of my results of algorithm development (and model genome improvements), see the files in the writeup folder in this order: [Rearrangement methods](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/rearrangement_methods.md), [model genome dataset 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md), [rearrangement methods part 2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p2_rearrangement_methods.md), [model genome dataset 3 and subsequent datasets](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/arabidopsis_chromosome4.md), [rearrangement methods part 3](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p3_rearrangement_methods.md), [rearrangement methods part 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/p4_rearrangement_methods.md).
+Creating a model genome
+--------------------
 
-**Details of the main files in the repo are below. For a more comprehensive summary of how/why they are used, read the writeup**
+Running: **ruby [arabidopsis_c4_w_snps.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb) dataset_name** will generate a new model genome of that name based on Arabidopsis chromosome 4 and the experiment detailed above, in fragmented_genome_with_snps/arabidopsis_datasets. This includes a FASTA file with the sequences of each fragment, and a VCF file with the SNPs on each fragment. In the INFO field of the VCF, each SNP has been given an allele frequency (AF). Heterozygous SNPs will generally have AF = ~0.5, and homozygous AF = ~1.0, but this will vary with pooled data. In the model, each SNP has been given an allele frequency of exactly 0.5 or 1.0.
 
-### Modeling a fragmented genome with SNP's in Ruby, creation of dataset 1 and 2:
+Locating the causative mutation
+--------------
 
-The mutant position is located at position 100,000 in [dataset 1](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/fasta_vcf) and [2](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/fasta_vcf_d2)), the mid-point of a 200Kb sequence. The sequence is split into fragments of 50-250b length.
+I am currently attempting to use a genetic algorithm to rearrange the fragments, by reforming the homozygous/heterozygous SNP ratio distribution.
 
-1. [fragments_w_snps.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/fragments_w_snps.rb) - This generates the fragments described above. JSON files are created: one contains the fragments, another the SNP positions for each fragment.
+1. [reform_ratio.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/reform_ratio.rb) uses my own implementation of a genetic algorithm. To run it: **ruby reform_ratio.rb dataset_name**, where the dataset name is the same as the one used to create the model genome.
 
-2. ^ a text file of the snp positions is also created. Running [normality_test.txt](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/normality_test.txt) in R confirms that the snp positions are normally distributed:
- - see [dataset2.md](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md) for details
+2. [charlie_1.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/charlie_1.rb) is an attempt to use the [charlie](http://charlie.rubyforge.org/) ruby gem genetic algorithm. To run it: **ruby charlie_1.rb dataset_name**.
+ - currently, the algorithm is not rearranging the frags that the fitness function is acting on, so the fitness value being displayed is random
 
-3. [json->fasta.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/json-%3Efasta.rb) - uses the information in the JSON files to construct a rudimentary fasta format file and VCF file. (see commits from before 11/11/13 for dataset 1 and 2)
-
-4. [dataset2.md](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/dataset2.md) contains details of the improvements made to the model genome after testing [fragment rearrangement methods](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb), see below
-
-### A more realistic model: *Arabidopsis thaliana* chromosome 4
-
-1. Dataset 3 and all subsequent datasets are based on [*Arabidopsis thaliana* chromosome 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/writeup/arabidopsis_chromosome4.md).
- - [arabidopsis_c4_w_snps.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb) replaces [fragments_w_snps.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/fragments_w_snps.rb)
- 
-2. When running [arabidopsis_c4_w_snps.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_c4_w_snps.rb) and [json->fasta.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/json-%3Efasta.rb), do as follows for a named dataset e.g. datasetX
- - ruby "" datasetX
- - the name of the dataset entered into the command line saves the outputted files in an appropriate location
- - the same command line argument can also now be used for 
-
-### Designing an algorithm that will determine the position of a phenotype altering mutation:
-
-1. [density_method_testa.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/density_method_testa.rb) - uses information from fasta and VCF files to work out the SNP density of each fragment in the fasta file, measured as SNPS per Kb.
-
-2. Rearranging the fragments into their original order:
- - [rearrangement_methods.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/rearrangement_methods.rb) contains rearrangement methods
- - then see the writeup in chronological order (above)
- 
-3. Identifying the causative mutation
+3. [ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/ratio.R) is used within the fitness function of my genetic algorithm. It compares the homozygous/heterozygous SNP distribution of the rearranged fragments, to the same distributions I used when creating the model genome, using a qq plot. A coefficient value is obtained, between 0 and 1. The closer the value is to 1, the more likely it is that the correct fragment arrangement has been found.
