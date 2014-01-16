@@ -3,6 +3,11 @@ require 'bio-samtools'
 require 'bio'
 require 'rinruby'
 
+class FragOrderSnpRatio
+	def initialize(vcf_file, fasta_file, gen, pop, mut) # generations, population size, number of mutants in each generation
+		fasta = fasta_array(fasta_file)
+		evolve(fasta, vcf_file, gen, pop, mut)
+	end
 def get_snp_data (vcf_file)
 	vcfs_chrom = []
 	vcfs_pos = []
@@ -282,8 +287,9 @@ def evolve(fasta, vcf, gen, pop_size, mut_num)
 		Signal.trap("PIPE", "EXIT")
 	end
 end
+end
 
 vcf = 'arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf'
-fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
+fasta = 'arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta'
 
-evolve(fasta, vcf, 10, 100, 20) # gen, pop, mut
+FragOrderSnpRatio.new(fasta, vcf, 10, 10, 2)
