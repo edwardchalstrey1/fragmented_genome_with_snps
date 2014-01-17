@@ -313,7 +313,8 @@ vcf = 'arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf'
 fasta = 'arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta'
 
 #ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
-#average_fitness(ordered_fasta, vcf, 10)
+#average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
+#average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 2, 10, 2, 2) # gen, pop, mut, save
+evolve(fasta, vcf, 200, 10, 2, 2) # gen, pop, mut, save
 
