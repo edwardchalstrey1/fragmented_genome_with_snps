@@ -19,5 +19,6 @@ qq_real_expect <- function(het_snps, hom_snps, ratio){
 	real_htd <- density(real_ht, from=0, to=18585056)
 	real_ratio <- real_hmd$y/real_htd$y
 	qqp <- qqplot(ratio, real_ratio, plot.it=FALSE)
+  #qqp <- qqnorm(real_ratio)
 	return(cor(qqp$x,qqp$y))
 }

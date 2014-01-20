@@ -3,11 +3,6 @@ require 'bio-samtools'
 require 'bio'
 require 'rinruby'
 
-myr = RinRuby.new(echo=false)
-myr.eval "source('~/fragmented_genome_with_snps/comparable_ratio.R')"
-RATIO = myr.pull "comparable_ratio(1)"
-myr.quit
-
 def get_snp_data (vcf_file)
 	vcfs_chrom = []
 	vcfs_pos = []
@@ -99,10 +94,11 @@ def het_hom (actual_pos, vcfs_info) #actual_pos in same order as VCF
 	end
 	return het, hom
 end
-
-# Genetic Algorithm
-#------------------
-
+def write_txt (filename, array)
+	File.open(filename+".txt", "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
+end
 def prime? (n)
 	for d in 2..(n - 1)
 		if (n % d) == 0
@@ -191,47 +187,53 @@ def recombine (mum, dad)
 	end
 	return kid[0]
 end
-def mutate (fasta)
-	x = 0
-	until x > 2
-		if prime?(fasta.length)
-			x = division(fasta, "p")
-		else
-			x = division(fasta, "n")
-		end
-	end
-	sliced = fasta.each_slice(x).to_a
-	e = rand(sliced.length-1).to_i
-	sliced[e] = sliced[e].shuffle
-	return sliced.flatten
+def fasta_child (fasta)
+	mum = fasta.shuffle
+	dad = fasta.shuffle
+	child = recombine(mum, dad)
+	return child
 end
-def fitness (fasta, snp_data, same) # same? - use the same constant Y of snp ratio to qq plot against the frags, or not
+def fitness (fasta, n)
 	fasta_ids = []
 	fasta_lengths = []
 	fasta.each do |i|
 		fasta_ids << i.entry_id
 		fasta_lengths << i.length
 	end
-	snps_per_frag = snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
-	pos = get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag) #get snp positions for each frag in array of arrays
+	snp_data = get_snp_data('arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf')
+	vcfs_chrom = snp_data[0] #array of vcf frag ids
+	vcfs_pos = snp_data[1] #array of all the snp positions (fragments with snps)
+	snps_hash = snp_data[2] #hash of each fragment from vcf, and it's number of snps
+	vcfs_info = snp_data[3]
+	snps_per_frag = snps_per_fasta_frag(snps_hash, fasta) #array of no. of snps per frag in same order as fasta
+	pos = get_positions(fasta, vcfs_chrom, vcfs_pos, snps_per_frag) #get snp positions for each frag in array of arrays
 	actual_pos = total_pos(pos, fasta_lengths)
-	het_hom_snps = het_hom(actual_pos, snp_data[3])
+	het_hom_snps = het_hom(actual_pos, vcfs_info)
 	het = het_hom_snps[0]
 	hom = het_hom_snps[1]
 	myr = RinRuby.new(echo=false)
 	myr.assign "het_snps", het
 	myr.assign "hom_snps", hom
-	myr.eval "source('~/fragmented_genome_with_snps/comparable_ratio.R')"
-	if same == "same"
-		ratio = RATIO
-	else
-		ratio = myr.pull "comparable_ratio(1)"
-	end
-	myr.assign "ratio", ratio
-	coeff = myr.pull "qq_real_expect(het_snps, hom_snps, ratio)"
+	myr.eval "source('~/fragmented_genome_with_snps/ratio.R')"
+	coeff = myr.pull "cor(qqp$x,qqp$y)"
 	myr.quit
+	if n == "hi"
+		write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/het_snps", het)
+		write_txt("arabidopsis_datasets/"+ARGV[0].to_s+"/hom_snps", hom)
+	end
 	return coeff
 end
+
+x = ARGV[1]
+if x == "shuffled"
+	fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
+else
+	fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
+end
+#puts "Coefficient = "+(fitness(fasta)).to_s
+
+### Genetic Algorithm
+
 def initial_population(fasta, size)
 	population = []
 	size.times do
@@ -240,88 +242,20 @@ def initial_population(fasta, size)
 	end
 	return population
 end
-def select(pop, snp_data)
+def select(pop)
 	fits = []
 	pop.each do |sol| #solution
-		fits << fitness(sol, snp_data, "same")
+		fits << fitness(sol)
 	end
 	pop_fits = fits.zip(pop).sort
-	length = pop_fits.length
-	pop_fits = pop_fits.reverse.each_slice(length/2).to_a[0].reverse # best half gets saved
-	puts "Selected #{pop_fits.size} of #{length} permutations"
-	return pop_fits
+	return pop_fits[-1], pop_fits[-2]
 end
-def new_population(population, size, mut_num, save, ran) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
-	population = [population, population].flatten(1)
+def new_population(parent1, parent2, size)
 	pop = []
-	population[-save,save].each do |i|
-		pop << i[1]
-	end
-	x = rand(size-1)
-	for i in population[mut_num+save+ran..-1]
-		pop << recombine(i[1], population[x][1])
-	end
-	mut_num.times do
-		pop << mutate(population[-1][1])
-	end
-	ran.times do
-		pop << population[0][1].shuffle
+	size.times do
+		pop << recombine(parent1, parent2)
 	end
 	return pop
 end
-def average_fitness (fasta, vcf_file, num)
-	snp_data = get_snp_data(vcf_file)
-	fits = []
-	num.times do
-		fits<<fitness(fasta, snp_data, "diff")
-	end
-	worst = fits.sort[0]
-	average = fits.inject(:+)/num
-	puts "Worst #{worst}"
-	puts "Average #{average}"
-	return average
-end
-def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran)
-	puts
-	puts "Gen 0"
-	fasta = fasta_array(fasta_file) #array of fasta format fragments
-	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
-	pop = initial_population(fasta, pop_size)
-	pop_fits = select(pop, snp_data)
-	puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
-	puts
-	y=1
-	gen.times do
-		puts "Gen #{y}"
-		prev_best_arr = pop_fits[-1][1]
-		pop = new_population(pop_fits, pop_size, mut_num, save, ran)
-		pop_fits = select(pop, snp_data)
-		puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
-		if pop_fits[-1][1] == prev_best_arr
-			puts "Same best arrangement as previous generation!" # If this is not called, this implies there has been some improvement
-		end
-		puts
-		if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
-			av = average_fitness(pop_fits[-1][1], vcf_file, 100)
-			if av >= 0.999
-				ids = []
-				pop_fits[-1][1].each do |frag|
-					ids << frag.entry_id
-				end
-				puts ids # we should modify this to save a "correct" arrangement
-			end
-		end
-		y+=1
-		Signal.trap("PIPE", "EXIT")
-	end
-end
 
-vcf = 'arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf'
-fasta = 'arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta'
-
-#ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
-#average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
-#average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
-
-evolve(fasta, vcf, 100, 10, 2, 5, 1) # gen, pop, mut, save, ran
-
+fitness(fasta, "hi")
