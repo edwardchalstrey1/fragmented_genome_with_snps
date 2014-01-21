@@ -87,7 +87,7 @@ def total_pos (pos, fasta_lengths) #pos is in the same order as the vcf, fasta l
 end
 def het_hom (actual_pos, vcfs_info) #actual_pos in same order as VCF
 	het = []
-	hom = []
+	hom = [] # I'm suspicious of this method for unordered fragments, unless the fitness score is working
 	x = 0
 	actual_pos.flatten.each do |snp|
 		if vcfs_info[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
@@ -291,6 +291,7 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran)
 	puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
 	puts
 	y=1
+	z=1
 	gen.times do
 		puts "Gen #{y}"
 		prev_best_arr = pop_fits[-1][1]
@@ -299,18 +300,31 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran)
 		puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
 		if pop_fits[-1][1] == prev_best_arr
 			puts "Same best arrangement as previous generation!" # If this is not called, this implies there has been some improvement
+			z+=1
+		else
+			z=1
 		end
 		puts
-		if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
-			av = average_fitness(pop_fits[-1][1], vcf_file, 100)
-			if av >= 0.999
-				ids = []
-				pop_fits[-1][1].each do |frag|
-					ids << frag.entry_id
-				end
-				puts ids # we should modify this to save a "correct" arrangement
+		if z >= 10
+			ids = []
+			pop_fits[-1][1].each do |frag|
+				ids << frag.entry_id
 			end
+			puts ids
 		end
+		if z >= 10
+			then break
+		end
+		#if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
+		#	av = average_fitness(pop_fits[-1][1], vcf_file, 100)
+		#	if av >= 0.999
+		#		ids = []
+		#		pop_fits[-1][1].each do |frag|
+		#			ids << frag.entry_id
+		#		end
+		#		puts ids # we should modify this to save a "correct" arrangement
+		#	end
+		#end
 		y+=1
 		Signal.trap("PIPE", "EXIT")
 	end
@@ -323,5 +337,5 @@ fasta = 'arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta'
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 100, 10, 2, 5, 1) # gen, pop, mut, save, ran
+evolve(fasta, vcf, 100, 100, 20, 5, 10) # gen, pop, mut, save, ran
 
