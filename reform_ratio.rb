@@ -8,6 +8,15 @@ myr.eval "source('~/fragmented_genome_with_snps/comparable_ratio.R')"
 RATIO = myr.pull "comparable_ratio(1)"
 myr.quit
 
+def fasta_id_n_lengths (fasta) # array of fasta format frags
+	ids = []
+	lengths = []
+	fasta.each do |i|
+		ids << i.entry_id
+		lengths << i.length
+	end
+	return ids, lengths
+end
 def get_snp_data (vcf_file)
 	vcfs_chrom = []
 	vcfs_pos = []
@@ -99,7 +108,20 @@ def het_hom (actual_pos, vcfs_info) #actual_pos in same order as VCF
 	end
 	return het, hom
 end
-
+def rearrangement_score (frags_original_order, rearranged)
+	position_each_frag_id_in_d = frags_original_order.map{|x| rearranged.index(x)} #works out the index of frags_original_order values in rearranged
+	index_values = Array(0..(frags_original_order.length - 1)) # index values that frags_original_order originally at
+	both = []
+	both << position_each_frag_id_in_d
+	both << index_values
+	difference = both.transpose.map {|x| x.reduce(:-)} # taking away old position from new position, to find the distance that the frag has moved when re-ordered
+	difference_abs = []
+	difference.each do |i|
+		difference_abs << i.abs
+	end
+	score = difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
+	return score
+end
 # Genetic Algorithm
 #------------------
 
@@ -206,12 +228,9 @@ def mutate (fasta)
 	return sliced.flatten
 end
 def fitness (fasta, snp_data, same) # same? - use the same constant Y of snp ratio to qq plot against the frags, or not
-	fasta_ids = []
-	fasta_lengths = []
-	fasta.each do |i|
-		fasta_ids << i.entry_id
-		fasta_lengths << i.length
-	end
+	id_n_lengths = fasta_id_n_lengths(fasta)
+	fasta_ids = id_n_lengths[0]
+	fasta_lengths = id_n_lengths[1]
 	snps_per_frag = snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
 	pos = get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag) #get snp positions for each frag in array of arrays
 	actual_pos = total_pos(pos, fasta_lengths)
@@ -281,14 +300,17 @@ def average_fitness (fasta, vcf_file, num)
 	puts "Average #{average}"
 	return average
 end
-def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran)
+def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fasta)
+	worst_score = rearrangement_score(ordered_fasta, ordered_fasta.reverse)
 	puts
 	puts "Gen 0"
 	fasta = fasta_array(fasta_file) #array of fasta format fragments
 	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 	pop = initial_population(fasta, pop_size)
 	pop_fits = select(pop, snp_data)
-	puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
+	puts "Coefficient 1best= #{pop_fits[-1][0]}"
+	best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
+	puts "Score = #{rearrangement_score(ordered_fasta, best_perm_ids)}  Worst possible = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
 	puts
 	y=1
 	z=1
@@ -297,7 +319,9 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran)
 		prev_best_arr = pop_fits[-1][1]
 		pop = new_population(pop_fits, pop_size, mut_num, save, ran)
 		pop_fits = select(pop, snp_data)
-		puts "Coefficient 1best= "+(pop_fits[-1][0]).to_s
+		puts "Coefficient 1best= #{pop_fits[-1][0]}"
+		best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
+		puts "Score = #{rearrangement_score(ordered_fasta, best_perm_ids)}  Worst possible = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
 		if pop_fits[-1][1] == prev_best_arr
 			puts "Same best arrangement as previous generation!" # If this is not called, this implies there has been some improvement
 			z+=1
@@ -306,11 +330,7 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran)
 		end
 		puts
 		if z >= 10
-			ids = []
-			pop_fits[-1][1].each do |frag|
-				ids << frag.entry_id
-			end
-			puts ids
+			puts best_perm_ids
 		end
 		if z >= 10
 			then break
@@ -333,9 +353,9 @@ end
 vcf = 'arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf'
 fasta = 'arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta'
 
-#ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
+ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 200, 100, 20, 5, 10) # gen, pop, mut, save, ran
+evolve(fasta, vcf, 10, 20, 2, 5, 1, ordered_fasta) # gen, pop, mut, save, ran ### ordered_fasta is temporary
 
