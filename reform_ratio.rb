@@ -337,5 +337,5 @@ fasta = 'arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta'
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 100, 100, 20, 5, 10) # gen, pop, mut, save, ran
+evolve(fasta, vcf, 200, 100, 20, 5, 10) # gen, pop, mut, save, ran
 
