@@ -227,6 +227,7 @@ end
 x = ARGV[1]
 if x == "shuffled"
 	fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags_shuffled.fasta') #array of fasta format fragments, and entry_ids
+	fasta.shuffle!
 else
 	fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 end

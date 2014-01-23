@@ -227,7 +227,16 @@ def mutate (fasta)
 	sliced[e] = sliced[e].shuffle
 	return sliced.flatten
 end
-def fitness (fasta, snp_data, same) # same? - use the same constant Y of snp ratio to qq plot against the frags, or not
+def mini_mutate (fasta)
+	i = rand(fasta.length)
+	j = rand(fasta.length)
+	a = fasta[i]
+	b = fasta[j]
+	fasta[i] = b
+	fasta[j] = a
+	return fasta
+end
+def fitness (fasta, snp_data, same) # same? - use the same constant RATIO of snp ratio to qq plot against the frags, or not
 	id_n_lengths = fasta_id_n_lengths(fasta)
 	fasta_ids = id_n_lengths[0]
 	fasta_lengths = id_n_lengths[1]
@@ -277,11 +286,14 @@ def new_population(population, size, mut_num, save, ran) # mut_num = no. of muta
 		pop << i[1]
 	end
 	x = rand(size-1)
-	for i in population[mut_num+save+ran..-1]
+	for i in population[(mut_num*2)+save+ran..-1]
 		pop << recombine(i[1], population[x][1])
 	end
 	mut_num.times do
-		pop << mutate(population[-1][1])
+		pop << mutate(population[rand(population.length)][1])
+	end
+	mut_num.times do
+		pop << mini_mutate(population[-1][1])
 	end
 	ran.times do
 		pop << population[0][1].shuffle
@@ -301,16 +313,19 @@ def average_fitness (fasta, vcf_file, num)
 	return average
 end
 def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fasta)
-	worst_score = rearrangement_score(ordered_fasta, ordered_fasta.reverse)
+	ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
+	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
+	puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
+	puts "Original order score = #{rearrangement_score(ordered_ids, ordered_ids)}"
+	worst_score = rearrangement_score(ordered_ids, ordered_ids.reverse)
 	puts
 	puts "Gen 0"
 	fasta = fasta_array(fasta_file) #array of fasta format fragments
-	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 	pop = initial_population(fasta, pop_size)
 	pop_fits = select(pop, snp_data)
-	puts "Coefficient 1best= #{pop_fits[-1][0]}"
+	puts "Best correlation = #{pop_fits[-1][0]}"
 	best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
-	puts "Score = #{rearrangement_score(ordered_fasta, best_perm_ids)}  Worst possible = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
+	puts "Score of best correlation = #{rearrangement_score(ordered_ids, best_perm_ids)}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
 	puts
 	y=1
 	z=1
@@ -319,14 +334,21 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fast
 		prev_best_arr = pop_fits[-1][1]
 		pop = new_population(pop_fits, pop_size, mut_num, save, ran)
 		pop_fits = select(pop, snp_data)
-		puts "Coefficient 1best= #{pop_fits[-1][0]}"
+		puts "Best correlation = #{pop_fits[-1][0]}"
 		best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
-		puts "Score = #{rearrangement_score(ordered_fasta, best_perm_ids)}  Worst possible = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
+		score = rearrangement_score(ordered_ids, best_perm_ids)
+		puts "Score of best correlation = #{score}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
 		if pop_fits[-1][1] == prev_best_arr
-			puts "Same best arrangement as previous generation!" # If this is not called, this implies there has been some improvement
+			puts "No fitness improvement" # If this is not called, this implies there has been some improvement
 			z+=1
 		else
+			puts "FITNESS IMPROVEMENT!"
 			z=1
+		end
+		if score < rearrangement_score(ordered_ids, (fasta_id_n_lengths(prev_best_arr)[0]))
+			puts "SCORE IMPROVEMENT!"
+		else
+			puts "No score improvement"
 		end
 		puts
 		if z >= 10
@@ -357,5 +379,37 @@ ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 10, 20, 2, 5, 1, ordered_fasta) # gen, pop, mut, save, ran ### ordered_fasta is temporary
+evolve(fasta, vcf, 100, 100, 10, 5, 5, ordered_fasta) # gen, pop, mut*2, save, ran ### ordered_ids is temporary
+
+
+
+
+
+
+
+
+def how_we_doin (ordered_fasta, vcf)
+	ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
+	snp_data = get_snp_data(vcf)
+	puts "Ordered #{fitness(ordered_fasta, snp_data, "same")}"
+	puts rearrangement_score(ordered_ids, ordered_ids)
+	mutant = mutate(ordered_fasta)
+	puts "Mutant #{fitness(mutant, snp_data, "same")}"
+	puts rearrangement_score(ordered_ids, fasta_id_n_lengths(mutant)[0])
+	recombination = recombine(ordered_fasta, ordered_fasta.shuffle)
+	puts "recombination #{fitness(recombination, snp_data, "same")}"
+	puts rearrangement_score(ordered_ids, fasta_id_n_lengths(recombination)[0])
+	#fits = []
+	#100.times {|x| fits << fitness(ordered_fasta.shuffle, snp_data, "same")}
+	#fits = fits.inject(:+)/100
+	shuffled = ordered_fasta.shuffle
+	puts "Shuffled #{fitness(shuffled, snp_data, "same")}"
+	puts rearrangement_score(ordered_ids, fasta_id_n_lengths(shuffled)[0])
+	#puts "Shuffled #{fits}"
+	mini = mini_mutate(ordered_fasta)
+	puts "mini mutate #{fitness(mini, snp_data, "same")}"
+	puts rearrangement_score(ordered_ids, fasta_id_n_lengths(mini)[0])
+end
+#how_we_doin(ordered_fasta, vcf)
+
 

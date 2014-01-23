@@ -14,14 +14,20 @@ hmd <- density(hm, from=0, to=18585056)
 htd <- density(ht, from=0, to=18585056)
 x <- (1:512)*36298
 y <- hmd$y/htd$y
+#plot(x, hmd$y)
+#plot(x, htd$y)
 #plot(x, y)
 
 real_hmd <- density(real_hm, from=0, to=18585056)
 real_htd <- density(real_ht, from=0, to=18585056)
 real_y <- real_hmd$y/real_htd$y
-#plot(x, y)
+#plot(x, real_htd$y)
+#plot(x, real_hmd$y)
+plot(x, real_y)
 
-qqplot(y, real_y)
+#qqplot(y, real_y)
 #qqp <-qqnorm(y)
 qqp <- qqplot(y, real_y, plot.it=FALSE)
-cor(qqp$x,qqp$y) 
+cor(qqp$x,qqp$y)
+
+findpeaks(real_y) # library("pracma", lib.loc="/Library/Frameworks/R.framework/Versions/3.0/Resources/library")
