@@ -34,32 +34,42 @@ def snps_per_fasta_frag (snps_per_vcf_frag_hash, fasta_array)
 	#now we have an array with the number of snps per frag in the same order as the fasta array, which we can get lengths from to calculate density
 	return snps_per_frag_fasta_order
 end
-def get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag)
+def get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info)
 	pos = [] #get the snp positions for each frag, in an array of arrays
+	info = []
 	n = 0
 	fasta.each do |frag|
 		x = 0
 		each_fr_pos = []
+		each_fr_info = []
 		snps_per_frag[n].times do |j|
 			if frag.entry_id == vcfs_chrom[x] #this assumes that frag_id == vcf.chrom then continues to for the number of snps (for that frag)
 				each_fr_pos << vcfs_pos[x]
+				each_fr_info << vcfs_info[x]
 				x+=1
 			else
 				while frag.entry_id != vcfs_chrom[x]
 					x+=1
 				end
 				each_fr_pos << vcfs_pos[x]
+				each_fr_info << vcfs_info[x]
 				x+=1
 			end
 		end
 		pos << each_fr_pos #this gives empty arrays for frags with out snps, and a list of the positions of those with
+		info << each_fr_info
 		n+=1
+		if frag.entry_id == "frag88"
+			#puts each_fr_pos
+		end
 	end
-	return pos
+	puts pos[87]
+	puts info[87]
+	return pos, info
 end
-def total_pos (pos, fasta_lengths) #pos is in the same order as the vcf, fasta lengths is in the fasta order, so this only works if they are in the correct order, 
-	totals = []                    #but the totals are what we need for wrongly ordered frags too, they will be incorrect of course, but that is what we need to test
-	x = 0						   # matching the ids for the info_hash and total_pos will work, because total pos is in the same order as pos, same order as VCF
+def total_pos (pos, fasta_lengths)  # both args in same order as fasta = good. this all works!
+	totals = []                    
+	x = 0						   
 	pos.each do |frag|
 		if x == 0
 			totals << frag.uniq
@@ -78,16 +88,17 @@ def total_pos (pos, fasta_lengths) #pos is in the same order as the vcf, fasta l
 			x+=1
 		end
 	end
+	#puts totals[100]
 	return totals
 end
-def het_hom (actual_pos, vcfs_info) #actual_pos in same order as VCF
+def het_hom (actual_pos, vcfs_info) #actual_pos in same order as fasta perm. now so is info
 	het = []
 	hom = []
 	x = 0
 	actual_pos.flatten.each do |snp|
-		if vcfs_info[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
+		if vcfs_info.flatten[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
 			hom << snp
-		elsif vcfs_info[x] == {"AF"=>"0.5"}
+		elsif vcfs_info.flatten[x] == {"AF"=>"0.5"}
 			het << snp
 		end
 		x+=1
@@ -206,9 +217,11 @@ def fitness (fasta, n)
 	snps_hash = snp_data[2] #hash of each fragment from vcf, and it's number of snps
 	vcfs_info = snp_data[3]
 	snps_per_frag = snps_per_fasta_frag(snps_hash, fasta) #array of no. of snps per frag in same order as fasta
-	pos = get_positions(fasta, vcfs_chrom, vcfs_pos, snps_per_frag) #get snp positions for each frag in array of arrays
+	pos_n_info = get_positions(fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info) #get snp positions for each frag in array of arrays
+	pos = pos_n_info[0]
+	info = pos_n_info[1]
 	actual_pos = total_pos(pos, fasta_lengths)
-	het_hom_snps = het_hom(actual_pos, vcfs_info)
+	het_hom_snps = het_hom(actual_pos, info)
 	het = het_hom_snps[0]
 	hom = het_hom_snps[1]
 	myr = RinRuby.new(echo=false)
@@ -231,6 +244,7 @@ if x == "shuffled"
 else
 	fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 end
+#puts fasta[100].entry_id
 #puts "Coefficient = "+(fitness(fasta)).to_s
 
 ### Genetic Algorithm

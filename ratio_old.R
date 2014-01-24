@@ -28,6 +28,7 @@ plot(x, real_y)
 #qqplot(y, real_y)
 #qqp <-qqnorm(y)
 qqp <- qqplot(y, real_y, plot.it=FALSE)
-cor(qqp$x,qqp$y)
+corr <- cor(qqp$x,qqp$y)
 
-findpeaks(real_y) # library("pracma", lib.loc="/Library/Frameworks/R.framework/Versions/3.0/Resources/library")
+library("pracma", lib.loc="/Library/Frameworks/R.framework/Versions/3.0/Resources/library")
+findpeaks(real_y) # 

@@ -68,7 +68,13 @@ First an initial population of fragment order permutations is generated, by shuf
 
 USE PEAK FINDING IN R
 
+Using the R library pracma, the findpeaks function can be used to identify the peaks in a distribution vector.
+
 Purpose of Project
 ------------
 
-IN THE CONTEXT OF WHY IT WILL BE USEFUL TO HAVE THIS ALGORITHM, WHAT IT DOES THAT IS UNIQUE
+IN THE CONTEXT OF WHY IT WILL BE USEFUL TO HAVE THIS ALGORITHM, WHAT IT DOES THAT IS UNIQUE. LOOK AT LINEAR.PROGX AND ADD LINKS FOR NGM AND SHOREMP
+
+Identifying the genes and alleles associated with beneficial and deleterious traits, is of the utmost importance to agronomic and biomedical science. When beneficial mutations are identified in agronomically important plant species, breeders can select for progeny with the mutant phenotype. This molecular breeding strategy speeds up the selection process, because rejected plants need not be grown. If breeders wish to enhance a complex trait, such as pathogenic disease resistance in a crop species, natural variation can be a limiting factor. One approach is to induce mutations experimentally. These mutagens include chemicals such as ethylmethane sulphonate (EMS).
+
+Identifying causal mutants is important in understanding the mechanism by which they confer a beneficial phenotype. Software packages like SHOREmap (Schneeberger et al, 2009) and NGM (Austin et al, 2011) have been developed, which can be used to identify causative mutations in F2 EMS mutants. NGM uses a chastity statistic to quantify the relative contribution of the parental mutant, and mapping lines, to each single nucleotide polymorphism (SNP), in the pooled F2 population. 
