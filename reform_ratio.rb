@@ -127,6 +127,11 @@ def rearrangement_score (frags_original_order, rearranged)
 	score = difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
 	return score
 end
+def write_txt (filename, array)
+	File.open(filename, "w+") do |f|
+		array.each { |i| f.puts(i) }
+	end
+end
 # Genetic Algorithm
 #------------------
 
@@ -157,10 +162,8 @@ def recombine (mum, dad)
 		mum1 = "bogey"
 		x = division(mum, "n")
 		if x == mum.length && prime?(x) == false
-			#puts "redoing1..."
 			redo
 		elsif x == mum.length # to compensate for datasets with a prime number of fragments:
-			#puts "we gotta prime"
 			ig = rand(mum.length)-1 # choose a random element of the fasta array to ignore
 			mig = mum[ig] # we can add these frags back at their original positions after recombination
 			dig = dad[ig]
@@ -176,10 +179,7 @@ def recombine (mum, dad)
 		else
 			mum1 = mum.each_slice(x).to_a
 			dad1 = dad.each_slice(x).to_a
-		end
-		#puts "Ignored a frag? " +(ig != nil).to_s
-		# Let's say we use one chunk of the dad solution, the rest mum
-		#puts "x is " +x.to_s
+		end # Let's say we use one chunk of the dad solution, the rest mum
 		ch = rand(dad1.length)-1 # choose one of the chunks of fragments to keep from dad
 		child = mum1.dup.flatten
 		y = 0
@@ -193,7 +193,6 @@ def recombine (mum, dad)
 			y+=1
 		end
 		if pos_array.include?(nil)
-			#puts "redoing2..."
 			redo
 		else
 			y = 0
@@ -205,7 +204,6 @@ def recombine (mum, dad)
 				y+=1
 			end
 		end
-		#puts "kid length same: "+(mum1.flatten.length == child.length).to_s
 		if ig != nil
 			if dad1[ch].include?(dig) # add the ignored fragment at it's 
 				child.insert(ig, dig)
@@ -213,7 +211,6 @@ def recombine (mum, dad)
 				child.insert(ig, mig)
 			end
 		end
-		#puts "kid unique? "+(child == child.uniq).to_s
 		kid << child
 	end
 	return kid[0]
@@ -323,8 +320,8 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fast
 	ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
 	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 	puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
-	puts "Original order score = #{rearrangement_score(ordered_ids, ordered_ids)}"
-	worst_score = rearrangement_score(ordered_ids, ordered_ids.reverse)
+	#puts "Original order score = #{rearrangement_score(ordered_ids, ordered_ids)}"
+	#worst_score = rearrangement_score(ordered_ids, ordered_ids.reverse)
 	puts
 	puts "Gen 0"
 	fasta = fasta_array(fasta_file) #array of fasta format fragments
@@ -332,31 +329,32 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fast
 	pop_fits = select(pop, snp_data)
 	puts "Best correlation = #{pop_fits[-1][0]}"
 	best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
-	puts "Score of best correlation = #{rearrangement_score(ordered_ids, best_perm_ids)}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
+	#puts "Score of best correlation = #{rearrangement_score(ordered_ids, best_perm_ids)}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
 	puts
 	y=1
 	z=1
 	gen.times do
 		puts "Gen #{y}"
 		prev_best_arr = pop_fits[-1][1]
+		prev_best_fit = pop_fits[-1][0]
 		pop = new_population(pop_fits, pop_size, mut_num, save, ran)
 		pop_fits = select(pop, snp_data)
 		puts "Best correlation = #{pop_fits[-1][0]}"
 		best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
-		score = rearrangement_score(ordered_ids, best_perm_ids)
-		puts "Score of best correlation = #{score}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
-		if pop_fits[-1][1] == prev_best_arr
+		#score = rearrangement_score(ordered_ids, best_perm_ids)
+		#puts "Score of best correlation = #{score}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
+		if pop_fits[-1][0] <= prev_best_fit
 			puts "No fitness improvement" # If this is not called, this implies there has been some improvement
 			z+=1
 		else
 			puts "FITNESS IMPROVEMENT!"
 			z=1
 		end
-		if score < rearrangement_score(ordered_ids, (fasta_id_n_lengths(prev_best_arr)[0]))
-			puts "SCORE IMPROVEMENT!"
-		else
-			puts "No score improvement"
-		end
+		#if score < rearrangement_score(ordered_ids, (fasta_id_n_lengths(prev_best_arr)[0]))
+		#	puts "SCORE IMPROVEMENT!"
+		#else
+		#	puts "No score improvement"
+		#end
 		puts
 		if z >= 10
 			puts best_perm_ids
@@ -364,16 +362,13 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fast
 		if z >= 10
 			then break
 		end
-		#if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
-		#	av = average_fitness(pop_fits[-1][1], vcf_file, 100)
-		#	if av >= 0.999
-		#		ids = []
-		#		pop_fits[-1][1].each do |frag|
-		#			ids << frag.entry_id
-		#		end
-		#		puts ids # we should modify this to save a "correct" arrangement
-		#	end
-		#end
+		if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
+			av = average_fitness(pop_fits[-1][1], vcf_file, 10)
+			if av >= 0.999
+				puts "Perfect reform ratio has a rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
+				write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)		
+			end
+		end
 		y+=1
 		Signal.trap("PIPE", "EXIT")
 	end
@@ -386,7 +381,7 @@ ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 100, 100, 10, 10, 1, ordered_fasta) # gen, pop, mut*2, save, ran ### ordered_ids is temporary
+evolve(fasta, vcf, 200, 100, 10, 10, 5, ordered_fasta) # gen, pop, mut*2, save, ran ### ordered_ids is temporary
 
 
 
