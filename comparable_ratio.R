@@ -1,3 +1,5 @@
+# Input: Any argument (to make function work)
+# Output: Homozygous/heterozygous snp ratio - vector of the homozygous density estimate points divided by the heterozygous ones
 comparable_ratio <- function(a){
 	aaa <- a
 	hm <- rnorm(35, 10000000, 5000000)
@@ -12,6 +14,9 @@ comparable_ratio <- function(a){
 	return(ratio)
 }
 
+# Input 1: Array of heterozygous snp positions (from a fragment permutation)
+# Input 2: Array of homozygous snp positions (from a fragment permutation)
+# Input 3: Homozygous/heterozygous snp ratio to compare against in qq plot - vector of homozygous density estimate points divided by the heterozygous ones (from comparable_ratio)
 qq_real_expect <- function(het_snps, hom_snps, ratio){
 	real_ht <- as.vector(as.matrix(het_snps))
 	real_hm <- as.vector(as.matrix(hom_snps))
@@ -19,6 +24,6 @@ qq_real_expect <- function(het_snps, hom_snps, ratio){
 	real_htd <- density(real_ht, from=0, to=18585056)
 	real_ratio <- real_hmd$y/real_htd$y
 	qqp <- qqplot(ratio, real_ratio, plot.it=FALSE)
-  #qqp <- qqnorm(real_ratio)
+    #qqp <- qqnorm(real_ratio)
 	return(cor(qqp$x,qqp$y))
 }

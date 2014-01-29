@@ -3,12 +3,16 @@ require 'bio-samtools'
 require 'bio'
 require 'rinruby'
 
+# See the comparable_ratio function in comparable_ratio.R
 myr = RinRuby.new(echo=false)
 myr.eval "source('~/fragmented_genome_with_snps/comparable_ratio.R')"
 RATIO = myr.pull "comparable_ratio(1)"
 myr.quit
 
-def fasta_id_n_lengths (fasta) # array of fasta format frags
+# Input: Array of Bio::FastaFormat entries
+# Output 0: Array of identifiers
+# Output 1: Array of lengths (integers)
+def fasta_id_n_lengths (fasta)
 	ids = []
 	lengths = []
 	fasta.each do |i|
@@ -17,6 +21,12 @@ def fasta_id_n_lengths (fasta) # array of fasta format frags
 	end
 	return ids, lengths
 end
+
+# Input: VCF file
+# Output 0: Array of VCF chrom field (fragment identifiers)
+# Output 1: Array of VCF pos field (positions of snps on fragments)
+# Output 2: Hash with fragment id keys and the corresponding number of snps as an integer values
+# Output 3: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
 def get_snp_data (vcf_file)
 	vcfs_chrom = []
 	vcfs_pos = []
@@ -33,6 +43,9 @@ def get_snp_data (vcf_file)
 	#the frag_id(.chrom) is the key, the number of snps for that frag is the value. putting the number of snps for each frag into hash
 	return vcfs_chrom, vcfs_pos, num_snps_frag_hash, vcfs_info
 end
+
+# Input: FASTA file
+# Output: Array of Bio::FastaFormat entries
 def fasta_array (fasta_file)
 	fasta = [] #we have the lengths of each fasta, but the frags are different to those of the vcf/hash(this only has the frags w snps)
 	Bio::FastaFormat.open(fasta_file).each do |i| #get array of fasta format frags, ##  WE NEED TO REORDER THE FASTA FRAGS HERE, TO TEST DIFFERENT ARRANGEMENTS
@@ -40,14 +53,26 @@ def fasta_array (fasta_file)
 	end
 	return fasta
 end
+
+# Input 0: Hash with fragment id keys and the corresponding number of snps as an integer values
+# Input 1: Array of Bio::FastaFormat entries
+# Output: Array of the number of snps per fragment, in the same order as the input 1 fasta array
 def snps_per_fasta_frag (snps_per_vcf_frag_hash, fasta_array)
 	snps_per_frag_fasta_order = [] #use the id to identify the number of snps for that frag using the keys of snps_hash
 	fasta_array.each do |frag|
 		snps_per_frag_fasta_order << snps_per_vcf_frag_hash[frag.entry_id] #gives 0 for keys that don't exist = good, because the frags with 0 density would otherwise be missing
 	end
-	#now we have an array with the number of snps per frag in the same order as the fasta array, which we can get lengths from to calculate density
+	#now we have an array with the number of snps per frag in the same order as the fasta array
 	return snps_per_frag_fasta_order
 end
+
+# Input 0: Array of Bio::FastaFormat entries
+# Input 1: Array of VCF chrom field (fragment identifiers)
+# Input 2: Array of VCF pos field (positions of snps on fragments)
+# Input 3: Array of the number of snps per fragment, in the same order as the input 0 fasta array
+# Input 4: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
+# Output 0: The snp positions for each frag, in an array of arrays (each sub array contains the snp positions for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
+# Output 1: The info hashes (of each snp) for each frag, in an array of arrays (each sub array contains the info hashes for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
 def get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info)
 	pos = [] #get the snp positions for each frag, in an array of arrays
 	info = []
@@ -76,6 +101,10 @@ def get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info)
 	end
 	return pos, info
 end
+
+# Input 0: The snp positions for each frag, in an array of arrays (for a given fragment permutation)
+# Input 1: Array of fragment lengths (integers) (for the same fragment permutation as Input 0)
+# Output: Array of the snp positions in the genome (assuming the genome is ordered according to the fragment permutation in Input 0)
 def total_pos (pos, fasta_lengths)  # both args in same order as fasta = good. this all works!
 	totals = []                    
 	x = 0						   
@@ -97,13 +126,18 @@ def total_pos (pos, fasta_lengths)  # both args in same order as fasta = good. t
 			x+=1
 		end
 	end
-	return totals
+	return totals.flatten
 end
+
+# Input 0: Array of the snp positions in the genome
+# Input 1: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
+# Output 0: Array of all the heterozygous snp positions
+# Output 1: Array of all the homozygous snp positions
 def het_hom (actual_pos, vcfs_info) #actual_pos in same order as fasta perm. now so is info
 	het = []
 	hom = []
 	x = 0
-	actual_pos.flatten.each do |snp|
+	actual_pos.each do |snp|
 		if vcfs_info.flatten[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
 			hom << snp
 		elsif vcfs_info.flatten[x] == {"AF"=>"0.5"}
@@ -113,6 +147,10 @@ def het_hom (actual_pos, vcfs_info) #actual_pos in same order as fasta perm. now
 	end
 	return het, hom
 end
+
+# Input 0: Array of fragment identifiers in the correct order
+# Input 1: Array of fragment identifiers in the order you wish to check
+# Output 0: Ordinal similarity score value (0 = correct order)
 def rearrangement_score (frags_original_order, rearranged)
 	position_each_frag_id_in_d = frags_original_order.map{|x| rearranged.index(x)} #works out the index of frags_original_order values in rearranged
 	index_values = Array(0..(frags_original_order.length - 1)) # index values that frags_original_order originally at
@@ -127,14 +165,17 @@ def rearrangement_score (frags_original_order, rearranged)
 	score = difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
 	return score
 end
+
+# Input 0: Filename by which to save an array to a .txt file, one value per line
+# Input 1: Array to save
 def write_txt (filename, array)
 	File.open(filename, "w+") do |f|
 		array.each { |i| f.puts(i) }
 	end
 end
-# Genetic Algorithm
-#------------------
 
+# Input: An integer you wish to know whether it's a prime
+# Output: true/false
 def prime? (n)
 	for d in 2..(n - 1)
 		if (n % d) == 0
@@ -143,6 +184,13 @@ def prime? (n)
 	end
 	true
 end
+
+# Genetic Algorithm
+#------------------
+
+# Input 0: Array of Bio::FastaFormat entries (permutation)
+# Input 1: "p" if the number of entries (fragments) is prime, "n" if not prime
+# Output: The randomly chosen size of chunks that permutations will be split into, in the recombine/mutate methods
 def division (frags, prime) #number of frags
 	x = 1.5
 	if prime == "n"
@@ -156,6 +204,10 @@ def division (frags, prime) #number of frags
 	end		
 	return x
 end
+
+# Input 0: A parent permutation array of Bio::FastaFormat entries
+# Input 1: A second parent permutation array of Bio::FastaFormat entries
+# Output: A child permutation array of Bio::FastaFormat entries, whose order is a recombination of the parent permutations
 def recombine (mum, dad)
 	kid = []
 	1.times do
@@ -215,6 +267,9 @@ def recombine (mum, dad)
 	end
 	return kid[0]
 end
+
+# Input: A permutation array of Bio::FastaFormat entries
+# Output: The input permutation array of Bio::FastaFormat entries, with a small change in the fragment order
 def mutate (fasta)
 	x = 0
 	until x > 2
@@ -229,6 +284,9 @@ def mutate (fasta)
 	sliced[e] = sliced[e].shuffle
 	return sliced.flatten
 end
+
+# Input: A permutation array of Bio::FastaFormat entries
+# Output: The input permutation array of Bio::FastaFormat entries, with a small change in the fragment order
 def mini_mutate (fasta)
 	i = rand(fasta.length)
 	j = rand(fasta.length)
@@ -238,7 +296,12 @@ def mini_mutate (fasta)
 	fasta[j] = a
 	return fasta
 end
-def fitness (fasta, snp_data, same) # same? - use the same constant RATIO of snp ratio to qq plot against the frags, or not
+
+# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
+# Input 1: Array of all the outputs from get_snp_data method
+# Input 2: NOT IMPORTANT, WILL REMOVE EVENTUALLY "same" if we wish to compare the reformed ratio to the constant RATIO, or any other argument if we wish to compare to a re-run of comparable_ratio function in comparable_ratio.R
+# Output: A correlation value that is the fitness of the Input 0 permutation
+def fitness (fasta, snp_data, same) 
 	id_n_lengths = fasta_id_n_lengths(fasta)
 	fasta_ids = id_n_lengths[0]
 	fasta_lengths = id_n_lengths[1]
@@ -260,10 +323,14 @@ def fitness (fasta, snp_data, same) # same? - use the same constant RATIO of snp
 		ratio = myr.pull "comparable_ratio(1)"
 	end
 	myr.assign "ratio", ratio
-	coeff = myr.pull "qq_real_expect(het_snps, hom_snps, ratio)"
+	correlation = myr.pull "qq_real_expect(het_snps, hom_snps, ratio)"
 	myr.quit
-	return coeff
+	return correlation
 end
+
+# Input 0: Array of Bio::FastaFormat entries
+# Input 1: Integer of the desired population size
+# Output: Population - Array of size "size", where each element is a shuffled permutation of the input 0 array of Bio::FastaFormat entries (random permutations)
 def initial_population(fasta, size)
 	population = []
 	size.times do
@@ -272,6 +339,10 @@ def initial_population(fasta, size)
 	end
 	return population
 end
+
+# Input 0: Population - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
+# Input 1: Array of all the outputs from get_snp_data method
+# Output: Fittest half of the population
 def select(pop, snp_data)
 	fits = []
 	pop.each do |sol| #solution
@@ -283,6 +354,13 @@ def select(pop, snp_data)
 	puts "Selected #{pop_fits.size} of #{length} permutations"
 	return pop_fits
 end
+
+# Input 0: Fittest half of previous population
+# Input 1: Integer of the desired population size (NOT USED)
+# Input 2: Integer of the desired number of mutant permutations in the new population (this number of mutate and mini_mutate methods)
+# Input 3: Integer of the desired number of the best permutations from the previous population, to be included in the new one
+# Input 4: Integer of the desired number of randomly shuffled permutations in a new population
+# Output: New population of mutants, recombinants etc - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 def new_population(population, size, mut_num, save, ran) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
 	population = [population, population].flatten(1)
 	pop = []
@@ -304,6 +382,11 @@ def new_population(population, size, mut_num, save, ran) # mut_num = no. of muta
 	end
 	return pop
 end
+
+# Input 0: A permutation array of Bio::FastaFormat entries
+# Input 1: VCF file
+# Input 2: Integer of the number of times the fitness method should be called with the permutation, and to divide the sum by to get an average
+# Output: Average fitness correlation value
 def average_fitness (fasta, vcf_file, num)
 	snp_data = get_snp_data(vcf_file)
 	fits = []
@@ -316,6 +399,16 @@ def average_fitness (fasta, vcf_file, num)
 	puts "Average #{average}"
 	return average
 end
+
+# Input 0: FASTA file
+# Input 1: VCF file
+# Input 2: Integer of desired number of generations - the number of times a new population is created from an old one
+# Input 3: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
+# Input 4: Integer of the desired number of mutant permutations in each new population (this number of mutate and mini_mutate methods)
+# Input 5: Integer of the desired number of the best permutations from each population, to be included in the next one
+# Input 6: Integer of the desired number of randomly shuffled permutations in each new population
+# Input 7: Correctly ordered array of Bio::FastaFormat entries
+# Output: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fasta)
 	ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
 	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
