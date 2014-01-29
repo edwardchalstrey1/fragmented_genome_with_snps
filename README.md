@@ -75,6 +75,13 @@ Purpose of Project
 
 IN THE CONTEXT OF WHY IT WILL BE USEFUL TO HAVE THIS ALGORITHM, WHAT IT DOES THAT IS UNIQUE. LOOK AT LINEAR.PROGX AND ADD LINKS FOR NGM AND SHOREMP
 
-Identifying the genes and alleles associated with beneficial and deleterious traits, is of the utmost importance to agronomic and biomedical science. When beneficial mutations are identified in agronomically important plant species, breeders can select for progeny with the mutant phenotype. This molecular breeding strategy speeds up the selection process, because rejected plants need not be grown. If breeders wish to enhance a complex trait, such as pathogenic disease resistance in a crop species, natural variation can be a limiting factor. One approach is to induce mutations experimentally. These mutagens include chemicals such as ethylmethane sulphonate (EMS).
+Identifying the genes and alleles associated with beneficial and deleterious traits, is of the utmost importance to agronomic and biomedical science. When beneficial mutations are identified in agronomically important plant species, breeders can select for progeny with the mutant phenotype. This molecular breeding strategy speeds up the selection process, because rejected plants need not be grown. If breeders wish to enhance a complex trait, such as pathogenic disease resistance in a crop species, natural variation can be a limiting factor. One approach is to induce mutations experimentally, using mutagens such as ethylmethane sulphonate (EMS).
 
-Identifying causal mutants is important in understanding the mechanism by which they confer a beneficial phenotype. Software packages like SHOREmap (Schneeberger et al, 2009) and NGM (Austin et al, 2011) have been developed, which can be used to identify causative mutations in F2 EMS mutants. NGM uses a chastity statistic to quantify the relative contribution of the parental mutant, and mapping lines, to each single nucleotide polymorphism (SNP), in the pooled F2 population. 
+Identifying causal mutants is important in understanding the mechanism by which they confer a beneficial phenotype. Software packages like SHOREmap (Schneeberger et al, 2009) and NGM (Austin et al, 2011) have been developed, which can be used to identify causative mutations in F2 EMS mutants. NGM uses a chastity statistic to quantify the relative contribution of the parental mutant, and mapping lines, to each single nucleotide polymorphism (SNP), in the pooled F2 population.
+
+However, in species where a reference genome is not available, there exists a need to develop tools which can identify mutations directly from HTS datasets.
+
+
+How the Algorithm [reform_ratio.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/reform_ratio.rb) works
+-----------------
+
