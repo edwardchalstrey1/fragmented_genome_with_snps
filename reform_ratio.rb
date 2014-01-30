@@ -317,13 +317,18 @@ def fitness (fasta, snp_data, same)
 	myr.assign "het_snps", het
 	myr.assign "hom_snps", hom
 	myr.eval "source('~/fragmented_genome_with_snps/comparable_ratio.R')"
-	if same == "same"
-		ratio = RATIO
-	else
+	if same == "diff"
 		ratio = myr.pull "comparable_ratio(1)"
+	else
+		ratio = RATIO
 	end
 	myr.assign "ratio", ratio
-	correlation = myr.pull "qq_real_expect(het_snps, hom_snps, ratio)"
+	myr.eval "corr_n_reformed_ratio <- qq_real_expect(het_snps, hom_snps, ratio)"
+	if same == "figure"
+		myr.assign "dataset", ARGV[0]
+		myr.eval "plot_distribution(corr_n_reformed_ratio[2], dataset)"
+	end
+	correlation = myr.pull "corr_n_reformed_ratio[1]"
 	myr.quit
 	return correlation
 end
@@ -342,44 +347,60 @@ end
 
 # Input 0: Population - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 # Input 1: Array of all the outputs from get_snp_data method
-# Output: Fittest half of the population
-def select(pop, snp_data)
+# Input 2: Integer of the desired number of permutations to be selected for the next generation
+# Output 1: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
+# Output 2: Integer of leftover fragments, to be taken from the multiplied selected population
+def select(pop, snp_data, num)
 	fits = []
 	pop.each do |sol| #solution
 		fits << fitness(sol, snp_data, "same")
 	end
 	pop_fits = fits.zip(pop).sort
 	length = pop_fits.length
-	pop_fits = pop_fits.reverse.each_slice(length/2).to_a[0].reverse # best half gets saved
+	sliced = pop_fits.reverse.each_slice(num).to_a
+	pop_fits = sliced[0].reverse
+	if sliced[-1].length != sliced[0].length # if there is a remainder slice
+		leftover = sliced[-1].length
+	else 
+		leftover = 0
+	end
+	#pop_fits = pop_fits.reverse.each_slice(length/2).to_a[0].reverse # best half gets saved
 	puts "Selected #{pop_fits.size} of #{length} permutations"
-	return pop_fits
+	return pop_fits, leftover
 end
 
-# Input 0: Fittest half of previous population
+# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 # Input 1: Integer of the desired population size (NOT USED)
 # Input 2: Integer of the desired number of mutant permutations in the new population (this number of mutate and mini_mutate methods)
 # Input 3: Integer of the desired number of the best permutations from the previous population, to be included in the new one
 # Input 4: Integer of the desired number of randomly shuffled permutations in a new population
+# Input 5: Integer of leftover fragments, to be taken from the multiplied selected population
 # Output: New population of mutants, recombinants etc - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
-def new_population(population, size, mut_num, save, ran) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
-	population = [population, population].flatten(1)
+def new_population(pop_fits, size, mut_num, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
+	x = (size-leftover)/select_num
+	pop_fits = pop_fits*x
+	if leftover != 0
+		pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) #add leftover number of frags (best)
+	end
+	pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
 	pop = []
-	population[-save,save].each do |i|
-		pop << i[1]
+	pop_save.each do |i|
+		pop << i[1] # adding the permutations only, not the fitness score
 	end
-	x = rand(size-1)
-	for i in population[(mut_num*2)+save+ran..-1]
-		pop << recombine(i[1], population[x][1])
-	end
-	mut_num.times do
-		pop << mutate(population[rand(population.length)][1])
+	for i in pop_fits[(mut_num*2)+save+ran..-1]
+		x = rand(size-1)
+		pop << recombine(i[1], pop_fits[x][1])
 	end
 	mut_num.times do
-		pop << mini_mutate(population[-1][1])
+		pop << mutate(pop_fits[rand(pop_fits.length)][1]) # mutating randomly selected permutations from pop_fits
+	end
+	mut_num.times do
+		pop << mini_mutate(pop_fits[-1][1]) # mini_mutating the best permutations
 	end
 	ran.times do
-		pop << population[0][1].shuffle
+		pop << pop_fits[0][1].shuffle
 	end
+	puts "New population size = #{pop.size}, with #{pop.size-(mut_num*2)-save-ran} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
 	return pop
 end
 
@@ -409,20 +430,19 @@ end
 # Input 6: Integer of the desired number of randomly shuffled permutations in each new population
 # Input 7: Correctly ordered array of Bio::FastaFormat entries
 # Output: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
-def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fasta)
+def evolve(fasta_file, vcf_file, gen, pop_size, select_num, mut_num, save, ran, ordered_fasta)
 	ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
 	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 	puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
-	#puts "Original order score = #{rearrangement_score(ordered_ids, ordered_ids)}"
-	#worst_score = rearrangement_score(ordered_ids, ordered_ids.reverse)
 	puts
 	puts "Gen 0"
 	fasta = fasta_array(fasta_file) #array of fasta format fragments
 	pop = initial_population(fasta, pop_size)
-	pop_fits = select(pop, snp_data)
+	pop_fits_n_leftover = select(pop, snp_data, select_num)
+	pop_fits = pop_fits_n_leftover[0]
+	leftover = pop_fits_n_leftover[1]
 	puts "Best correlation = #{pop_fits[-1][0]}"
 	best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
-	#puts "Score of best correlation = #{rearrangement_score(ordered_ids, best_perm_ids)}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
 	puts
 	y=1
 	z=1
@@ -430,12 +450,12 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fast
 		puts "Gen #{y}"
 		prev_best_arr = pop_fits[-1][1]
 		prev_best_fit = pop_fits[-1][0]
-		pop = new_population(pop_fits, pop_size, mut_num, save, ran)
-		pop_fits = select(pop, snp_data)
+		pop = new_population(pop_fits, pop_size, mut_num, save, ran, select_num, leftover)
+		pop_fits_n_leftover = select(pop, snp_data, select_num)
+		pop_fits = pop_fits_n_leftover[0]
+		leftover = pop_fits_n_leftover[1]
 		puts "Best correlation = #{pop_fits[-1][0]}"
 		best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
-		#score = rearrangement_score(ordered_ids, best_perm_ids)
-		#puts "Score of best correlation = #{score}  Worst score = #{worst_score}" # THE REARRANGEMENT SCORE METHOD IS FOR TESTING THE ALGORITHM ONLY, NOT PART OF IT
 		if pop_fits[-1][0] <= prev_best_fit
 			puts "No fitness improvement" # If this is not called, this implies there has been some improvement
 			z+=1
@@ -443,24 +463,22 @@ def evolve(fasta_file, vcf_file, gen, pop_size, mut_num, save, ran, ordered_fast
 			puts "FITNESS IMPROVEMENT!"
 			z=1
 		end
-		#if score < rearrangement_score(ordered_ids, (fasta_id_n_lengths(prev_best_arr)[0]))
-		#	puts "SCORE IMPROVEMENT!"
-		#else
-		#	puts "No score improvement"
-		#end
 		puts
 		if z >= 10
-			puts best_perm_ids
-		end
-		if z >= 10
-			then break
+			puts "Algorithm quit for lack of fitness improvement, rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
+			write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)
+			fitness(best_perm_ids, snp_data, "figure") # makes figure of ratio density distribution
 		end
 		if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
 			av = average_fitness(pop_fits[-1][1], vcf_file, 10)
 			if av >= 0.999
-				puts "Perfect reform ratio has a rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
-				write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)		
+				puts "Fitness #{av}: reform ratio has a rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
+				write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)
+				z = 10
 			end
+		end
+		if z >= 10
+			then break
 		end
 		y+=1
 		Signal.trap("PIPE", "EXIT")
@@ -474,8 +492,7 @@ ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 200, 100, 10, 10, 5, ordered_fasta) # gen, pop, mut*2, save, ran ### ordered_ids is temporary
-
+evolve(fasta, vcf, 1000, 50, 25, 5, 5, 1, ordered_fasta) # gen, pop, select_num, mut*2, save, ran, ### ordered_ids is temporary
 
 
 

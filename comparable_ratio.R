@@ -17,6 +17,8 @@ comparable_ratio <- function(a){
 # Input 1: Array of heterozygous snp positions (from a fragment permutation)
 # Input 2: Array of homozygous snp positions (from a fragment permutation)
 # Input 3: Homozygous/heterozygous snp ratio to compare against in qq plot - vector of homozygous density estimate points divided by the heterozygous ones (from comparable_ratio)
+# Output 1: Correlation value
+# Output 2: Reformed ratio
 qq_real_expect <- function(het_snps, hom_snps, ratio){
 	real_ht <- as.vector(as.matrix(het_snps))
 	real_hm <- as.vector(as.matrix(hom_snps))
@@ -25,5 +27,13 @@ qq_real_expect <- function(het_snps, hom_snps, ratio){
 	real_ratio <- real_hmd$y/real_htd$y
 	qqp <- qqplot(ratio, real_ratio, plot.it=FALSE)
     #qqp <- qqnorm(real_ratio)
-	return(cor(qqp$x,qqp$y))
+	return(cor(qqp$x,qqp$y), real_ratio)
+}
+
+
+plot_distribution <- function(real_ratio, dataset){
+	x <- (1:512)*36298.9375 # genome length/512
+	png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/", dataset,"best_permutation_distribution.png", sep=""))
+	plot(x, real_ratio, xlab="Arabidopsis chromosome 4 (nucleotides)", ylab="Ratio of Homozygous SNP Density/Heterozygous SNP Density")
+	dev.off()
 }
