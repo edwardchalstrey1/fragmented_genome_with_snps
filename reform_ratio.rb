@@ -323,12 +323,13 @@ def fitness (fasta, snp_data, same)
 		ratio = RATIO
 	end
 	myr.assign "ratio", ratio
-	myr.eval "corr_n_reformed_ratio <- qq_real_expect(het_snps, hom_snps, ratio)"
+	myr.eval "correlation <- get_corr(het_snps, hom_snps, ratio)"
 	if same == "figure"
 		myr.assign "dataset", ARGV[0]
-		myr.eval "plot_distribution(corr_n_reformed_ratio[2], dataset)"
+		myr.eval "real_ratio <- get_real_ratio(het_snps, hom_snps, ratio)"
+		myr.eval "plot_distribution(real_ratio, dataset)" # plot of the real_ratio
 	end
-	correlation = myr.pull "corr_n_reformed_ratio[1]"
+	correlation = myr.pull "correlation"
 	myr.quit
 	return correlation
 end
@@ -431,6 +432,7 @@ end
 # Input 7: Correctly ordered array of Bio::FastaFormat entries
 # Output: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 def evolve(fasta_file, vcf_file, gen, pop_size, select_num, mut_num, save, ran, ordered_fasta)
+	gen_fits = [] # array of the best fitness in each generation
 	ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
 	snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 	puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
@@ -441,8 +443,10 @@ def evolve(fasta_file, vcf_file, gen, pop_size, select_num, mut_num, save, ran, 
 	pop_fits_n_leftover = select(pop, snp_data, select_num)
 	pop_fits = pop_fits_n_leftover[0]
 	leftover = pop_fits_n_leftover[1]
+	best_perm = pop_fits[-1][1]
 	puts "Best correlation = #{pop_fits[-1][0]}"
-	best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
+	gen_fits << pop_fits[-1][0]
+	best_perm_ids = fasta_id_n_lengths(best_perm)[0]
 	puts
 	y=1
 	z=1
@@ -454,8 +458,10 @@ def evolve(fasta_file, vcf_file, gen, pop_size, select_num, mut_num, save, ran, 
 		pop_fits_n_leftover = select(pop, snp_data, select_num)
 		pop_fits = pop_fits_n_leftover[0]
 		leftover = pop_fits_n_leftover[1]
+		best_perm = pop_fits[-1][1]
 		puts "Best correlation = #{pop_fits[-1][0]}"
-		best_perm_ids = fasta_id_n_lengths(pop_fits[-1][1])[0]
+		gen_fits << pop_fits[-1][0]
+		best_perm_ids = fasta_id_n_lengths(best_perm)[0]
 		if pop_fits[-1][0] <= prev_best_fit
 			puts "No fitness improvement" # If this is not called, this implies there has been some improvement
 			z+=1
@@ -467,13 +473,14 @@ def evolve(fasta_file, vcf_file, gen, pop_size, select_num, mut_num, save, ran, 
 		if z >= 10
 			puts "Algorithm quit for lack of fitness improvement, rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
 			write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)
-			fitness(best_perm_ids, snp_data, "figure") # makes figure of ratio density distribution
+			fitness(best_perm, snp_data, "figure") # makes figure of ratio density distribution
 		end
 		if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
 			av = average_fitness(pop_fits[-1][1], vcf_file, 10)
 			if av >= 0.999
 				puts "Fitness #{av}: reform ratio has a rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
 				write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)
+				fitness(best_perm, snp_data, "figure") # makes figure of ratio density distribution
 				z = 10
 			end
 		end
@@ -483,6 +490,12 @@ def evolve(fasta_file, vcf_file, gen, pop_size, select_num, mut_num, save, ran, 
 		y+=1
 		Signal.trap("PIPE", "EXIT")
 	end
+	myr = RinRuby.new(echo=false)
+	myr.assign "gen_fits", gen_fits
+	myr.eval "source('~/fragmented_genome_with_snps/comparable_ratio.R')"
+	myr.assign "dataset", ARGV[0]
+	myr.eval "plot_performance(gen_fits, dataset)"
+	myr.quit
 end
 
 vcf = 'arabidopsis_datasets/'+ARGV[0].to_s+'/snps.vcf'
@@ -492,7 +505,7 @@ ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 1000, 50, 25, 5, 5, 1, ordered_fasta) # gen, pop, select_num, mut*2, save, ran, ### ordered_ids is temporary
+evolve(fasta, vcf, 20, 50, 25, 10, 5, 1, ordered_fasta) # gen, pop, select_num, mut*2, save, ran, ### ordered_ids is temporary
 
 
 
