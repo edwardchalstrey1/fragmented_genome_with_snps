@@ -3,6 +3,8 @@ require 'bio-samtools'
 require 'bio'
 require 'rinruby'
 
+
+
 # See the comparable_ratio function in comparable_ratio.R
 myr = RinRuby.new(echo=false)
 myr.eval "source('~/fragmented_genome_with_snps/comparable_ratio.R')"
