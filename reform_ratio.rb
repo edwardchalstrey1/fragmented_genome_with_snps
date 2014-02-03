@@ -505,7 +505,7 @@ ordered_fasta = fasta_array('arabidopsis_datasets/'+ARGV[0].to_s+'/frags.fasta')
 #average_fitness(ordered_fasta, vcf, 10) # test to see how well correct arrangement performs...
 #average_fitness(fasta_array(fasta), vcf, 10) # ... vs random arrangement
 
-evolve(fasta, vcf, 20, 50, 25, 10, 5, 1, ordered_fasta) # gen, pop, select_num, mut*2, save, ran, ### ordered_ids is temporary
+evolve(fasta, vcf, 1000, 100, 50, 10, 5, 5, ordered_fasta) # gen, pop, select_num, mut*2, save, ran, ### ordered_ids is temporary
 
 
 
