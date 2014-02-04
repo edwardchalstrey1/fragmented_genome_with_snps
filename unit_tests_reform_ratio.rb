@@ -8,6 +8,14 @@ require 'test/unit'
 
 # UNIT TESTING THE ReformRatio CLASS
 
+class FakeFasta
+	attr_accessor :entry_id, :length
+	def initialize
+		@entry_id = "FragX"
+		@length = 10
+	end
+end
+
 class TestReform < Test::Unit::TestCase
 	def test_rearrangement_score
 		a = ["a", "b", "c"]
@@ -53,6 +61,22 @@ class TestReform < Test::Unit::TestCase
 		assert(child2.uniq == child2, "Child of p3/4 not unique")
 		assert(child2 != parent3, "Child same as parent3")
 		assert(child2 != parent4, "Child same as parent4")
+	end
+	def test_fasta_id_n_lengths
+		fragment = FakeFasta.new
+		fasta = [fragment, fragment, fragment]
+		ids_n_lengths = ReformRatio::fasta_id_n_lengths(fasta)
+		ids = ids_n_lengths[0]
+		lengths = ids_n_lengths[1]
+		assert_equal(['FragX', 'FragX', 'FragX'], ids)
+		assert_equal([10,10,10], lengths)
+	end
+	def test_snps_per_fasta_frag
+		frag1, frag2 = FakeFasta.new, FakeFasta.new
+		frag1.entry_id, frag2.entry_id = 'frag1', 'frag2'
+		fasta = [frag1, frag2]
+		h = {'frag2'=>3,'frag1'=>2}
+		assert_equal([2,3], ReformRatio::snps_per_fasta_frag(h, fasta))
 	end
 end
 
