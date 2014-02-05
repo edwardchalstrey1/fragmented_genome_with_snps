@@ -1,6 +1,7 @@
-require "rubygems"
-require "rinruby"
-require "json"
+#encoding: utf-8
+require 'rubygems'
+require 'rinruby'
+require 'json'
 require 'bio-samtools'
 require 'bio'
 
@@ -11,6 +12,7 @@ def fasta2char_array (fasta)
 	end
 	return fasta_array[0].split(//)
 end
+
 def normal_dist
 	myr = RinRuby.new(echo = false)
 	myr.eval "hm <- rnorm(35, 10000000, 5000000)"
@@ -24,8 +26,7 @@ def normal_dist
 		hm = [hm, 10000000].flatten # adding in the causative SNP, if there isn't one already at the position
 	end
 	ht = myr.pull "ht"
-	hm_int = []
-	ht_int = []
+	hm_int, ht_int = []
 	hm.each{|i| hm_int << i.abs.to_i}
 	ht.each{|i| ht_int << i.abs.to_i}
 	snp_pos = [ht_int,hm_int].flatten
@@ -35,6 +36,7 @@ def normal_dist
 	puts "There are "+ht.length.to_s+" heterozygous SNPs"
 	return snp_pos, hm_int, ht_int
 end
+
 def get_frags (seq)
 	frags = []
 	rt = 0
@@ -46,37 +48,28 @@ def get_frags (seq)
 	end
 	return frags
 end
+
 def snp_seq (seq, snp_pos)
 	snp_pos.each do |i|
-		#if i == 10000000
-		#	seq[9999999] = 'M'
-		#	puts "hi"
-		#else
-			if seq[i-1] == 'A' # -1 because ruby counts from 0
-				seq[i-1] = 'T'
-			elsif seq[i-1] == 'T'
-				seq[i-1] = 'A'
-			elsif seq[i-1] == 'C'
-				seq[i-1] = 'G'
-			elsif seq[i-1] == 'G'
-				seq[i-1] = 'C'
-			elsif seq[i-1] == 'N'
-				seq[i-1] = 'R'
-			end
-		#end
+		case seq[i-1]
+		when 'A' then seq[i-1] = 'T'
+		when 'T' then seq[i-1] = 'A'
+		when 'C' then seq[i-1] = 'G'
+		when 'G' then seq[i-1] = 'C'
+		when 'N' then seq[i-1] = 'R'
+		else puts "Error: base not A,T,C,G or N\n Base was #{seq[i-1]}"
+		end
 	end
-	#puts seq[seq[seq.index('M')+1..-1].index('M')+seq.index('M')] # FUCK M!!!
-	#seq[seq[seq.index('M')+1..-1].index('M')+seq.index('M')] = "A"
-	#puts "There is "+seq.count("M").to_s+" M. At position "+(seq.index("M")+1).to_s#+" and at "+(seq[seq.index('M')+1..-1].index('M')+seq.index('M')+1).to_s
 	return seq
 end
-def pos_each_frag (snp_pos, frags) #get the positions for snps on individual frags
-	sorted_pos = snp_pos.sort #this is needed as the ht/hm SNPs need to be ordered together
+
+def pos_each_frag (snp_pos, frags) # get the positions for snps on individual frags
+	snp_pos.sort! # this is needed as the ht/hm SNPs need to be ordered together
 	p_ranges = []
 	frags.each do |i|
-		p_ranges << i.length + p_ranges[-1].to_i #adding the fragment lengths to get the upper bounds of ranges of positions on the original seq.
+		p_ranges << i.length + p_ranges[-1].to_i # adding the fragment lengths to get the upper bounds of ranges of positions on the original seq.
 	end
-	first_pos = [] #then, to work out the first position of each fragment
+	first_pos = [] # then, to work out the first position of each fragment
 	first_pos << 0
 	first_pos << p_ranges[0..-2]
 	first_pos = first_pos.flatten
@@ -84,26 +77,27 @@ def pos_each_frag (snp_pos, frags) #get the positions for snps on individual fra
 	t = 0
 	all_frags_pos = [] # the positions of snps on each fragment, array of arrays
 	snp_pos_all = [] # the actual positions in the genome for each fragment
-	p_ranges.each do |jj| #for each of the upper ranges (j) that the positions could be in
+	p_ranges.each do |jj| # for each of the upper ranges (j) that the positions could be in
 		each_frag_pos = []
 		actual_pos = []
-		while sorted_pos[t].to_i < jj && !sorted_pos[t].nil? do #make the loop quit before trying to access index of snp_pos that doesn't exist
-			each_frag_pos << sorted_pos[t].to_i 	# add all of the positions < jj to a new array for each frag
-			actual_pos << sorted_pos[t].to_i
+		while snp_pos[t].to_i < jj && snp_pos[t].nil? == false do # make the loop quit before trying to access index of snp_pos that doesn't exist
+			each_frag_pos << snp_pos[t].to_i 	# add all of the positions < jj to a new array for each frag
+			actual_pos << snp_pos[t].to_i
 			t += 1
 		end
 		snp_pos_all << actual_pos 
 		z = 0
 		y = first_pos[p].to_i
-		each_frag_pos.each do |e|   
-			each_frag_pos[z] = e - y #taking away the value at the first position of each fragment to get the true/actual positions
-			z += 1
-		end
+		each_frag_pos.each do |e|
+      each_frag_pos[z] = e - y # taking away the value at the first position of each fragment to get the true/actual positions
+      z += 1
+    end
 		p += 1
 		all_frags_pos << each_frag_pos # add the positions for the frag to an array of the each_frag arrays
 	end
 	return all_frags_pos, snp_pos_all
 end
+
 def storage_json (frags, pos, dataset)
 	frags_with_positions = []
 	x = 0
@@ -118,6 +112,7 @@ def storage_json (frags, pos, dataset)
 		f.write(frags_with_positions.to_json)
 	end
 end
+
 def write_txt (filename, array)
 	File.open(filename, "w+") do |f|
 		array.each { |i| f.puts(i) }
@@ -129,8 +124,7 @@ end
 ###########
 
 def fasta_array (frags)
-	frag_ids = []
-	id_and_length = [] 
+	frag_ids, id_and_length = [] 
 	x = 0
 	frag_strings = []
 	frags.each do |i|
@@ -144,6 +138,7 @@ def fasta_array (frags)
 	fastaformat_array = id_and_length.zip(frag_strings) #create the array, each element of which goes onto a new line in fasta
 	return fastaformat_array, frag_ids
 end
+
 def vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
 	x = 0
 	ids = []
@@ -151,11 +146,10 @@ def vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
 		ids << ('frag' + (x+1).to_s)
 		x+=1
 	end
-	chrom = []
-	alt = []
+	chrom, alt = []
 	q = 0
 	pos_on_frags.each do |h|
-		if h.to_s != '[]' #all of the fragments that contain at least one snp
+		if h.length != 0 #all of the fragments that contain at least one snp
 			h.length.times do #*no. of snps
 				chrom << ids[q]
 			end
@@ -167,22 +161,14 @@ def vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
 	end
 	ref = []
 	it = 0
-	alt.each do |base|
-		if base == nil
-			alt[it] ='T'
-		end
-		if base == 'A'
-			ref << 'T'
-		elsif base == 'T'
-			ref << 'A'
-		elsif base == 'C'
-			ref << 'G'
-		elsif base == 'G'
-			ref << 'C'
-		elsif base == 'R'
-			ref << 'N'
-		else
-			ref << 'A'
+	alt.each do |base| # TODO change to CASE!!! NOT SURE IF THIS IS RIGHT, WONT IT NOW SKIP THE CASE IF BASE IS nil? I WANT IT TO DO BOTH
+		base == nil ? alt[it] ='T': case base
+		when 'A' then ref << 'T'
+		when 'T' then ref << 'A'
+		when 'C' then ref << 'G'
+		when 'G' then ref << 'C'
+		when 'R' then ref << 'N'
+		else ref << 'A'
 		end
 		it+=1
 	end
@@ -202,11 +188,13 @@ def vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
 	end
 	return vcf_format, chrom.uniq
 end
+
 def write_data (array, file, dataset)
 	File.open("arabidopsis_datasets/"+dataset.to_s+"/"+file, "w+") do |f|
 		array.each { |i| f.puts(i) } #write the fasta/vcf
 	end
 end
+
 def json_array (array, file, dataset)
 	File.open("arabidopsis_datasets/"+dataset.to_s+"/"+file, "w+") do |f|
 		f.write(array.to_json)

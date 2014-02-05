@@ -66,9 +66,9 @@ end
 # Input 1: Array of VCF chrom field (fragment identifiers)
 # Input 2: Array of VCF pos field (positions of snps on fragments)
 # Input 3: Array of the number of snps per fragment, in the same order as the input 0 fasta array
-# Input 4: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
+# Input 4: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency, single key/value)
 # Output 0: The snp positions for each frag, in an array of arrays (each sub array contains the snp positions for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
-# Output 1: The info hashes (of each snp) for each frag, in an array of arrays (each sub array contains the info hashes for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
+# Output 1: The info hashes (of each snp, single key/value) for each frag, in an array of arrays (each sub array contains the info hashes for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
 def self.get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info)
 	pos = [] #get the snp positions for each frag, in an array of arrays
 	info = []
@@ -260,16 +260,12 @@ def self.recombine (mum, dad)
 	return kid[0]
 end
 
-# Input: A permutation array of Bio::FastaFormat entries
+# Input: A permutation array of Bio::FastaFormat entries (or any array)
 # Output: The input permutation array of Bio::FastaFormat entries, with a small change in the fragment order
 def self.mutate (fasta)
 	x = 0
 	until x > 2
-		if prime?(fasta.length)
-			x = division(fasta, "p")
-		else
-			x = division(fasta, "n")
-		end
+		x = division(fasta)
 	end
 	sliced = fasta.each_slice(x).to_a
 	e = rand(sliced.length-1).to_i
