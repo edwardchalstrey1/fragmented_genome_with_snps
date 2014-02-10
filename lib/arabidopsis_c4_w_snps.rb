@@ -77,7 +77,7 @@ class ModelGenome
 			when 'C' then seq[i-1] = 'G'
 			when 'G' then seq[i-1] = 'C'
 			when 'N' then seq[i-1] = 'R'
-			else puts "Error: base not A,T,C,G or N\n Base was #{seq[i-1]}"
+			else seq[i-1] = 'A'; puts "Error: base not A,T,C,G or N\n Made it #{seq[i-1]}"
 			end
 		end
 		return seq
@@ -150,22 +150,16 @@ class ModelGenome
 	# Input 4: Array of the genomic SNP positions that are heterozygous
 	# Output: Array of strings, each string is a line that will be written to the VCF file
 	def self.vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
-		x = 1
-		ids = []
-		frags.each do |i| #getting the ids, TODO must be a faster way of doing this?
-			ids << "frag#{x}"
-			x+=1
-		end
-		chrom, alt = []
-		q = 0
-		pos_on_frags.each do |snps_on_frag|
-			if snps_on_frag.length != 0 #all of the fragments that contain at least one snp
-				snps_on_frag.length.times do #*no. of snps
-					chrom << ids[q]
+		chrom, alt = [], []
+		q = 1
+		while q <= pos_on_frags.length
+			if pos_on_frags[q-1].length != 0 #all of the fragments that contain at least one snp
+				pos_on_frags[q-1].length.times do #*no. of snps
+					chrom << "frag#{q}"
 				end
 			end
-			snps_on_frag.each do |i|
-				alt << frags[q][i] #what nucleotide is at these positions?
+			pos_on_frags[q-1].each do |i|
+				alt << frags[q-1][i] #what nucleotide is at these positions?
 			end
 			q+=1
 		end
@@ -192,7 +186,7 @@ class ModelGenome
 			else
 				x = 'WRONG'
 			end
-			line = "#{chrom[u]}	#{i}	.	#{ref[u]}	#{alt[u]}	100	PASS	AF=#{x}"
+			line = "#{chrom[u]}	#{i+1}	.	#{ref[u]}	#{alt[u]}	100	PASS	AF=#{x}" # we use i+1 to get actual positions e.g. 1 where ruby says 0
 			vcf_format << line
 			u+=1
 		end
@@ -205,34 +199,3 @@ class ModelGenome
 		end
 	end
 end
-#Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s)) # make the directory to put data files into
-
-# snpz = normal_dist
-# snp_pos = snpz[0]
-# hm = snpz[1]
-# ht = snpz[2]
-
-# puts "Is there a SNP at the causative mutation position? -- "+snp_pos.include?(10000000).to_s
-
-# arabidopsis_c4 = fasta_to_char_array("TAIR10_chr4.fasta")
-# snp_sequence = snp_seq(arabidopsis_c4, snp_pos)
-# frags = get_frags(snp_sequence, 10000) # 10-20Kb
-# puts "Arabidopsis chr4 length: "+arabidopsis_c4.length.to_s+" bases"
-# puts "Fragmented seq   length: "+frags.join.length.to_s+ " = close enough? You decide."
-# puts "You have created "+frags.length.to_s+" fragments of sizes 10-20Kb"
-
-# pos_on_all = pos_each_frag(snp_pos, frags)
-# pos_on_frags = pos_on_all[0]
-# snp_pos_all = pos_on_all[1]
-
-# fastaformat_array = fasta_array(frags)
-
-# vcf = vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
-
-# write_data(fastaformat_array, 'frags.fasta', ARGV[0])
-# write_data(vcf, 'snps.vcf', ARGV[0])
-
-# fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it to show that the order doesn't need to be conserved when working out density later on
-# write_data(fastaformat_array_shuf, 'frags_shuffled.fasta', ARGV[0])
-
-

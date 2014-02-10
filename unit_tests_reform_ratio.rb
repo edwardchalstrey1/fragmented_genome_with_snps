@@ -6,9 +6,6 @@ require 'rinruby'
 require_relative 'lib/reform_ratio'
 require 'test/unit'
 
-
-# UNIT TESTING THE ReformRatio CLASS
-
 class FakeFasta
 	attr_accessor :entry_id, :length
 	def initialize

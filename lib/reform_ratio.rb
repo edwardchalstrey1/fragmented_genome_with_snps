@@ -1,8 +1,8 @@
 #encoding: utf-8
-#require 'rubygems'
-#require 'bio-samtools'
-#require 'bio'
-#require 'rinruby' ## These are needed in a script that uses this class
+require 'rubygems'
+require 'bio-samtools'
+require 'bio'
+require 'rinruby' ## These are needed in a script that uses this class
 
 class ReformRatio
 
