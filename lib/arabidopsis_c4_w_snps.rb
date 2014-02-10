@@ -49,20 +49,20 @@ class ModelGenome
 	# Input 0: Character array of genome sequence e.g. ['A','T', 'C'...]
 	# Input 1: Size of fragments: Output fragments are of random length between the value of input 1 and double that value
 	# Output: Fragmented genome: Character array split into chunks and put into super array e.g. [['A', 'T'], ['C', 'G']...]
-	def self.get_frags (seq, size) # GET THIS SHIT TO WORK!!!!
+	def self.get_frags (seq, size)
 		frags = []
 		rt = 0
-		while rt < seq.length
+		while frags.flatten.length < seq.length
 			frag_length = rand(size) + size # fragments of 10kb - 20kb
 			frag = seq[rt..(rt + frag_length)]
+			frags << frag
 			rt = rt + frag_length
+		end
+		frags = frags[0..-2]
+		if frags.flatten.length < seq.length
+			frag = seq[frags.flatten.length..seq.length-1]
 			frags << frag
 		end
-		puts frags.flatten.length
-		frags = frags[0..-2]
-		puts frags.flatten.length
-		final_frag = seq[-(seq.length - frags.flatten.length)..-1]
-		frags << final_frag
 		return frags
 	end
 
@@ -83,6 +83,10 @@ class ModelGenome
 		return seq
 	end
 
+	# Input 0: Array of all the SNP positions in the genome
+	# Input 1: Fragmented genome: Character array split into chunks and put into super array e.g. [['A', 'T'], ['C', 'G']...]
+	# Output 0: Array of arrays where each sub array contains the SNP positions on one fragment, and each sub array is ordered in the same way as Input 1 in the super array.
+	# Output 1: Array of arrays where each sub array contains the genomic positions of the SNPs for that fragment, and each sub array is ordered in the same way as Input 1 in the super array.
 	def self.pos_each_frag (snp_pos, frags) # get the positions for snps on individual frags
 		snp_pos.sort! # this is needed as the ht/hm SNPs need to be ordered together
 		p_ranges = []
@@ -118,51 +122,52 @@ class ModelGenome
 		return all_frags_pos, snp_pos_all
 	end
 
-	def self.write_txt (filename, array)
-		File.open(filename, "w+") do |f|
-			array.each { |i| f.puts(i) }
-		end
-	end
-
 	###########
 	#FASTA/VCF#
 	###########
 
+	# Input: Fragmented genome: Character array split into chunks and put into super array e.g. [['A', 'T'], ['C', 'G']...]
+	# Output: Array of arrays, a sub array for each fragment that contains 2 strings: an identifier with the fragment's length, and the sequence of that fragment.
 	def self.fasta_array (frags)
-		frag_ids, id_and_length = [] 
-		x = 0
+		frag_ids, id_and_length = [], []
+		x = 1
 		frag_strings = []
 		frags.each do |i|
-			id = ('>frag' + (x+1).to_s)
-			id_and_length << (id + "  Length = " + i.length.to_s)
-			id.slice!('>')
+			id = "frag#{x}"
+			id_and_length << ">#{id} Length = #{i.length}"
 			frag_ids << id
 			frag_strings << i.join.to_s # joining all the bases in one frag array to form a string for fasta
 			x+=1
 		end
 		fastaformat_array = id_and_length.zip(frag_strings) #create the array, each element of which goes onto a new line in fasta
-		return fastaformat_array, frag_ids
+		return fastaformat_array
 	end
 
+	# Input 0: Fragmented genome: Character array split into chunks and put into super array e.g. [['A', 'T'], ['C', 'G']...]
+	# Input 1: Array of arrays where each sub array contains the SNP positions on one fragment
+	# Input 2: Array of arrays where each sub array contains the genomic positions of the SNPs for that fragment
+	# Input 3: Array of the genomic SNP positions that are homozygous
+	# Input 4: Array of the genomic SNP positions that are heterozygous
+	# Output: Array of strings, each string is a line that will be written to the VCF file
 	def self.vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
-		x = 0
+		x = 1
 		ids = []
-		frags.each do |i| #getting the ids 
-			ids << ('frag' + (x+1).to_s)
+		frags.each do |i| #getting the ids, TODO must be a faster way of doing this?
+			ids << "frag#{x}"
 			x+=1
 		end
 		chrom, alt = []
 		q = 0
-		pos_on_frags.each do |h|
-			if h.length != 0 #all of the fragments that contain at least one snp
-				h.length.times do #*no. of snps
+		pos_on_frags.each do |snps_on_frag|
+			if snps_on_frag.length != 0 #all of the fragments that contain at least one snp
+				snps_on_frag.length.times do #*no. of snps
 					chrom << ids[q]
 				end
 			end
-			h.each do |i|
+			snps_on_frag.each do |i|
 				alt << frags[q][i] #what nucleotide is at these positions?
 			end
-			q += 1
+			q+=1
 		end
 		ref = []
 		it = 0
@@ -179,23 +184,23 @@ class ModelGenome
 		end
 		vcf_format = ['##fileformat=VCFv4.1', '##source=Fake', '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO'] 
 		u = 0
-		pos_on_frags.flatten.each do |i| # trying to do: if we increment the pos_on_frags and the snp_pos_all together, we should be able to tell whether each SNP from on_frags is het/homo
+		pos_on_frags.flatten.each do |i| #if we increment the pos_on_frags and the snp_pos_all together, we can tell whether each SNP from on_frags is het/homo
 			if hm.include?(snp_pos_all.flatten[u])
-				x = "1.0"
+				x = '1.0'
 			elsif ht.include?(snp_pos_all.flatten[u])
-				x = "0.5"
+				x = '0.5'
 			else
-				x = "WRONG"
+				x = 'WRONG'
 			end
-			line = chrom[u] + '	' + i.to_s + '	.	' +	ref[u] + '	' + alt[u] + '	100	PASS	AF='+x
+			line = "#{chrom[u]}	#{i}	.	#{ref[u]}	#{alt[u]}	100	PASS	AF=#{x}"
 			vcf_format << line
-			u += 1
+			u+=1
 		end
-		return vcf_format, chrom.uniq
+		return vcf_format
 	end
 
 	def self.write_data (array, file, dataset)
-		File.open("arabidopsis_datasets/"+dataset.to_s+"/"+file, "w+") do |f|
+		File.open("arabidopsis_datasets/#{dataset}/#{file}", "w+") do |f|
 			array.each { |i| f.puts(i) } #write the fasta/vcf
 		end
 	end
@@ -220,13 +225,9 @@ end
 # pos_on_frags = pos_on_all[0]
 # snp_pos_all = pos_on_all[1]
 
-# fasta_n_ids = fasta_array(frags)
-# fastaformat_array = fasta_n_ids[0]
-# frag_ids = fasta_n_ids[1]
+# fastaformat_array = fasta_array(frags)
 
-# vcf_n_chrom = vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
-# vcf = vcf_n_chrom[0]
-# chrom = vcf_n_chrom[1]
+# vcf = vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
 
 # write_data(fastaformat_array, 'frags.fasta', ARGV[0])
 # write_data(vcf, 'snps.vcf', ARGV[0])
