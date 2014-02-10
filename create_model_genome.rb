@@ -15,10 +15,10 @@ ht = snpz[2]
 puts "Is there a SNP at the causative mutation position? -- #{snp_pos.include?(10000000)}"
 
 arabidopsis_c4 = ModelGenome::fasta_to_char_array("TAIR10_chr4.fasta")
-snp_sequence = ModelGenome::snp_seq(arabidopsis_c4, snp_pos)
+#snp_sequence = ModelGenome::snp_seq(arabidopsis_c4, snp_pos)
 
 contig_size = 10000 # 10-20kb
-frags = ModelGenome::get_frags(snp_sequence, contig_size)
+frags = ModelGenome::get_frags(arabidopsis_c4, contig_size)
 
 puts "Arabidopsis chr4 length: #{arabidopsis_c4.length} bases"
 puts "Fragmented seq   length: #{frags.join.length} = close enough? You decide."

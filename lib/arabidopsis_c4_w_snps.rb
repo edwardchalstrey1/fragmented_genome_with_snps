@@ -150,7 +150,7 @@ class ModelGenome
 	# Input 4: Array of the genomic SNP positions that are heterozygous
 	# Output: Array of strings, each string is a line that will be written to the VCF file
 	def self.vcf_array (frags, pos_on_frags, snp_pos_all, hm, ht)
-		chrom, alt = [], []
+		chrom, ref = [], []
 		q = 1
 		while q <= pos_on_frags.length
 			if pos_on_frags[q-1].length != 0 #all of the fragments that contain at least one snp
@@ -159,20 +159,20 @@ class ModelGenome
 				end
 			end
 			pos_on_frags[q-1].each do |i|
-				alt << frags[q-1][i] #what nucleotide is at these positions?
+				ref << frags[q-1][i] #what nucleotide is at these positions?
 			end
 			q+=1
 		end
-		ref = []
+		alt = []
 		it = 0
-		alt.each do |base| # TODO change to CASE!!! NOT SURE IF THIS IS RIGHT, WONT IT NOW SKIP THE CASE IF BASE IS nil? I WANT IT TO DO BOTH
-			base == nil ? alt[it] ='T': case base
-			when 'A' then ref << 'T'
-			when 'T' then ref << 'A'
-			when 'C' then ref << 'G'
-			when 'G' then ref << 'C'
-			when 'R' then ref << 'N'
-			else ref << 'A'
+		ref.each do |base| 
+			base == nil ? ref[it] ='T': case base
+			when 'A' then alt << 'T'
+			when 'T' then alt << 'A'
+			when 'C' then alt << 'G'
+			when 'G' then alt << 'C'
+			when 'N' then alt << 'R'
+			else alt << 'A'
 			end
 			it+=1
 		end

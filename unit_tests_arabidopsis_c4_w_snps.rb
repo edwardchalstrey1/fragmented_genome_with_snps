@@ -53,8 +53,8 @@ class TestModelGenome < Test::Unit::TestCase
 		hm = [2,5]
 		ht = [1,6]
 		vcf_array = ModelGenome::vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
-		assert_equal('frag1	2	.	A	T	100	PASS	AF=0.5', vcf_array[3])
-		assert_equal('frag2	1	.	G	C	100	PASS	AF=1.0', vcf_array[4])
-		assert_equal('frag3	3	.	G	C	100	PASS	AF=0.5', vcf_array[6])
+		assert_equal('frag1	2	.	T	A	100	PASS	AF=0.5', vcf_array[3])
+		assert_equal('frag2	1	.	C	G	100	PASS	AF=1.0', vcf_array[4])
+		assert_equal('frag3	3	.	C	G	100	PASS	AF=0.5', vcf_array[6])
 	end
 end
