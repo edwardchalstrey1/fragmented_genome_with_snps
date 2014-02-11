@@ -6,6 +6,10 @@ require 'rinruby' ## These are needed in a script that uses this class
 
 class ReformRatio
 
+	myr = RinRuby.new(echo = false)
+	myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
+	RATIO = myr.pull "comparable_ratio(1)" # this is the same for every instance of the class
+
 	# Input: Array of Bio::FastaFormat entries
 	# Output 0: Array of identifiers
 	# Output 1: Array of lengths (integers)
@@ -201,7 +205,7 @@ class ReformRatio
 	def self.recombine (mum, dad)
 		kid = []
 		1.times do # so we can use redo
-			mum1 = "bogey"
+			mum1 = 'bogey'
 			x = division(mum)
 			if x == mum.length && prime?(x) == false
 				redo
@@ -215,7 +219,7 @@ class ReformRatio
 				dad1.delete_at(ig)
 				x = division(mum1)
 			end
-			if mum1 != "bogey"
+			if mum1 != 'bogey'
 				mum1 = mum1.each_slice(x).to_a
 				dad1 = dad1.each_slice(x).to_a
 			else
@@ -264,26 +268,42 @@ class ReformRatio
 	# Input: A permutation array of Bio::FastaFormat entries (or any array)
 	# Output: The input permutation array of Bio::FastaFormat entries, with a small change in the fragment order
 	def self.mutate (fasta)
-		x = 0
-		until x > 2
-			x = division(fasta)
+		mutant = []
+		1.times do
+			x = 0
+			until x > 2
+				x = division(fasta)
+			end
+			sliced = fasta.each_slice(x).to_a
+			e = rand(sliced.length-1).to_i
+			sliced[e] = sliced[e].shuffle
+			if sliced.flatten == fasta
+				redo
+			end
+			mutant << sliced.flatten
 		end
-		sliced = fasta.each_slice(x).to_a
-		e = rand(sliced.length-1).to_i
-		sliced[e] = sliced[e].shuffle
-		return sliced.flatten
+		return mutant[0]
 	end
 
 	# Input: A permutation array of Bio::FastaFormat entries (or any array)
 	# Output: The input permutation array of Bio::FastaFormat entries, with a small change in the fragment order
 	def self.mini_mutate (fasta)
-		i = rand(fasta.length)
-		j = rand(fasta.length)
-		a = fasta[i]
-		b = fasta[j]
-		fasta[i] = b
-		fasta[j] = a
-		return fasta
+		a = b = 0
+		until a != b
+			a = fasta[rand(fasta.length-1)]
+			b = fasta[rand(fasta.length-1)]
+		end
+		mutant = []
+		fasta.each do |i|
+			if i == a
+				mutant << b
+			elsif i == b
+				mutant << a
+			else
+				mutant << i
+			end
+		end
+		return mutant
 	end
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
@@ -302,7 +322,7 @@ class ReformRatio
 		het_hom_snps = het_hom(actual_pos, info)
 		het = het_hom_snps[0]
 		hom = het_hom_snps[1]
-		myr = RinRuby.new(echo=false)
+		myr = RinRuby.new(echo = false)
 		myr.assign "het_snps", het
 		myr.assign "hom_snps", hom
 		myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
@@ -354,17 +374,17 @@ class ReformRatio
 		else 
 			leftover = 0
 		end
-		#pop_fits = pop_fits.reverse.each_slice(length/2).to_a[0].reverse # best half gets saved
 		puts "Selected #{pop_fits.size} of #{length} permutations"
 		return pop_fits, leftover
 	end
 
 	# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
-	# Input 1: Integer of the desired population size (NOT USED)
+	# Input 1: Integer of the desired population size
 	# Input 2: Integer of the desired number of mutant permutations in the new population (this number of mutate and mini_mutate methods)
 	# Input 3: Integer of the desired number of the best permutations from the previous population, to be included in the new one
 	# Input 4: Integer of the desired number of randomly shuffled permutations in a new population
-	# Input 5: Integer of leftover fragments, to be taken from the multiplied selected population
+	# Input 5: Integer of the number of permutations selected by the select method
+	# Input 6: Integer of leftover fragments, to be taken from the multiplied selected population
 	# Output: New population of mutants, recombinants etc - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 	def self.new_population(pop_fits, size, mut_num, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
 		x = (size-leftover)/select_num
@@ -374,22 +394,14 @@ class ReformRatio
 		end
 		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
 		pop = []
-		pop_save.each do |i|
-			pop << i[1] # adding the permutations only, not the fitness score
-		end
+		pop_save.each{|i| pop << i[1]} # adding the permutations only, not the fitness score
 		for i in pop_fits[(mut_num*2)+save+ran..-1]
 			x = rand(size-1)
 			pop << recombine(i[1], pop_fits[x][1])
 		end
-		mut_num.times do
-			pop << mutate(pop_fits[rand(pop_fits.length)][1]) # mutating randomly selected permutations from pop_fits
-		end
-		mut_num.times do
-			pop << mini_mutate(pop_fits[-1][1]) # mini_mutating the best permutations
-		end
-		ran.times do
-			pop << pop_fits[0][1].shuffle
-		end
+		mut_num.times{mutate(pop_fits[rand(pop_fits.length)][1])} # mutating randomly selected permutations from pop_fits
+		mut_num.times{pop << mini_mutate(pop_fits[-1][1])} # mini_mutating the best permutations
+		ran.times{pop << pop_fits[0][1].shuffle}
 		puts "New population size = #{pop.size}, with #{pop.size-(mut_num*2)-save-ran} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
 		return pop
 	end
@@ -402,7 +414,7 @@ class ReformRatio
 		snp_data = get_snp_data(vcf_file)
 		fits = []
 		num.times do
-			fits<<fitness(fasta, snp_data, "diff")
+			fits << fitness(fasta, snp_data, "diff")
 		end
 		worst = fits.sort[0]
 		average = fits.inject(:+)/num
@@ -426,9 +438,7 @@ class ReformRatio
 		gen_fits = [] # array of the best fitness in each generation
 		ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
 		snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
-		puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
-		puts
-		puts "Gen 0"
+		puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}\nGen 0"
 		fasta = fasta_array(fasta_file) #array of fasta format fragments
 		pop = initial_population(fasta, pop_size)
 		pop_fits_n_leftover = select(pop, snp_data, select_num)
@@ -442,7 +452,6 @@ class ReformRatio
 		y=1
 		z=1
 		gen.times do
-			puts "Gen #{y}"
 			prev_best_arr = pop_fits[-1][1]
 			prev_best_fit = pop_fits[-1][0]
 			pop = new_population(pop_fits, pop_size, mut_num, save, ran, select_num, leftover)
@@ -450,7 +459,7 @@ class ReformRatio
 			pop_fits = pop_fits_n_leftover[0]
 			leftover = pop_fits_n_leftover[1]
 			best_perm = pop_fits[-1][1]
-			puts "Best correlation = #{pop_fits[-1][0]}"
+			puts "Gen #{y}\nBest correlation = #{pop_fits[-1][0]}"
 			gen_fits << pop_fits[-1][0]
 			best_perm_ids = fasta_id_n_lengths(best_perm)[0]
 			if pop_fits[-1][0] <= prev_best_fit

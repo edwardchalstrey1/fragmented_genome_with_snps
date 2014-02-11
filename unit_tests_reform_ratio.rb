@@ -16,6 +16,8 @@ end
 
 class TestReform < Test::Unit::TestCase
 
+	TEST_ARRAY = %w(a b c d e f g h i j k l m n o p q r s t)
+
 	def fasta
 		frag1, frag2, frag3 = FakeFasta.new, FakeFasta.new, FakeFasta.new
 		frag1.entry_id, frag2.entry_id, frag3.entry_id = 'frag1', 'frag2', 'frag3'
@@ -23,11 +25,10 @@ class TestReform < Test::Unit::TestCase
 	end
 
 	def test_rearrangement_score
-		a = ['a', 'b', 'c']
-		b = ['a', 'b', 'c']
-		c = ['c', 'b', 'a']
-		assert_equal(0, ReformRatio::rearrangement_score(a,b))
-		assert_equal(4, ReformRatio::rearrangement_score(c,b))
+		a = %w(a b c)
+		c = a.reverse
+		assert_equal(0, ReformRatio::rearrangement_score(a,a))
+		assert_equal(4, ReformRatio::rearrangement_score(c,a))
 	end
 
 	def test_total_pos
@@ -55,11 +56,11 @@ class TestReform < Test::Unit::TestCase
 	end
 
 	def test_recombination
-		parent1 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j','k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'] #20
+		parent1 = TEST_ARRAY #20
 		parent2 = parent1.reverse
 		child = ReformRatio::recombine(parent1, parent2)
 
-		parent3 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j','k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's'] #19
+		parent3 = TEST_ARRAY[0..-2] #19
 		parent4 = parent3.reverse
 		child2 = ReformRatio::recombine(parent3, parent4)
 		
@@ -98,21 +99,19 @@ class TestReform < Test::Unit::TestCase
 	end
 
 	def test_fasta_array
-		fasta_file = 'test/dummy.fasta'
-		fasta_array = ReformRatio::fasta_array(fasta_file)
+		fasta_array = ReformRatio::fasta_array('test/dummy.fasta')
 		assert_equal('frag1', fasta_array[0].entry_id)
 		assert_equal('AAAAAAAA', fasta_array[1].seq)
 		assert_equal(8, fasta_array[2].length)
 	end
 
 	def test_get_snp_data
-		vcf_file = 'test/dummy.vcf'
 		vcfs_chrom = %w(frag1 frag1 frag2 frag3)
 		vcfs_pos = [7,8,2,2]
 		num_snps_frag_hash = {'frag1'=>2, 'frag2'=>1, 'frag3'=>1}
 		vcfs_info = [{'AF'=>'1.0','NS'=>'5'}, {'AF'=>'1.0'}, {'AF'=>'0.5'}, {'AF'=>'1.0'}]
 		snp_data = [vcfs_chrom, vcfs_pos, num_snps_frag_hash, vcfs_info]
-		assert_equal(snp_data, ReformRatio::get_snp_data(vcf_file))
+		assert_equal(snp_data, ReformRatio::get_snp_data('test/dummy.vcf'))
 	end
 
 	def test_het_hom
@@ -124,20 +123,25 @@ class TestReform < Test::Unit::TestCase
 	end
 
 	def test_mutate
-		test_array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j','k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'] #20
-		mutant = ReformRatio::mutate(test_array)
-		#mini_mutant = ReformRatio::mini_mutate(test_array)
+		mutant = ReformRatio::mutate(TEST_ARRAY)
 		assert(mutant.uniq == mutant)
-		assert(mutant != test_array)
-		#assert(mini_mutant.uniq == mini_mutant)
-		#assert(mini_mutant != test_array, "mini_mutant same as non-mutant")
+		assert(mutant != TEST_ARRAY, 'Mutant was the same as parent')
+		assert_kind_of(Array, mutant, 'Mutant not an array!')	
+	end
+
+	def test_mini_mutate
+		mini_mutant = ReformRatio::mini_mutate(TEST_ARRAY)
+		assert(mini_mutant.uniq == mini_mutant)
+		assert(mini_mutant != TEST_ARRAY, "mini_mutant same as non-mutant")
+		assert_kind_of(Array, mini_mutant)
 	end
 
 	def test_fitness
 		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset3/frags.fasta')
 		snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/ratio_dataset3/snps.vcf')
 		fit = ReformRatio::fitness(fasta_array, snp_data, "diff")
-		assert(fit > 0 && fit < 1)
+		assert_kind_of(Float, fit)
+		assert_in_delta(0.5, fit, 0.5)
 	end
 
 	def test_initial_population
@@ -145,8 +149,19 @@ class TestReform < Test::Unit::TestCase
 		pop = ReformRatio::initial_population(array, 2)
 		assert(pop == [%w(a b), %w(a b)] || pop == [%w(b a), %w(a b)] || pop == [%w(a b), %w(b a)] || pop = [%w(b a), %w(b a)])
 	end
-	#def test_select
 
-	#	select(pop, snp_data, num)
+	def test_select
+		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset4/frags_shuffled.fasta')
+		snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/ratio_dataset4/snps.vcf')
+		pop = ReformRatio::initial_population(fasta_array, 20)
+		selected = ReformRatio::select(pop, snp_data, 10)
+		assert_kind_of(Integer, selected[1], 'leftover not int') # leftover
+		assert_kind_of(Array, selected[0], 'permutation and correlation not array') # permutation and correlation
+		assert_equal(10, selected[0].length) # no. of permutations selcted
+		assert_kind_of(Float, selected[0][0][0], 'correlation not float') # correlation value
+		assert_in_delta(0.5, selected[0][0][0], 0.5) # correlation value
+		assert_kind_of(Array, selected[0][0][1], 'permutation not array') # permutation
+		assert_kind_of(Bio::FastaFormat, selected[0][0][1][0], 'Not a Bio::FastaFormat')
+	end
 end
 
