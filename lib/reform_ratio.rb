@@ -1,14 +1,10 @@
 #encoding: utf-8
-require 'rubygems'
-require 'bio-samtools'
-require 'bio'
-require 'rinruby' ## These are needed in a script that uses this class
 
 class ReformRatio
 
-	myr = RinRuby.new(echo = false)
-	myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
-	RATIO = myr.pull "comparable_ratio(1)" # this is the same for every instance of the class
+	require 'rubygems'
+	require 'bio-samtools'
+	require 'bio'
 
 	# Input: Array of Bio::FastaFormat entries
 	# Output 0: Array of identifiers
@@ -166,28 +162,20 @@ class ReformRatio
 		score = difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
 		return score
 	end
+end
 
-	# Input 0: Filename by which to save an array to a .txt file, one value per line
-	# Input 1: Array to save
-	def self.write_txt (filename, array)
-		File.open(filename, "w+") do |f|
-			array.each { |i| f.puts(i) }
-		end
-	end
+class GATOC # Genetic Algorithm To Order Contigs
 
-	# Input: An integer you wish to know whether it's a prime
-	# Output: true/false
-	def self.prime? (n)
-		for d in 2..(n - 1)
-			if (n % d) == 0
-	    		return false
-	    	end
-		end
-		true
-	end
+	require 'rubygems'
+	require 'bio-samtools'
+	require 'bio'
+	require 'rinruby'
+	require_relative 'write_it'
 
-	# Genetic Algorithm
-	#------------------
+	myr = RinRuby.new(echo = false)
+	myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
+	RATIO = myr.pull "comparable_ratio(1)" # this is the same for every instance of the class
+	myr.quit
 
 	# Input: Array
 	# Output: A random integer that the length of the Input 0 array can be divided by to get another integer (the randomly chosen size of chunks that permutations will be split into, in the recombine/mutate methods)
@@ -207,7 +195,7 @@ class ReformRatio
 		1.times do # so we can use redo
 			mum1 = 'bogey'
 			x = division(mum)
-			if x == mum.length && prime?(x) == false
+			if x == mum.length && WriteIt::prime?(x) == false
 				redo
 			elsif x == mum.length # to compensate for datasets with a prime number of fragments:
 				ig = rand(mum.length)-1 # choose a random element of the fasta array to ignore
@@ -311,15 +299,15 @@ class ReformRatio
 	# Input 2: NOT IMPORTANT, WILL REMOVE EVENTUALLY "same" if we wish to compare the reformed ratio to the constant RATIO, or any other argument if we wish to compare to a re-run of comparable_ratio function in comparable_ratio.R
 	# Output: A correlation value that is the fitness of the Input 0 permutation
 	def self.fitness (fasta, snp_data, same) 
-		id_n_lengths = fasta_id_n_lengths(fasta)
+		id_n_lengths = ReformRatio::fasta_id_n_lengths(fasta)
 		fasta_ids = id_n_lengths[0]
 		fasta_lengths = id_n_lengths[1]
-		snps_per_frag = snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
-		pos_n_info = get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) #get snp positions for each frag in array of arrays
+		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
+		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) #get snp positions for each frag in array of arrays
 		pos = pos_n_info[0]
 		info = pos_n_info[1] # rearranged vcfs_info filed to permutation order
-		actual_pos = total_pos(pos, fasta_lengths)
-		het_hom_snps = het_hom(actual_pos, info)
+		actual_pos = ReformRatio::total_pos(pos, fasta_lengths)
+		het_hom_snps = ReformRatio::het_hom(actual_pos, info)
 		het = het_hom_snps[0]
 		hom = het_hom_snps[1]
 		myr = RinRuby.new(echo = false)
@@ -389,21 +377,33 @@ class ReformRatio
 	def self.new_population(pop_fits, size, mut_num, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
 		x = (size-leftover)/select_num
 		pop_fits = pop_fits*x
+		puts pop_fits.length ###
 		if leftover != 0
 			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) #add leftover number of frags (best)
 		end
+		puts leftover ###
 		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
 		pop = []
 		pop_save.each{|i| pop << i[1]} # adding the permutations only, not the fitness score
-		for i in pop_fits[(mut_num*2)+save+ran..-1]
+		puts 'done saved'
+		recomb = size - ((mut_num * 2) + save + ran)
+		puts recomb
+		z = size - recomb
+		recomb.times do
+			puts z
 			x = rand(size-1)
-			pop << recombine(i[1], pop_fits[x][1])
+			pop << recombine(pop_fits[z][1], pop_fits[x][1])
+			z+=1
 		end
+		puts 'done recombine'
 		mut_num.times{mutate(pop_fits[rand(pop_fits.length)][1])} # mutating randomly selected permutations from pop_fits
+		puts 'done mutants'
 		mut_num.times{pop << mini_mutate(pop_fits[-1][1])} # mini_mutating the best permutations
+		puts 'done mini_mutants'
 		ran.times{pop << pop_fits[0][1].shuffle}
-		puts "New population size = #{pop.size}, with #{pop.size-(mut_num*2)-save-ran} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
-		return pop
+		puts 'done rand'
+		puts "New population size = #{pop.size}, with #{recomb} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
+		return pop, leftover
 	end
 
 	# Input 0: A permutation array of Bio::FastaFormat entries
@@ -436,10 +436,10 @@ class ReformRatio
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
 	def self.evolve(fasta_file, vcf_file, gen, pop_size, select_num, mut_num, save, ran, ordered_fasta, figures)
 		gen_fits = [] # array of the best fitness in each generation
-		ordered_ids = fasta_id_n_lengths(ordered_fasta)[0]
-		snp_data = get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
+		ordered_ids = ReformRatio::fasta_id_n_lengths(ordered_fasta)[0]
+		snp_data = ReformRatio::get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 		puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}\nGen 0"
-		fasta = fasta_array(fasta_file) #array of fasta format fragments
+		fasta = ReformRatio::fasta_array(fasta_file) #array of fasta format fragments
 		pop = initial_population(fasta, pop_size)
 		pop_fits_n_leftover = select(pop, snp_data, select_num)
 		pop_fits = pop_fits_n_leftover[0]
@@ -447,7 +447,7 @@ class ReformRatio
 		best_perm = pop_fits[-1][1]
 		puts "Best correlation = #{pop_fits[-1][0]}"
 		gen_fits << pop_fits[-1][0]
-		best_perm_ids = fasta_id_n_lengths(best_perm)[0]
+		best_perm_ids = ReformRatio::fasta_id_n_lengths(best_perm)[0]
 		puts
 		y=1
 		z=1
@@ -461,7 +461,7 @@ class ReformRatio
 			best_perm = pop_fits[-1][1]
 			puts "Gen #{y}\nBest correlation = #{pop_fits[-1][0]}"
 			gen_fits << pop_fits[-1][0]
-			best_perm_ids = fasta_id_n_lengths(best_perm)[0]
+			best_perm_ids = ReformRatio::fasta_id_n_lengths(best_perm)[0]
 			if pop_fits[-1][0] <= prev_best_fit
 				puts "No fitness improvement" # If this is not called, this implies there has been some improvement
 				z+=1
@@ -472,14 +472,14 @@ class ReformRatio
 			puts
 			if z >= 10
 				puts "Algorithm quit for lack of fitness improvement, rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
-				write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)
+				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/reformed_ratio_frag_order", best_perm_ids)
 				fitness(best_perm, snp_data, "figure") # makes figure of ratio density distribution
 			end
 			if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
 				av = average_fitness(pop_fits[-1][1], vcf_file, 10)
 				if av >= 0.999 && figures != "no figures"
 					puts "Fitness #{av}: reform ratio has a rearrangement score of #{rearrangement_score(ordered_ids, best_perm_ids)}"
-					write_txt('arabidopsis_datasets/'+ARGV[0].to_s+'/reformed_ratio_frag_order.txt', best_perm_ids)
+					WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/reformed_ratio_frag_order", best_perm_ids)
 					fitness(best_perm, snp_data, "figure") # makes figure of ratio density distribution
 					z = 10
 				end

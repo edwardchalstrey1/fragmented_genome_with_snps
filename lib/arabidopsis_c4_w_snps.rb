@@ -66,23 +66,6 @@ class ModelGenome
 		return frags
 	end
 
-	# Input 0: Character array of initial genome sequence e.g. ['A','T', 'C'...]
-	# Input 1: SNP positions to change for input 0, to create mutant genome
-	# Output: Character array of mutant genome sequence
-	def self.snp_seq (seq, snp_pos)
-		snp_pos.each do |i|
-			case seq[i-1]
-			when 'A' then seq[i-1] = 'T'
-			when 'T' then seq[i-1] = 'A'
-			when 'C' then seq[i-1] = 'G'
-			when 'G' then seq[i-1] = 'C'
-			when 'N' then seq[i-1] = 'R'
-			else seq[i-1] = 'A'; puts "Error: base not A,T,C,G or N\n Made it #{seq[i-1]}"
-			end
-		end
-		return seq
-	end
-
 	# Input 0: Array of all the SNP positions in the genome
 	# Input 1: Fragmented genome: Character array split into chunks and put into super array e.g. [['A', 'T'], ['C', 'G']...]
 	# Output 0: Array of arrays where each sub array contains the SNP positions on one fragment, and each sub array is ordered in the same way as Input 1 in the super array.
@@ -191,11 +174,5 @@ class ModelGenome
 			u+=1
 		end
 		return vcf_format
-	end
-
-	def self.write_data (array, file, dataset)
-		File.open("arabidopsis_datasets/#{dataset}/#{file}", "w+") do |f|
-			array.each { |i| f.puts(i) } #write the fasta/vcf
-		end
 	end
 end
