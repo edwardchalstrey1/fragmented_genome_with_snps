@@ -1,5 +1,6 @@
 #encoding: utf-8
 require_relative 'lib/reform_ratio'
+require_relative 'lib/GATOC'
 
 vcf_file = "arabidopsis_datasets/#{ARGV[0]}/snps.vcf"
 fasta_file = "arabidopsis_datasets/#{ARGV[0]}/frags_shuffled.fasta"
