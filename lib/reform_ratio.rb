@@ -9,8 +9,7 @@ class ReformRatio
 	# Output 0: Array of identifiers
 	# Output 1: Array of lengths (integers)
 	def self.fasta_id_n_lengths (fasta)
-		ids = []
-		lengths = []
+		ids, lengths = [], []
 		fasta.each do |i|
 			ids << i.entry_id
 			lengths << i.length
@@ -24,9 +23,7 @@ class ReformRatio
 	# Output 2: Hash with fragment id keys and the corresponding number of snps as an integer values
 	# Output 3: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
 	def self.get_snp_data (vcf_file)
-		vcfs_chrom = []
-		vcfs_pos = []
-		vcfs_info = []
+		vcfs_chrom, vcfs_pos, vcfs_info = [], [], []
 		File.open(vcf_file, "r").each do |line| #get array of vcf lines, you can call a method on one line
 			next if line =~ /^#/
 			v = Bio::DB::Vcf.new(line)
@@ -57,8 +54,7 @@ class ReformRatio
 		snps_per_frag_fasta_order = [] #use the id to identify the number of snps for that frag using the keys of snps_hash
 		fasta_array.each do |frag|
 			snps_per_frag_fasta_order << snps_per_vcf_frag_hash[frag.entry_id] #gives 0 for keys that don't exist = good, because the frags with 0 density would otherwise be missing
-		end
-		#now we have an array with the number of snps per frag in the same order as the fasta array
+		end #now we have an array with the number of snps per frag in the same order as the fasta array
 		return snps_per_frag_fasta_order
 	end
 
@@ -70,26 +66,18 @@ class ReformRatio
 	# Output 0: The snp positions for each frag, in an array of arrays (each sub array contains the snp positions for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
 	# Output 1: The info hashes (of each snp, single key/value) for each frag, in an array of arrays (each sub array contains the info hashes for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
 	def self.get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info)
-		pos = [] #get the snp positions for each frag, in an array of arrays
-		info = []
+		pos, info = [], []
 		n = 0
 		fasta.each do |frag|
 			x = 0
-			each_fr_pos = []
-			each_fr_info = []
-			snps_per_frag[n].times do |j|
-				if frag.entry_id == vcfs_chrom[x] #this assumes that frag_id == vcf.chrom then continues to for the number of snps (for that frag)
-					each_fr_pos << vcfs_pos[x]
-					each_fr_info << vcfs_info[x]
-					x+=1
-				else
-					while frag.entry_id != vcfs_chrom[x]
-						x+=1
-					end
-					each_fr_pos << vcfs_pos[x]
-					each_fr_info << vcfs_info[x]
+			each_fr_pos, each_fr_info = [], []
+			snps_per_frag[n].times do |i|
+				while frag.entry_id != vcfs_chrom[x]
 					x+=1
 				end
+				each_fr_pos << vcfs_pos[x]
+				each_fr_info << vcfs_info[x]
+				x+=1
 			end
 			pos << each_fr_pos #this gives empty arrays for frags with out snps, and a list of the positions of those with
 			info << each_fr_info
@@ -109,12 +97,11 @@ class ReformRatio
 				totals << frag.uniq
 				x+=1
 			else
-				tot_frag = []
-				lengths = []
-				fasta_lengths[0..x-1].each do |p|
-					lengths << p
+				tot_frag, lengths = [], []
+				fasta_lengths[0..x-1].each do |l|
+					lengths << l
 				end
-				so_far = lengths.inject(:+) # this needs to be the length of the frags, not the number of snps
+				so_far = lengths.inject(:+) # this is the sum of the lengths for all the frags so far
 				frag.each do |i|
 					tot_frag << so_far-1 + i
 				end
@@ -130,8 +117,7 @@ class ReformRatio
 	# Output 0: Array of all the heterozygous snp positions
 	# Output 1: Array of all the homozygous snp positions
 	def self.het_hom (actual_pos, vcfs_info) #actual_pos in same order as fasta perm. now so is info
-		het = []
-		hom = []
+		het, hom = [], []
 		x = 0
 		actual_pos.each do |snp|
 			if vcfs_info.flatten[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
@@ -142,23 +128,5 @@ class ReformRatio
 			x+=1
 		end
 		return het, hom
-	end
-
-	# Input 0: Array of fragment identifiers in the correct order
-	# Input 1: Array of fragment identifiers in the order you wish to check
-	# Output 0: Ordinal similarity score value (0 = correct order)
-	def self.rearrangement_score (frags_original_order, rearranged)
-		position_each_frag_id_in_d = frags_original_order.map{|x| rearranged.index(x)} #works out the index of frags_original_order values in rearranged
-		index_values = Array(0..(frags_original_order.length - 1)) # index values that frags_original_order originally at
-		both = []
-		both << position_each_frag_id_in_d
-		both << index_values
-		difference = both.transpose.map {|x| x.reduce(:-)} # taking away old position from new position, to find the distance that the frag has moved when re-ordered
-		difference_abs = []
-		difference.each do |i|
-			difference_abs << i.abs
-		end
-		score = difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
-		return score
 	end
 end

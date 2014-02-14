@@ -16,8 +16,8 @@ class TestGATOC < Test::Unit::TestCase
 		b = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
 		ax = GATOC::division(a)
 		bx = GATOC::division(a)
-		assert(ax==2||ax==1||ax==4||ax==5||ax==10||ax==20) 
-		assert(bx==18||bx==9||bx=6||bx==3||bx==2||bx==1)
+		assert(ax==2||ax==1||ax==4||ax==5||ax==10) 
+		assert(bx==9||bx=6||bx==3||bx==2||bx==1)
 	end
 
 	def test_recombination
@@ -29,29 +29,23 @@ class TestGATOC < Test::Unit::TestCase
 		parent4 = parent3.shuffle
 		child2 = GATOC::recombine(parent3, parent4)
 
-		parent5 = [TEST_ARRAY, 'u'].flatten
-		parent6 = parent5.shuffle
-		child3 = GATOC::recombine(parent5, parent6)
-
 		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset3/frags_shuffled.fasta').shuffle
 		p2_fasta = fasta_array.shuffle
-		child4 = GATOC::recombine(fasta_array, p2_fasta)
+		child3 = GATOC::recombine(fasta_array, p2_fasta)
 		
 		assert(child.uniq == child, 'Child of p1/2 not unique')
 		assert(child != parent1, 'Child same as parent1')
 		assert(child != parent2, 'Child same as parent2')
+		assert(child.sort == parent1.sort, 'Child not a permutation')
 
 		assert(child2.uniq == child2, 'Child of p3/4 not unique')
 		assert(child2 != parent3, 'Child same as parent3')
 		assert(child2 != parent4, 'Child same as parent4')
+		assert(child2.sort == parent3.sort, 'Child not a permutation')
 
-		assert(child3.uniq == child3, 'Child of p5/6 not unique')
-		assert(child3 != parent5, 'Child same as parent5')
-		assert(child3 != parent6, 'Child same as parent6')
-
-		assert(child4.uniq == child4, 'Child of fasta not unique')
-		assert(child4 != fasta_array, 'Child same as fasta')
-		assert(child4 != p2_fasta, 'Child same as fasta2')
+		assert(child3.uniq == child3, 'Child of fasta not unique')
+		assert(child3 != fasta_array, 'Child same as fasta')
+		assert(child3 != p2_fasta, 'Child same as fasta2')
 	end
 
 	def test_mutate
@@ -103,6 +97,8 @@ class TestGATOC < Test::Unit::TestCase
 		selected = GATOC::select(pop, snp_data, 10)
 		new_pop  = GATOC::new_population(selected[0], 20, 1, 1, 1, 10, selected[1])
 		assert_kind_of(Array, new_pop)
+		assert_kind_of(Array, new_pop[0])
+		assert_kind_of(Bio::FastaFormat, new_pop[0][0])
 	end
 end
 
