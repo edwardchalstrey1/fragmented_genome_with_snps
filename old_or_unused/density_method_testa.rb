@@ -144,21 +144,21 @@ write_json(id_density_hash, 'arabidopsis_datasets/'+ARGV[0].to_s+'/re_files/id_d
 
 
 #############################################################
-### FINDING FRAG WITH CAUSATIVE MUTATION DATASET9 ONWARDS ###
+### FINDING FRAG WITH CAUSATIVE MUTATION DATASET9 ONWARDS ### Haven't managed to solve the 2 M's problem, but not worrying about this for now
 #############################################################
-if ARGV[1] == "m"
-	puts "Fragment "+frags_by_density[-1].to_s+" has the highest density: "+sorted_densities[-1].to_s
-	z = 0
-	frag_mut = []
-	fasta.each do |entry|
-		z+=1
-		if entry.seq.include?("M")
-			frag_mut << fasta_ids[z-1]
-		end
-	end
-	frag_mut = frag_mut[0]
-	puts frag_mut+" has the mutant SNP"
-	a = []
-	a <<(frags_by_density.length - frags_by_density.index(frag_mut))
-	write_txt("frag_mut_dist/"+ARGV[0].to_s, a)
-end
+#if ARGV[1] == "m"
+#	puts "Fragment "+frags_by_density[-1].to_s+" has the highest density: "+sorted_densities[-1].to_s
+#	z = 0
+#	frag_mut = []
+#	fasta.each do |entry|
+#		z+=1
+#		if entry.seq.include?("M")
+#			frag_mut << fasta_ids[z-1]
+#		end
+#	end
+#	frag_mut = frag_mut[0]
+#	puts frag_mut+" has the mutant SNP"
+#	a = []
+#	a <<(frags_by_density.length - frags_by_density.index(frag_mut))
+#	write_txt("frag_mut_dist/"+ARGV[0].to_s, a)
+#end

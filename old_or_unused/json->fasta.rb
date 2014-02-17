@@ -62,7 +62,9 @@ def vcf_array (frags, snp_pos)
 	vcf_format = ['##fileformat=VCFv4.1', '##source=Fake', '#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO'] 
 	u = 0
 	snp_pos.flatten.each do |i|
-		line = chrom[u] + '	' + i.to_s + '	.	' +	ref[u] + '	' + alt[u] + '	100	PASS	.'
+		if hm include?(i)
+			#####
+		line = chrom[u] + '	' + i.to_s + '	.	' +	ref[u] + '	' + alt[u] + '	100	PASS	AF='+x.to_s
 		vcf_format << line
 		u += 1
 	end
