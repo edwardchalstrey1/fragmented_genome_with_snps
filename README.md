@@ -1,14 +1,14 @@
 Detecting Causative Mutations from High-throughput Sequencing on Unordered Genomes
 ===========================
 
-I am creating a model genome, based of [Arabidopsis chromosome 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/TAIR10_chr4.fasta), from an individual created by the back-crossing of a mutant with a mapping line, where the mutation is an experimentally induced, phenotype altering SNP. 
+I am creating a model genome, based of [Arabidopsis chromosome 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/TAIR10_chr4.fasta), from an individual created by the back-crossing of a mutant with a mapping line, where the mutation is an experimentally induced, phenotype altering SNP. 
 
 I am designing an algorithm that can locate a causative SNP mutation, based on the distribution of SNPs. To emulate real data, I first split the genome into fragments, which model contigs assembled from high-throughput sequencing reads. My algorithm will need to rearrange these fragments into their proper order, then locate the causative mutation.
 
 Creating a model genome
 --------------------
 
-Running: **ruby [create_model_genome.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/create_model_genome.rb) ARGV[0] = dataset_name** will generate a new model genome of that name based on Arabidopsis chromosome 4 and the experiment detailed above, in fragmented_genome_with_snps/arabidopsis_datasets. This includes a FASTA file with the sequences of each fragment, and a VCF file with the SNPs on each fragment. In the INFO field of the VCF, each SNP has been given an allele frequency (AF). Heterozygous SNPs will generally have AF = ~0.5, and homozygous AF = ~1.0, but this will vary with pooled data. In the model, each SNP has been given an allele frequency of exactly 0.5 or 1.0. The methods used to create these files are in the [ModelGenome class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/arabidopsis_c4_w_snps.rb).
+Running: **ruby [create_model_genome.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/create_model_genome.rb) ARGV[0] = dataset_name** will generate a new model genome of that name based on Arabidopsis chromosome 4 and the experiment detailed above, in fragmented_genome_with_snps/arabidopsis_datasets. This includes a FASTA file with the sequences of each fragment, and a VCF file with the SNPs on each fragment. In the INFO field of the VCF, each SNP has been given an allele frequency (AF). Heterozygous SNPs will generally have AF = ~0.5, and homozygous AF = ~1.0, but this will vary with pooled data. In the model, each SNP has been given an allele frequency of exactly 0.5 or 1.0. The methods used to create these files are in the [ModelGenome class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/arabidopsis_c4_w_snps.rb).
 
 Why not use real data straight away?
  - With model data, I know the location of the causative mutation and the correct order of the fragments. This means I can tell whether or not my algorithm works.
@@ -27,13 +27,13 @@ Re-ordering the Genome
 
 I am currently attempting to use a **genetic algorithm** to rearrange the fragments, by reforming the homozygous/heterozygous SNP ratio distribution. The algorithm I am creating will eventually be capable of determining the location of the causative mutation, in a genome from the experiment detailed above. The algorithm will take a FASTA file of all the unordered genome fragments, and a VCF file containing the SNP positions for each fragment. Currently, the algorithms below can only be used for my model data, based on Arabidopsis c4 (see above).
 
-1. To run it: **ruby [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/algorithm_test.rb) ARGV[0] = dataset name ARGV[1] = run **, where the dataset name is the same as the one used to create the model genome, and the run is the name of the directory to save performance figures to.
+1. To run it: **ruby [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb) ARGV[0] = dataset name ARGV[1] = run **, where the dataset name is the same as the one used to create the model genome, and the run is the name of the directory to save performance figures to.
 
-1. The [ReformRatio class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/reform_ratio.rb) contains methods involved in interpreting data from FASTA and VCF files, so they can be used in the genetic algorithm.
+1. The [ReformRatio class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb) contains methods involved in interpreting data from FASTA and VCF files, so they can be used in the genetic algorithm.
 
-2. The [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/GATOC.rb) (Genetic Agorithm To Order Contigs) contains all the genetic algorithm methods. See below for genetic algorithm description.
+2. The [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) (Genetic Agorithm To Order Contigs) contains all the genetic algorithm methods. See below for genetic algorithm description.
 
-3. [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/comparable_ratio.R) is used within the fitness method of my genetic algorithm. It compares the homozygous/heterozygous SNP distribution of the rearranged fragments, to the same distributions used when creating the model genome, using a qq plot. The Pearson correlation coefficient (r) for the Q-Q plot is obtained, between 0 and 1. The closer the value is to 1, the more likely it is that the correct fragment arrangement has been found.
+3. [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/comparable_ratio.R) is used within the fitness method of my genetic algorithm. It compares the homozygous/heterozygous SNP distribution of the rearranged fragments, to the same distributions used when creating the model genome, using a qq plot. The Pearson correlation coefficient (r) for the Q-Q plot is obtained, between 0 and 1. The closer the value is to 1, the more likely it is that the correct fragment arrangement has been found.
 
 Genetic Algorithm
 -------
@@ -46,23 +46,23 @@ Genetic algorithms are based on the principles of natural selection. A "populati
 
 ### Recombination
 
-The recombination method of the genetic algorithm in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/GATOC.rb) works as follows:
+The recombination method of the genetic algorithm in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) works as follows:
 Two parent permutations are used as input. Each of the parents are split into chunks of size X, where X is a random whole number that the number of fragments is divisible by. One of the chunks from parent 2 is chosen at random, to be recombined with parent 1. The "child" permutation, starts out as a copy of parent 1, then the chosen chunk from parent 2 replaces the equivalent chunk from parent 1. To avoid duplicating fragments (and losing others), each fragment from the chunk being displaced by the "chosen chunk", is placed into the position it's corresponding fragment (that holds the same position in the chosen chunk) occupies in parent 1. This results in a child permutation that has some parts ordered in the same way as parent 1, a chunk that is in the same order as in parent 2, and some fragments different positions than in either parent.
 
 ### Mutation
 
-The mutation method of the genetic algorithm in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/GATOC.rb) works as follows:
+The mutation method of the genetic algorithm in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) works as follows:
 One permutation is taken as input (the permutation to be mutated). It is split into chunks of size X, where X is a random whole number that the number of fragments is divisible by (just like in the recombination method). The fragments within the chunk are then shuffled, to give the new "mutant" permutation.
 
 ### Permutation Fitness: Q-Q plot
 
 Genetic algorithms require a fitness method, in order to tell how close each solution comes to solving the given problem. With a permutation problem, the fitness method should score the permutation based on how correct the ordering of elements is. In my algorithm, I want to identify a mutation based on the ratio of homozygous to heterozygous SNP distributions in a genome. I will therefore use the ratio as a way of telling how close a given fragment permutation is to the correct order. My algorithm does this by working out where the SNP positions are in the genome, assuming the fragments are ordered in the way of a given permutation (the position of SNPs on each fragment are known). The idea here, is that the more correct the arrangement of fragments, the closer the ratio distribution will be to the expected distribution (e.g. normal distribution).
 
-To calculate how similar the reformed SNP ratio (from a given fragment permutation) is to the expected ratio, a Q-Q plot is used. A Q-Q plot is a graphical method for comparing two probability distributions by plotting their quantiles against each other. By plotting the reformed distribution against the expected distribution, a correleation value is obtained (see Re-ordering the genome: [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/comparable_ratio.R) above). This is the value returned by the fitness method.
+To calculate how similar the reformed SNP ratio (from a given fragment permutation) is to the expected ratio, a Q-Q plot is used. A Q-Q plot is a graphical method for comparing two probability distributions by plotting their quantiles against each other. By plotting the reformed distribution against the expected distribution, a correleation value is obtained (see Re-ordering the genome: [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/comparable_ratio.R) above). This is the value returned by the fitness method.
 
 ### Evolving the Population
 
-The evolve method in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/ratio/lib/GATOC.rb) works as follows:
+The evolve method in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) works as follows:
 First an initial population of fragment order permutations is generated, by shuffling the fragments. The number of permutations in a population (the population size) is user defined. Then fittest half (or user defined amount) is selected for recombination. Each of the selected permutations is recombined with another randomly chosen permutation (out of the selection), and a user defined number of mutants are created (currently based on the fittest permutation from the previous generation). A user defined number of the fittest permutations are also carried over into the next generation. What this means is that the fittest permutation in each generation will either be more fit, or the same as the fittest permutation in the previous generation.
 
 ### Finding the Peak: The Causative Mutation
