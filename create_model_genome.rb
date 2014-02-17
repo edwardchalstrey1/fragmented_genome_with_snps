@@ -6,7 +6,7 @@ require 'bio'
 require_relative 'lib/arabidopsis_c4_w_snps'
 require_relative 'lib/write_it'
 
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/"+ARGV[0].to_s)) # make the directory to put data files into
+Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}")) # make the directory to put data files into
 
 snpz = ModelGenome::normal_dist
 snp_pos = snpz[0]

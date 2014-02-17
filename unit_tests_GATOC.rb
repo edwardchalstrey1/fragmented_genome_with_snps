@@ -70,6 +70,14 @@ class TestGATOC < Test::Unit::TestCase
 		assert_in_delta(0.5, fit, 0.5)
 	end
 
+	def test_average_fitness
+		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset3/frags.fasta')
+		snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/ratio_dataset3/snps.vcf')
+		fit = GATOC::average_fitness(fasta_array, snp_data, 5)
+		assert_kind_of(Float, fit)
+		assert_in_delta(0.5, fit, 0.5)
+	end
+
 	def test_initial_population
 		array = %w(a b)
 		pop = GATOC::initial_population(array, 2)
