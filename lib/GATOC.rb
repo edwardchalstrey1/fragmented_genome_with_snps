@@ -292,7 +292,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				puts "FITNESS IMPROVEMENT!\n \n"
 				z=1
 			end
-			if pop_fits[-1][0] >= 0.995 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
+			if pop_fits[-1][0] >= 0.998 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
 				av = average_fitness(pop_fits[-1][1], snp_data, opts[:average]) 
 				if av >= 0.999 && opts[:figures] != 'no figures'
 					best_msg = "Best possible permutation fitness: #{av}. Rearrangement score of #{RearrangementScore::rearrangement_score(ordered_ids, best_perm_ids)}"
