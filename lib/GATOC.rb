@@ -171,11 +171,21 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 1: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 	# Output 2: Integer of leftover fragments, to be taken from the multiplied selected population
 	def self.select(pop, snp_data, num)
-		fits = []
+		puts "#{pop.size} a"
+		fits = {}
+		x = 1
 		pop.each do |fasta_array|
-			fits << fitness(fasta_array, snp_data, 'same')
+			fitn = fitness(fasta_array, snp_data, 'same')
+			fits[fasta_array] = fitn #maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
+			puts "#{x} fit:#{fitn}"
+			x+=1
 		end
-		pop_fits = fits.zip(pop).sort
+		puts "#{fits.size} b"
+		fits = fits.sort_by {|k,v| v}
+		puts "#{fits.size} i"
+		pop_fits = []
+		fits.each {|i| pop_fits << i.reverse} # swapping the "key/values" around
+		puts "#{pop_fits.size} k"
 		initial_size = pop_fits.size
 		sliced = pop_fits.reverse.each_slice(num).to_a
 		pop_fits = sliced[0].reverse
@@ -201,6 +211,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		pop_fits = pop_fits*x
 		if leftover != 0
 			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) #add leftover number of frags (best)
+			puts "#{leftover} leftover frags added"
 		end
 		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
 		pop = []
@@ -285,6 +296,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			puts "Best correlation = #{pop_fits[-1][0]}"
 			gen_fits << pop_fits[-1][0]
 			best_perm_ids = ReformRatio::fasta_id_n_lengths(best_perm)[0]
+			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{y}_best_permutation", best_perm_ids)
 			if pop_fits[-1][0] <= prev_best_fit
 				puts "No fitness improvement\n \n" # If this is not called, this implies there has been some improvement
 				z+=1
@@ -305,7 +317,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				elsif av == nil && y == opts[:gen]
 					best_msg = "Algorithm quit as number of generations (#{y}/#{opts[:gen]}) complete: #{pop_fits[-1][0]}. Rearrangement score of #{RearrangementScore::rearrangement_score(ordered_ids, best_perm_ids)}"
 				end
-				best_msg = best_msg+"/#{RearrangementScore::rearrangement_score(ordered_ids, ordered_ids.reverse)}"
+				best_msg = "#{best_msg}/#{RearrangementScore::rearrangement_score(ordered_ids, ordered_ids.reverse)}"
 				puts best_msg
 				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [parameters, pop_n_msg[1], best_msg, '###', best_perm_ids].flatten)
 				fitness(best_perm, snp_data, 'figure') # makes figure of ratio density distribution

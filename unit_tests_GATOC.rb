@@ -105,8 +105,15 @@ class TestGATOC < Test::Unit::TestCase
 		selected = GATOC::select(pop, snp_data, 10)
 		new_pop  = GATOC::new_population(selected[0], 20, 1, 1, 1, 10, selected[1])
 		assert_kind_of(Array, new_pop)
+		assert_kind_of(String, new_pop[1])
 		assert_kind_of(Array, new_pop[0])
-		assert_kind_of(Bio::FastaFormat, new_pop[0][0])
+		x = 0
+		new_pop[0].each do |permutation|
+			assert_kind_of(Array, permutation, "permutation at element #{x} of population not array")
+			assert_equal(1239, permutation.length, "permutation at element #{x} of population not correct number of frags")
+			x+=1
+		end
+		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0])
 	end
 end
 
