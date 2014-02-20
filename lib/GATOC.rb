@@ -177,10 +177,21 @@ class GATOC # Genetic Algorithm To Order Contigs
 		pop.each do |fasta_array|
 			fitn = fitness(fasta_array, snp_data, 'same')
 			fits[fasta_array] = fitn #maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
-			puts "#{x} fit:#{fitn}"
+			if x >= 95
+				puts "#{x} fit:#{fitn}"
+			end
 			x+=1
 		end
-		puts "#{fits.size} b"
+		puts "fits.size = #{fits.size} b"
+		puts "Is the last fitness being removed? fits[-1] = #{fits[pop[-1]]}"
+		if fits.size < pop.size
+			diff = pop.size - fits.size
+			diff.times do
+				extra_rand = pop[0].shuffle
+				fits[extra_rand] = fitness(extra_rand, snp_data, 'same')
+				puts "extra random permutations added (once)"
+			end
+		end
 		fits = fits.sort_by {|k,v| v}
 		puts "#{fits.size} i"
 		pop_fits = []
