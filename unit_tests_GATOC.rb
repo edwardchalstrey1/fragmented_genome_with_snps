@@ -114,6 +114,7 @@ class TestGATOC < Test::Unit::TestCase
 			x+=1
 		end
 		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0])
+		assert_equal(new_pop.uniq.length, new_pop.length)
 	end
 end
 

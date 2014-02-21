@@ -171,32 +171,25 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 1: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 	# Output 2: Integer of leftover fragments, to be taken from the multiplied selected population
 	def self.select(pop, snp_data, num)
-		puts "#{pop.size} a"
+		puts "Pop is unique: #{pop.uniq.length == pop.length}"
 		fits = {}
-		x = 1
 		pop.each do |fasta_array|
 			fitn = fitness(fasta_array, snp_data, 'same')
 			fits[fasta_array] = fitn #maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
-			if x >= 95
-				puts "#{x} fit:#{fitn}"
-			end
-			x+=1
 		end
-		puts "fits.size = #{fits.size} b"
-		puts "Is the last fitness being removed? fits[-1] = #{fits[pop[-1]]}"
 		if fits.size < pop.size
 			diff = pop.size - fits.size
+			x = 0
 			diff.times do
 				extra_rand = pop[0].shuffle
 				fits[extra_rand] = fitness(extra_rand, snp_data, 'same')
-				puts "extra random permutations added (once)"
+				x+=1
 			end
+			puts "#{x} extra random permutations added, due to multiples of the same permutation in the population"
 		end
 		fits = fits.sort_by {|k,v| v}
-		puts "#{fits.size} i"
 		pop_fits = []
 		fits.each {|i| pop_fits << i.reverse} # swapping the "key/values" around
-		puts "#{pop_fits.size} k"
 		initial_size = pop_fits.size
 		sliced = pop_fits.reverse.each_slice(num).to_a
 		pop_fits = sliced[0].reverse
@@ -205,7 +198,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		else 
 			leftover = 0
 		end
-		puts "Selected #{pop_fits.size} of #{initial_size} permutations"
+		#puts "Selected #{pop_fits.size} of #{initial_size} permutations"
 		return pop_fits, leftover
 	end
 
@@ -235,7 +228,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		mut_num.times{pop << mini_mutate(pop_fits[-1][1])} # mini_mutating the best permutations
 		ran.times{pop << pop_fits[0][1].shuffle}
 		new_pop_msg = "Population size = #{pop.size}, with #{size - ((mut_num * 2) + save + ran)} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
-		puts new_pop_msg
+		#puts new_pop_msg
 		return pop, new_pop_msg
 	end
 
@@ -250,8 +243,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 		end
 		worst = fits.sort[0]
 		average = fits.inject(:+)/num
-		puts "Worst #{worst}"
-		puts "Average #{average}"
+		# puts "Worst #{worst}"
+		# puts "Average #{average}\n \n"
 		return average
 	end
 
@@ -283,7 +276,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 		gen_fits = [] # array of the best fitness in each generation
 		ordered_ids = ReformRatio::fasta_id_n_lengths(ordered_fasta)[0]
 		snp_data = ReformRatio::get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
-		puts "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}\n \nGen 0"
+		original_order_cor = "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
+		puts "#{original_order_cor} \n \nGen 0"
 		fasta = ReformRatio::fasta_array(fasta_file) #array of fasta format fragments
 		pop = initial_population(fasta, opts[:pop_size])
 		pop_fits_n_leftover = select(pop, snp_data, opts[:select_num])
@@ -330,7 +324,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 				best_msg = "#{best_msg}/#{RearrangementScore::rearrangement_score(ordered_ids, ordered_ids.reverse)}"
 				puts best_msg
-				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [parameters, pop_n_msg[1], best_msg, '###', best_perm_ids].flatten)
+				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [opts, pop_n_msg[1], best_msg, original_order_cor, '###', best_perm_ids].flatten)
 				fitness(best_perm, snp_data, 'figure') # makes figure of ratio density distribution
 			end
 			if z >= 10
