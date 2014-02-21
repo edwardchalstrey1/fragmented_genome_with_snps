@@ -169,7 +169,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 1: Array of all the outputs from get_snp_data method
 	# Input 2: Integer of the desired number of permutations to be selected for the next generation
 	# Output 1: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
-	# Output 2: Integer of leftover fragments, to be taken from the multiplied selected population
+	# Output 2: Integer of leftover permutations, to be taken from the multiplied selected population
 	def self.select(pop, snp_data, num)
 		puts "Pop is unique: #{pop.uniq.length == pop.length}"
 		fits = {}
@@ -208,7 +208,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 3: Integer of the desired number of the best permutations from the previous population, to be included in the new one
 	# Input 4: Integer of the desired number of randomly shuffled permutations in a new population
 	# Input 5: Integer of the number of permutations selected by the select method
-	# Input 6: Integer of leftover fragments, to be taken from the multiplied selected population
+	# Input 6: Integer of leftover permutations, to be taken from the multiplied selected population
 	# Output: New population of mutants, recombinants etc - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 	def self.new_population(pop_fits, size, mut_num, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
 		x = (size-leftover)/select_num
