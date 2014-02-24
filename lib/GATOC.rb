@@ -275,6 +275,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 		gen_fits = [] # array of the best fitness in each generation
 		ordered_ids = ReformRatio::fasta_id_n_lengths(ordered_fasta)[0]
+		WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation", ordered_ids)
 		snp_data = ReformRatio::get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 		original_order_cor = "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
 		puts "#{original_order_cor} \n \nGen 0"
