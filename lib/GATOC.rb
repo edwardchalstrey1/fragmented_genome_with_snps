@@ -302,7 +302,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			puts "Best correlation = #{pop_fits[-1][0]}"
 			gen_fits << pop_fits[-1][0]
 			best_perm_ids = ReformRatio::fasta_id_n_lengths(best_perm)[0]
-			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{y}_best_permutation", best_perm_ids)
+			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{y}_best_permutation", ["Ordinal Similarity: #{RearrangementScore::score(ordered_ids, best_perm_ids)}", best_perm_ids].flatten)
 			if pop_fits[-1][0] <= prev_best_fit
 				puts "No fitness improvement\n \n" # If this is not called, this implies there has been some improvement
 				z+=1
