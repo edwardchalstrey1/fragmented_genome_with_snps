@@ -1,3 +1,4 @@
+#encoding: utf-8
 require_relative 'lib/write_it'
 require_relative 'lib/rearrangement_score'
 require 'rinruby'
@@ -15,13 +16,13 @@ def best_perms(lrange, urange)
 	range.each do |i|
 		permutation = []
 		IO.foreach("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{i}_best_permutation.txt") { |line| permutation << line }
-		# permutation = permutation[1..-1]
+		permutation = permutation[1..-1] # permutation[2..-1]
 		best_perms << permutation 
 	end
 	return best_perms
 end
 
-def ord_sim_fig(best_perms, original_order, dataset, run)
+def ord_sim_fig(best_perms, original_order, dataset, run, rand_av) # average score for shuffled permutations
 	scores = []
 	best_perms.each do |perm|
 		scores << RearrangementScore::rearrangement_score(original_order, perm)
@@ -32,9 +33,10 @@ def ord_sim_fig(best_perms, original_order, dataset, run)
 	r_sesh.assign 'dataset', dataset
 	r_sesh.assign 'run', run
 	r_sesh.assign 'scores', scores
+	r_sesh.assign 'rand_av', rand_av
 	r_sesh.eval 'png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/", dataset, "/", run, "/ord_sim_over_generations.png", sep=""))'
-	r_sesh.eval 'plot(generations, scores, main="Line represents average score for shuffled permutations", xlab="Generation", ylab="Ordinal Similarity Score")'
-	r_sesh.eval 'abline(512351, 0)' # needs to be average of randoms #TODO
+	r_sesh.eval 'plot(generations, scores, main=paste("Ordinal similarities of best permutations 
+		where average score for shuffled permutations = ", rand_av, sep=""), xlab="Generation", ylab="Ordinal Similarity Score")'
 	r_sesh.eval 'dev.off()'
 	r_sesh.quit
 end
@@ -42,4 +44,4 @@ end
 original = original_order
 best = best_perms(ARGV[2].to_i, ARGV[3].to_i)
 
-ord_sim_fig(best, original, ARGV[0], ARGV[1])
+ord_sim_fig(best, original, ARGV[0], ARGV[1], ARGV[4])

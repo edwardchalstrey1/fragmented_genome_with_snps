@@ -23,3 +23,5 @@ else
 	perfect = RearrangementScore::rearrangement_score(ordered_fasta, ordered_fasta)
 	WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/shuffled_ordinal_similarities", ["Perfect = #{perfect}", "Best = #{best}", "Average = #{average}", "Worst = #{worst}", "Worst Possible = #{worst_possible}", scores].flatten)
 end
+
+puts average

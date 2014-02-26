@@ -1,10 +1,10 @@
 #encoding: utf-8
-require 'rubygems'
-require 'rinruby'
-require 'bio-samtools'
-require 'bio'
-
 class ModelGenome
+
+	require 'rubygems'
+	require 'rinruby'
+	require 'bio-samtools'
+	require 'bio'
 
 	# Input: FASTA file
 	# Output: Character array for all the bases in the first entry of the input FASTA

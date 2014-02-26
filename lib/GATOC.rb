@@ -5,6 +5,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require 'bio-samtools'
 	require 'bio'
 	require 'rinruby'
+	require 'parallel'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 	require_relative 'rearrangement_score'
@@ -248,19 +249,19 @@ class GATOC # Genetic Algorithm To Order Contigs
 		return average
 	end
 
-	# Input 0: FASTA file
-	# Input 1: VCF file
-	# Input 2: Correctly ordered array of Bio::FastaFormat entries
-	# Input 3: parameters:
-		# gen: Integer of desired number of generations - the number of times a new population is created from an old one
-		# pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
-		# mut_num: Integer of the desired number of mutant permutations in each new population (this number of mutate and mini_mutate methods)
-		# save: Integer of the desired number of the best permutations from each population, to be included in the next one
-		# ran: Integer of the desired number of randomly shuffled permutations in each new population
-		# figures: Any string: algorithm performance figures are created unless the string is 'no figures'
-	# Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
-	# Output 2: A saved figure of the algorithm's performance
-	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
+	Input 0: FASTA file
+	Input 1: VCF file
+	Input 2: Correctly ordered array of Bio::FastaFormat entries
+	Input 3: parameters:
+		gen: Integer of desired number of generations - the number of times a new population is created from an old one
+		pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
+		mut_num: Integer of the desired number of mutant permutations in each new population (this number of mutate and mini_mutate methods)
+		save: Integer of the desired number of the best permutations from each population, to be included in the next one
+		ran: Integer of the desired number of randomly shuffled permutations in each new population
+		figures: Any string: algorithm performance figures are created unless the string is 'no figures'
+	Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
+	Output 2: A saved figure of the algorithm's performance
+	Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
 	def self.evolve(fasta_file, vcf_file, ordered_fasta, parameters)
 		opts = {
 			:gen => 200,
@@ -302,7 +303,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			puts "Best correlation = #{pop_fits[-1][0]}"
 			gen_fits << pop_fits[-1][0]
 			best_perm_ids = ReformRatio::fasta_id_n_lengths(best_perm)[0]
-			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{y}_best_permutation", ["Ordinal Similarity: #{RearrangementScore::score(ordered_ids, best_perm_ids)}", best_perm_ids].flatten)
+			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{y}_best_permutation", ["Ordinal Similarity: #{RearrangementScore::score(ordered_ids, best_perm_ids)}", "Fitness = #{pop_fits[-1][0]}", best_perm_ids].flatten)
 			if pop_fits[-1][0] <= prev_best_fit
 				puts "No fitness improvement\n \n" # If this is not called, this implies there has been some improvement
 				z+=1
@@ -325,7 +326,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 				best_msg = "#{best_msg}/#{RearrangementScore::rearrangement_score(ordered_ids, ordered_ids.reverse)}"
 				puts best_msg
-				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [opts, pop_n_msg[1], best_msg, original_order_cor, '###', best_perm_ids].flatten)
+				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [opts, pop_n_msg[1], best_msg, original_order_cor, pop_fits[-1][0],'###', best_perm_ids].flatten)
 				fitness(best_perm, snp_data, 'figure') # makes figure of ratio density distribution
 			end
 			if z >= 10

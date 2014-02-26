@@ -1,8 +1,4 @@
 #encoding: utf-8
-require 'rubygems'
-require 'rinruby'
-require 'bio-samtools'
-require 'bio'
 require_relative 'lib/arabidopsis_c4_w_snps'
 require_relative 'lib/write_it'
 
