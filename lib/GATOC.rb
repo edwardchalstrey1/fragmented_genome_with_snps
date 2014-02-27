@@ -5,7 +5,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require 'bio-samtools'
 	require 'bio'
 	require 'rinruby'
-	require 'parallel'
+	#require 'parallel'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 	require_relative 'rearrangement_score'
@@ -126,7 +126,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
 	# Input 1: Array of all the outputs from get_snp_data method
-	# Input 2: "same" if we wish to compare the reformed ratio to the constant RATIO, or any other argument if we wish to compare to a re-run of comparable_ratio function in comparable_ratio.R
+	# Input 2: Any argument other than string "diff" if we wish to compare the reformed ratio to the constant RATIO, or "diff" if we wish to compare to a re-run of comparable_ratio function in comparable_ratio.R
+		# where this is an integer, the distribution across the genome is plotted for these SNP lists: see plot_distribution in comparable_ratio.R
 	# Output: A correlation value that is the fitness of the Input 0 permutation
 	def self.fitness(fasta, snp_data, same)
 		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
@@ -144,10 +145,11 @@ class GATOC # Genetic Algorithm To Order Contigs
 		end
 		myr.assign 'ratio', ratio
 		myr.eval 'correlation <- get_corr(het_snps, hom_snps, ratio)'
-		if same == 'figure'
+		if Integer === same
 			myr.assign 'dataset', "#{ARGV[0]}/#{ARGV[1]}"
+			myr.assign 'gen', same
 			myr.eval 'real_ratio <- get_real_ratio(het_snps, hom_snps, ratio)'
-			myr.eval 'plot_distribution(real_ratio, dataset)' # plot of the real_ratio
+			myr.eval 'plot_distribution(real_ratio, dataset, gen)' # plot of the real_ratio
 		end
 		correlation = myr.pull 'correlation'
 		myr.quit
@@ -249,19 +251,19 @@ class GATOC # Genetic Algorithm To Order Contigs
 		return average
 	end
 
-	Input 0: FASTA file
-	Input 1: VCF file
-	Input 2: Correctly ordered array of Bio::FastaFormat entries
-	Input 3: parameters:
-		gen: Integer of desired number of generations - the number of times a new population is created from an old one
-		pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
-		mut_num: Integer of the desired number of mutant permutations in each new population (this number of mutate and mini_mutate methods)
-		save: Integer of the desired number of the best permutations from each population, to be included in the next one
-		ran: Integer of the desired number of randomly shuffled permutations in each new population
-		figures: Any string: algorithm performance figures are created unless the string is 'no figures'
-	Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
-	Output 2: A saved figure of the algorithm's performance
-	Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
+	# Input 0: FASTA file
+	# Input 1: VCF file
+	# Input 2: Correctly ordered array of Bio::FastaFormat entries
+	# Input 3: parameters:
+	# 	gen: Integer of desired number of generations - the number of times a new population is created from an old one
+	# 	pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
+	# 	mut_num: Integer of the desired number of mutant permutations in each new population (this number of mutate and mini_mutate methods)
+	# 	save: Integer of the desired number of the best permutations from each population, to be included in the next one
+	# 	ran: Integer of the desired number of randomly shuffled permutations in each new population
+	# 	figures: Any string: algorithm performance figures are created unless the string is 'no figures'
+	# Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
+	# Output 2: A saved figure of the algorithm's performance
+	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
 	def self.evolve(fasta_file, vcf_file, ordered_fasta, parameters)
 		opts = {
 			:gen => 200,
@@ -327,8 +329,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 				best_msg = "#{best_msg}/#{RearrangementScore::rearrangement_score(ordered_ids, ordered_ids.reverse)}"
 				puts best_msg
 				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [opts, pop_n_msg[1], best_msg, original_order_cor, pop_fits[-1][0],'###', best_perm_ids].flatten)
-				fitness(best_perm, snp_data, 'figure') # makes figure of ratio density distribution
 			end
+			fitness(best_perm, snp_data, y) # makes figure of ratio density distribution for the best permutation in each generation
 			if z >= 10
 				then break
 			end

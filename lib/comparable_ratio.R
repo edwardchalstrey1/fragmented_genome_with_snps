@@ -45,14 +45,16 @@ get_real_ratio <- function(het_snps, hom_snps, ratio){
 # Input 1: Distribution from data: homozygous/heterozygous snp ratio - vector of the homozygous density estimate points divided by the heterozygous ones
 # Input 2: Dataset name string
 # Output: Figure of the homozygous/heterozygous snp density across the genome
-plot_distribution <- function(real_ratio, dataset){
+plot_distribution <- function(real_ratio, dataset, gen){
 	x <- (1:512)*36298.9375 # genome length/512
-	png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/", dataset,"/best_permutation_distribution.png", sep=""))
+	png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/", dataset,"/gen_", gen, "_best_permutation_distribution.png", sep=""))
 	plot(x, real_ratio, xlab="Arabidopsis chromosome 4 (nucleotides)", ylab="Ratio of Homozygous SNP Density/Heterozygous SNP Density")
 	dev.off()
 }
 
-
+# Input 1: Vector of fitness values (floats) for the best permutation from each generation of the genetic algorithm
+# Input 2: Name of dataset/run to save the performance figure in appropriate location
+# Output: Figure plotting performance of the genetic algorithm according to the fitness function
 plot_performance <- function(gen_fits, dataset){
 	x <- (0:(length(gen_fits)-1))
 	png(paste("~/fragmented_genome_with_snps/arabidopsis_datasets/", dataset,"/algorithm_performance.png", sep=""))
