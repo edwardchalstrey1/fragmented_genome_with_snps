@@ -92,7 +92,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.8799
+## [1] 0.8888
 ```
 
 
@@ -112,7 +112,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.6058
+## [1] 0.6168
 ```
 
 
@@ -183,7 +183,42 @@ Judging from the poor ordinal similarity score, the circos plot, and the shape o
 
 It is clear that the algorithm very quickly identifies the peak at one end of the genome as having a high fitness score. Subsequent improvements appear to flatten out the rest of the distribution. This would be useful if the peak were in the correct part of the genome. 
 
-### The next step 
+The next step
+------
 
-I will modify the fitness method used by the genetic algorithm, so that the peaks in the correct part of the genome get a higher score than other peaks. 
+I will modify the fitness method used by the genetic algorithm, so that the peaks in the correct part of the genome get a higher score than other peaks.
 
+### What does qqnorm look like for the best permutations from the genetic algorithm (where the peak is at the end of the genome)
+
+
+```r
+gen100_ht <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/arabidopsis_datasets/ratio_dataset4/run4/gen100_best_permutation_het_snps.txt", 
+    quote = "\"")))
+gen100_hm <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/arabidopsis_datasets/ratio_dataset4/run4/gen100_best_permutation_hom_snps.txt", 
+    quote = "\"")))
+
+gen100_hmd <- density(gen100_hm, from = 0, to = 18585056)
+gen100_htd <- density(gen100_ht, from = 0, to = 18585056)
+gen100_ratio <- gen100_hmd$y/gen100_htd$y
+```
+
+
+Q-Q plot of the distribution across the model genome for the best contig permutation (fitness) from generation 100, with normal expected quantiles:
+
+
+```r
+qqp <- qqnorm(gen100_ratio)
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
+
+```r
+cor(qqp$x, qqp$y)
+```
+
+```
+## [1] 0.6367
+```
+
+
+The shape of the graph and correlation value appears to be similar to that of the correct distribution (see sample distribution qqnorm plot above), which means that qqnorm won't be useful in distinguishing permutations with peaks in the correct position.
