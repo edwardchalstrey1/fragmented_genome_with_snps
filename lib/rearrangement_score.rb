@@ -3,24 +3,39 @@ class RearrangementScore
 	# Input 0: Array of objects in the correct order
 	# Input 1: Array of the same objects as an incorrect permutation
 	# Output 0: Ordinal similarity score value (0 = correct order)
-	def self.rearrangement_score(frags_original_order, rearranged)
-		position_each_frag_id_in_d = frags_original_order.map{|x| rearranged.index(x)} #works out the index of frags_original_order values in rearranged
-		index_values = Array(0..(frags_original_order.length - 1)) # index values that frags_original_order originally at
-		both = []
-		both << position_each_frag_id_in_d
-		both << index_values
+	def self.rearrangement_score(original, permutation)
+		both, difference_abs = [], []
+		both << original.map{|x| permutation.index(x)} #works out the index of original values in permutation
+		both << Array(0..(original.length - 1)) # index values that original originally at
 		difference = both.transpose.map {|x| x.reduce(:-)} # taking away old position from new position, to find the distance that the frag has moved when re-ordered
-		difference_abs = []
-		difference.each do |i|
-			difference_abs << i.abs
-		end
-		score = difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
-		return score
+		difference.each {|i| difference_abs << i.abs }
+		return difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
 	end
 
-	def self.score(frags_original_order, rearranged)
-		score = rearrangement_score(frags_original_order, rearranged)
-		worst = rearrangement_score(frags_original_order, frags_original_order.reverse)
-		return "#{score}/#{worst}"
+	# Input 0: Array of objects in the correct order
+	# Input 1: Array of the same objects as an incorrect permutation
+	# Output 0: Ordinal similarity score value / worst possible score
+	def self.score(original, permutation)
+		"#{rearrangement_score(original, permutation)}/#{rearrangement_score(original, original.reverse)}"
+	end
+
+	def self.metric_2(original, permutation)
+		pos_1 = permutation.index(original[0]) # position of the first object of original order in permutation
+		if original[0] != permutation[0]
+			new_a = [permutation[pos_1..-1], permutation[0..pos_1-1]].flatten # re-order the permutation to get first object at front
+		else
+			new_a = permutation
+		end
+		x = 0
+		hds = [] # hamming distances
+		new_a.each do |frag_id|
+			if frag_id == original[x]
+				hds << 0
+			else
+				hds << 1
+			end
+			x+=1
+		end
+		return hds.inject(:+) + pos_1 # no need to take away 1 as the index in ruby is position - 1
 	end
 end
