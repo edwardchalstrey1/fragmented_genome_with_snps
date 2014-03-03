@@ -125,4 +125,558 @@ as(c(3, 2, 1), "pMatrix")
 The first matrix above shows the correct permutation. The closer each of the other matrices is to the diagonal of ones, the "closer" the permutation must be to the correct order. The degree of "closeness" is what I am trying to establish by providing these metrics. One thing is certain, the reversed permutation ([3,2,1] here) should give the worst possible score, because it is the exact opposite of the correct order. Whilst this is the case for both metric 1 and 2, metric 1 also attributes the same score to two other permutations. Metric 2 takes into account the fact that parts of a permutation may be in consectutive order (objects within a part correctly positioned in relation to eachother), whilst out of step with their correct position in the perfect order. For example, the [2,3,1] and [3,1,2] matrices above have a better metric 2 score than [2,1,3], because they have 2,3 and 1,2 consecutively within them respectively.
 
 
+```r
+scores <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_metric_scores.txt", 
+    quote = "\"")))
+table <- matrix(scores, ncol = 5, byrow = TRUE)
+colnames(table) <- c("Metric 1", "Metric 2a", "Metric 2b", "Metric 2c", "Average of Metrics 1 and 2")
+rownames(table) <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", 
+    quote = "\"")))
+table <- as.table(table)
+table
+```
 
+```
+##      Metric 1 Metric 2a Metric 2b Metric 2c Average of Metrics 1 and 2
+## 1234     0.00      0.00      0.00      0.00                       0.00
+## 1243     2.00      2.00      0.50      2.00                       2.00
+## 1324     2.00      2.00      0.50      2.00                       2.00
+## 1342     4.00      3.00      0.75      3.00                       3.50
+## 1423     4.00      3.00      0.75      3.00                       3.50
+## 1432     4.00      2.00      0.50      2.00                       3.00
+## 2134     2.00      4.00      1.75      3.25                       3.00
+## 2143     4.00      3.00      1.50      2.25                       3.50
+## 2314     4.00      5.00      2.75      3.50                       4.50
+## 2341     6.00      3.00      3.00      0.75                       4.50
+## 2413     6.00      4.00      2.50      2.50                       5.00
+## 2431     6.00      5.00      3.50      2.75                       5.50
+## 3124     4.00      3.00      1.50      2.25                       3.50
+## 3142     6.00      4.00      1.75      3.25                       5.00
+## 3214     4.00      4.00      2.50      2.50                       4.00
+## 3241     6.00      5.00      3.50      2.75                       5.50
+## 3412     8.00      2.00      2.00      0.50                       5.00
+## 3421     8.00      6.00      3.75      3.75                       7.00
+## 4123     6.00      1.00      1.00      0.25                       3.50
+## 4132     6.00      3.00      1.50      2.25                       4.50
+## 4213     6.00      5.00      2.75      3.50                       5.50
+## 4231     6.00      6.00      3.75      3.75                       6.00
+## 4312     8.00      4.00      2.50      2.50                       6.00
+## 4321     8.00      5.00      3.50      2.75                       6.50
+```
+
+
+
+```r
+perms <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", 
+    quote = "\"")))
+convert <- function(perm) {
+    return(strtoi(unlist(strsplit(toString(perm), split = ""))))
+}
+
+as(convert(perms[1]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] | . . .
+## [2,] . | . .
+## [3,] . . | .
+## [4,] . . . |
+```
+
+```r
+perms[1]
+```
+
+```
+## [1] 1234
+```
+
+```r
+as(convert(perms[2]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] | . . .
+## [2,] . | . .
+## [3,] . . . |
+## [4,] . . | .
+```
+
+```r
+perms[2]
+```
+
+```
+## [1] 1243
+```
+
+```r
+as(convert(perms[3]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] | . . .
+## [2,] . . | .
+## [3,] . | . .
+## [4,] . . . |
+```
+
+```r
+perms[3]
+```
+
+```
+## [1] 1324
+```
+
+```r
+as(convert(perms[4]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] | . . .
+## [2,] . . | .
+## [3,] . . . |
+## [4,] . | . .
+```
+
+```r
+perms[4]
+```
+
+```
+## [1] 1342
+```
+
+```r
+as(convert(perms[5]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] | . . .
+## [2,] . . . |
+## [3,] . | . .
+## [4,] . . | .
+```
+
+```r
+perms[5]
+```
+
+```
+## [1] 1423
+```
+
+```r
+as(convert(perms[6]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] | . . .
+## [2,] . . . |
+## [3,] . . | .
+## [4,] . | . .
+```
+
+```r
+perms[6]
+```
+
+```
+## [1] 1432
+```
+
+```r
+as(convert(perms[7]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . | . .
+## [2,] | . . .
+## [3,] . . | .
+## [4,] . . . |
+```
+
+```r
+perms[7]
+```
+
+```
+## [1] 2134
+```
+
+```r
+as(convert(perms[8]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . | . .
+## [2,] | . . .
+## [3,] . . . |
+## [4,] . . | .
+```
+
+```r
+perms[8]
+```
+
+```
+## [1] 2143
+```
+
+```r
+as(convert(perms[9]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . | . .
+## [2,] . . | .
+## [3,] | . . .
+## [4,] . . . |
+```
+
+```r
+perms[9]
+```
+
+```
+## [1] 2314
+```
+
+```r
+as(convert(perms[10]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . | . .
+## [2,] . . | .
+## [3,] . . . |
+## [4,] | . . .
+```
+
+```r
+perms[10]
+```
+
+```
+## [1] 2341
+```
+
+```r
+as(convert(perms[11]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . | . .
+## [2,] . . . |
+## [3,] | . . .
+## [4,] . . | .
+```
+
+```r
+perms[11]
+```
+
+```
+## [1] 2413
+```
+
+```r
+as(convert(perms[12]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . | . .
+## [2,] . . . |
+## [3,] . . | .
+## [4,] | . . .
+```
+
+```r
+perms[12]
+```
+
+```
+## [1] 2431
+```
+
+```r
+as(convert(perms[13]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . | .
+## [2,] | . . .
+## [3,] . | . .
+## [4,] . . . |
+```
+
+```r
+perms[13]
+```
+
+```
+## [1] 3124
+```
+
+```r
+as(convert(perms[14]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . | .
+## [2,] | . . .
+## [3,] . . . |
+## [4,] . | . .
+```
+
+```r
+perms[14]
+```
+
+```
+## [1] 3142
+```
+
+```r
+as(convert(perms[15]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . | .
+## [2,] . | . .
+## [3,] | . . .
+## [4,] . . . |
+```
+
+```r
+perms[15]
+```
+
+```
+## [1] 3214
+```
+
+```r
+as(convert(perms[16]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . | .
+## [2,] . | . .
+## [3,] . . . |
+## [4,] | . . .
+```
+
+```r
+perms[16]
+```
+
+```
+## [1] 3241
+```
+
+```r
+as(convert(perms[17]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . | .
+## [2,] . . . |
+## [3,] | . . .
+## [4,] . | . .
+```
+
+```r
+perms[17]
+```
+
+```
+## [1] 3412
+```
+
+```r
+as(convert(perms[18]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . | .
+## [2,] . . . |
+## [3,] . | . .
+## [4,] | . . .
+```
+
+```r
+perms[18]
+```
+
+```
+## [1] 3421
+```
+
+```r
+as(convert(perms[19]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . . |
+## [2,] | . . .
+## [3,] . | . .
+## [4,] . . | .
+```
+
+```r
+perms[19]
+```
+
+```
+## [1] 4123
+```
+
+```r
+as(convert(perms[20]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . . |
+## [2,] | . . .
+## [3,] . . | .
+## [4,] . | . .
+```
+
+```r
+perms[20]
+```
+
+```
+## [1] 4132
+```
+
+```r
+as(convert(perms[21]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . . |
+## [2,] . | . .
+## [3,] | . . .
+## [4,] . . | .
+```
+
+```r
+perms[21]
+```
+
+```
+## [1] 4213
+```
+
+```r
+as(convert(perms[22]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . . |
+## [2,] . | . .
+## [3,] . . | .
+## [4,] | . . .
+```
+
+```r
+perms[22]
+```
+
+```
+## [1] 4231
+```
+
+```r
+as(convert(perms[23]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . . |
+## [2,] . . | .
+## [3,] | . . .
+## [4,] . | . .
+```
+
+```r
+perms[23]
+```
+
+```
+## [1] 4312
+```
+
+```r
+as(convert(perms[24]), "pMatrix")
+```
+
+```
+## 4 x 4 sparse Matrix of class "pMatrix"
+##             
+## [1,] . . . |
+## [2,] . . | .
+## [3,] . | . .
+## [4,] | . . .
+```
+
+```r
+perms[24]
+```
+
+```
+## [1] 4321
+```
+
+
+Evaluating the scores for permutations of length 4 shows that metric 2 has some problems. For example, it gives (4,2,3,1) a higher score (6) than (4,3,2,1) (5), even though the former has 2/4 correctly positioned objects (2 and 3). It also gives (3,4,1,2) a very good score (2) despite none of the objects being correctly positioned; this isn't neccesarily bad, the fact that the sections (3,4) and (1,2) are ordered correctly within has been taken into account.
+
+Averaging the scores of metric 1 and 2 has the following problem: (3,4,2,1) has a higher score (7) than (4,3,2,1) (6.5). This is bad because the (3,4) in the former permutation are correctly ordered realative to eachother.

@@ -19,7 +19,7 @@ class RearrangementScore
 		"#{rearrangement_score(original, permutation)}/#{rearrangement_score(original, original.reverse)}"
 	end
 
-	def self.metric_2(original, permutation)
+	def self.metric_2(original, permutation, version)
 		pos_1 = permutation.index(original[0]) # position of the first object of original order in permutation
 		if original[0] != permutation[0]
 			new_a = [permutation[pos_1..-1], permutation[0..pos_1-1]].flatten # re-order the permutation to get first object at front
@@ -36,6 +36,18 @@ class RearrangementScore
 			end
 			x+=1
 		end
-		return hds.inject(:+) + pos_1 # no need to take away 1 as the index in ruby is position - 1
+		if version == 'b'
+			score = (hds.inject(:+).to_f/permutation.length.to_f) + pos_1
+		elsif version == 'c'
+			score = hds.inject(:+) + (pos_1.to_f/permutation.length.to_f)
+		else
+			score = hds.inject(:+) + pos_1 # no need to take away 1 as the index in ruby is position - 1
+		end
+		return score
 	end
+
+	def self.metric_1_2_av(original, permutation)
+		(rearrangement_score(original, permutation).to_f + metric_2(original, permutation, 'a').to_f)/2
+	end
+
 end

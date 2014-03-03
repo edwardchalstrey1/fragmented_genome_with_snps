@@ -1,5 +1,6 @@
 require_relative 'lib/rearrangement_score.rb'
 require 'pp'
+require_relative 'lib/write_it'
 
 vp = [1,2,3]
 vo = [1,2,3]
@@ -17,12 +18,20 @@ a.each do |i|
 	x+=1
 end
 
-m1_scores, m2_scores = [], []
+m1_scores, m2a_scores, m2b_scores, m2c_scores, m12av_scores = [], [], [], [], []
 a.each do |perm|
 	m1_scores << RearrangementScore::rearrangement_score(orig, perm)
-	m2_scores << RearrangementScore::metric_2(orig, perm)
+	m2a_scores << RearrangementScore::metric_2(orig, perm, 'a')
+	m2b_scores << RearrangementScore::metric_2(orig, perm, 'b')
+	m2c_scores << RearrangementScore::metric_2(orig, perm, 'c')
+	m12av_scores << RearrangementScore::metric_1_2_av(orig, perm)
 end
 
-puts m1_scores
-puts
-puts m2_scores # now write these to txts or something
+scores = m1_scores.zip(m2a_scores).zip(m2b_scores).zip(m2c_scores).zip(m12av_scores).flatten
+
+perms = []
+a.each {|perm| perms << perm.join.to_s}
+
+WriteIt::write_txt('test/1-4_metric_scores', scores)
+WriteIt::write_txt('test/1-4_perms', perms)
+#WriteIt::write_txt('test/1-4_perms_arrays', a)

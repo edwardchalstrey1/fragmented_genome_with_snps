@@ -59,5 +59,47 @@ as(c(3,2,1), "pMatrix")
 The first matrix above shows the correct permutation. The closer each of the other matrices is to the diagonal of ones, the "closer" the permutation must be to the correct order. The degree of "closeness" is what I am trying to establish by providing these metrics. One thing is certain, the reversed permutation ([3,2,1] here) should give the worst possible score, because it is the exact opposite of the correct order. Whilst this is the case for both metric 1 and 2, metric 1 also attributes the same score to two other permutations. Metric 2 takes into account the fact that parts of a permutation may be in consectutive order (objects within a part correctly positioned in relation to eachother), whilst out of step with their correct position in the perfect order. For example, the [2,3,1] and [3,1,2] matrices above have a better metric 2 score than [2,1,3], because they have 2,3 and 1,2 consecutively within them respectively.
 
 ```{r}
+scores <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_metric_scores.txt", quote="\"")))
+table <- matrix(scores, ncol=5, byrow=TRUE)
+colnames(table) <- c("Metric 1","Metric 2a", "Metric 2b", "Metric 2c", "Average of Metrics 1 and 2")
+rownames(table) <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", quote="\"")))
+table <- as.table(table)
+table
+```
+
+```{r}
+perms <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", quote="\"")))
+convert <- function(perm){
+  return(strtoi(unlist(strsplit(toString(perm), split=""))))
+}
+ 
+as(convert(perms[1]), "pMatrix"); perms[1]
+as(convert(perms[2]), "pMatrix"); perms[2]
+as(convert(perms[3]), "pMatrix"); perms[3]
+as(convert(perms[4]), "pMatrix"); perms[4]
+as(convert(perms[5]), "pMatrix"); perms[5]
+as(convert(perms[6]), "pMatrix"); perms[6]
+as(convert(perms[7]), "pMatrix"); perms[7]
+as(convert(perms[8]), "pMatrix"); perms[8]
+as(convert(perms[9]), "pMatrix"); perms[9]
+as(convert(perms[10]), "pMatrix"); perms[10]
+as(convert(perms[11]), "pMatrix"); perms[11]
+as(convert(perms[12]), "pMatrix"); perms[12]
+as(convert(perms[13]), "pMatrix"); perms[13]
+as(convert(perms[14]), "pMatrix"); perms[14]
+as(convert(perms[15]), "pMatrix"); perms[15]
+as(convert(perms[16]), "pMatrix"); perms[16]
+as(convert(perms[17]), "pMatrix"); perms[17]
+as(convert(perms[18]), "pMatrix"); perms[18]
+as(convert(perms[19]), "pMatrix"); perms[19]
+as(convert(perms[20]), "pMatrix"); perms[20]
+as(convert(perms[21]), "pMatrix"); perms[21]
+as(convert(perms[22]), "pMatrix"); perms[22]
+as(convert(perms[23]), "pMatrix"); perms[23]
+as(convert(perms[24]), "pMatrix"); perms[24]
 
 ```
+
+Evaluating the scores for permutations of length 4 shows that metric 2 has some problems. For example, it gives (4,2,3,1) a higher score (6) than (4,3,2,1) (5), even though the former has 2/4 correctly positioned objects (2 and 3). It also gives (3,4,1,2) a very good score (2) despite none of the objects being correctly positioned; this isn't neccesarily bad, the fact that the sections (3,4) and (1,2) are ordered correctly within has been taken into account.
+
+Averaging the scores of metric 1 and 2 has the following problem: (3,4,2,1) has a higher score (7) than (4,3,2,1) (6.5). This is bad because the (3,4) in the former permutation are correctly ordered realative to eachother.

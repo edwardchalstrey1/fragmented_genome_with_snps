@@ -15,7 +15,15 @@ class TestRearrangementScore < Test::Unit::TestCase
 	end
 
 	def test_metric_2
-		assert_equal(0, RearrangementScore::metric_2(A,A))
-		assert_equal(5, RearrangementScore::metric_2(A,C))
+		assert_equal(0, RearrangementScore::metric_2(A,A, 'a'))
+		assert_equal(4, RearrangementScore::metric_2(A,C, 'a'))
+
+		assert_equal(2+(2.0/3.0), RearrangementScore::metric_2(A,C, 'b'))
+		assert_equal(2+(2.0/3.0), RearrangementScore::metric_2(A,C, 'c'))
 	end
+
+	def test_metric_1_2_av
+		assert_equal(4, RearrangementScore::metric_1_2_av(A,C))
+	end
+
 end
