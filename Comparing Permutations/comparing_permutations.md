@@ -126,53 +126,102 @@ The first matrix above shows the correct permutation. The closer each of the oth
 
 
 ```r
+source("~/fragmented_genome_with_snps/lib/kendall_tau_distance.R")
 scores <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_metric_scores.txt", 
     quote = "\"")))
-table <- matrix(scores, ncol = 5, byrow = TRUE)
-colnames(table) <- c("Metric 1", "Metric 2a", "Metric 2b", "Metric 2c", "Average of Metrics 1 and 2")
-rownames(table) <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", 
-    quote = "\"")))
-table <- as.table(table)
-table
-```
-
-```
-##      Metric 1 Metric 2a Metric 2b Metric 2c Average of Metrics 1 and 2
-## 1234     0.00      0.00      0.00      0.00                       0.00
-## 1243     2.00      2.00      0.50      2.00                       2.00
-## 1324     2.00      2.00      0.50      2.00                       2.00
-## 1342     4.00      3.00      0.75      3.00                       3.50
-## 1423     4.00      3.00      0.75      3.00                       3.50
-## 1432     4.00      2.00      0.50      2.00                       3.00
-## 2134     2.00      4.00      1.75      3.25                       3.00
-## 2143     4.00      3.00      1.50      2.25                       3.50
-## 2314     4.00      5.00      2.75      3.50                       4.50
-## 2341     6.00      3.00      3.00      0.75                       4.50
-## 2413     6.00      4.00      2.50      2.50                       5.00
-## 2431     6.00      5.00      3.50      2.75                       5.50
-## 3124     4.00      3.00      1.50      2.25                       3.50
-## 3142     6.00      4.00      1.75      3.25                       5.00
-## 3214     4.00      4.00      2.50      2.50                       4.00
-## 3241     6.00      5.00      3.50      2.75                       5.50
-## 3412     8.00      2.00      2.00      0.50                       5.00
-## 3421     8.00      6.00      3.75      3.75                       7.00
-## 4123     6.00      1.00      1.00      0.25                       3.50
-## 4132     6.00      3.00      1.50      2.25                       4.50
-## 4213     6.00      5.00      2.75      3.50                       5.50
-## 4231     6.00      6.00      3.75      3.75                       6.00
-## 4312     8.00      4.00      2.50      2.50                       6.00
-## 4321     8.00      5.00      3.50      2.75                       6.50
-```
-
-
-
-```r
 perms <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", 
     quote = "\"")))
 convert <- function(perm) {
     return(strtoi(unlist(strsplit(toString(perm), split = ""))))
 }
+kendallTauDistance(c(1, 2, 4, 3), convert(perms[1]))
+```
 
+```
+## [1] 1
+```
+
+```r
+kt_scores <- c()
+for (perm in perms) {
+    kt_scores <- c(kt_scores, kendallTauDistance(c(1, 2, 4, 3), convert(perm)))
+}
+
+table <- matrix(scores, ncol = 5, byrow = TRUE)
+colnames(table) <- c("Metric 1", "Metric 2a", "Metric 2b", "Metric 2c", "Metrics 1,2 average")  #, 'Kendall tau distance')
+rownames(table) <- perms
+table <- as.table(table)
+table
+```
+
+```
+##      Metric 1 Metric 2a Metric 2b Metric 2c Metrics 1,2 average
+## 1234     0.00      0.00      0.00      0.00                0.00
+## 1243     2.00      2.00      0.50      2.00                2.00
+## 1324     2.00      2.00      0.50      2.00                2.00
+## 1342     4.00      3.00      0.75      3.00                3.50
+## 1423     4.00      3.00      0.75      3.00                3.50
+## 1432     4.00      2.00      0.50      2.00                3.00
+## 2134     2.00      4.00      1.75      3.25                3.00
+## 2143     4.00      3.00      1.50      2.25                3.50
+## 2314     4.00      5.00      2.75      3.50                4.50
+## 2341     6.00      3.00      3.00      0.75                4.50
+## 2413     6.00      4.00      2.50      2.50                5.00
+## 2431     6.00      5.00      3.50      2.75                5.50
+## 3124     4.00      3.00      1.50      2.25                3.50
+## 3142     6.00      4.00      1.75      3.25                5.00
+## 3214     4.00      4.00      2.50      2.50                4.00
+## 3241     6.00      5.00      3.50      2.75                5.50
+## 3412     8.00      2.00      2.00      0.50                5.00
+## 3421     8.00      6.00      3.75      3.75                7.00
+## 4123     6.00      1.00      1.00      0.25                3.50
+## 4132     6.00      3.00      1.50      2.25                4.50
+## 4213     6.00      5.00      2.75      3.50                5.50
+## 4231     6.00      6.00      3.75      3.75                6.00
+## 4312     8.00      4.00      2.50      2.50                6.00
+## 4321     8.00      5.00      3.50      2.75                6.50
+```
+
+```r
+
+table_2 <- matrix(kt_scores, ncol = 1, byrow = TRUE)
+colnames(table_2) <- c("Kendall tau distance")
+rownames(table_2) <- perms
+table_2 <- as.table(table_2)
+table_2
+```
+
+```
+##      Kendall tau distance
+## 1234                    1
+## 1243                    0
+## 1324                    2
+## 1342                    3
+## 1423                    1
+## 1432                    2
+## 2134                    2
+## 2143                    1
+## 2314                    3
+## 2341                    4
+## 2413                    2
+## 2431                    3
+## 3124                    3
+## 3142                    4
+## 3214                    4
+## 3241                    5
+## 3412                    5
+## 3421                    6
+## 4123                    2
+## 4132                    3
+## 4213                    3
+## 4231                    4
+## 4312                    4
+## 4321                    5
+```
+
+
+
+```r
 as(convert(perms[1]), "pMatrix")
 ```
 
@@ -186,11 +235,11 @@ as(convert(perms[1]), "pMatrix")
 ```
 
 ```r
-perms[1]
+convert(perms[1])
 ```
 
 ```
-## [1] 1234
+## [1] 1 2 3 4
 ```
 
 ```r

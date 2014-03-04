@@ -59,21 +59,34 @@ as(c(3,2,1), "pMatrix")
 The first matrix above shows the correct permutation. The closer each of the other matrices is to the diagonal of ones, the "closer" the permutation must be to the correct order. The degree of "closeness" is what I am trying to establish by providing these metrics. One thing is certain, the reversed permutation ([3,2,1] here) should give the worst possible score, because it is the exact opposite of the correct order. Whilst this is the case for both metric 1 and 2, metric 1 also attributes the same score to two other permutations. Metric 2 takes into account the fact that parts of a permutation may be in consectutive order (objects within a part correctly positioned in relation to eachother), whilst out of step with their correct position in the perfect order. For example, the [2,3,1] and [3,1,2] matrices above have a better metric 2 score than [2,1,3], because they have 2,3 and 1,2 consecutively within them respectively.
 
 ```{r}
+source('~/fragmented_genome_with_snps/lib/kendall_tau_distance.R')
 scores <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_metric_scores.txt", quote="\"")))
-table <- matrix(scores, ncol=5, byrow=TRUE)
-colnames(table) <- c("Metric 1","Metric 2a", "Metric 2b", "Metric 2c", "Average of Metrics 1 and 2")
-rownames(table) <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", quote="\"")))
-table <- as.table(table)
-table
-```
-
-```{r}
 perms <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_perms.txt", quote="\"")))
 convert <- function(perm){
   return(strtoi(unlist(strsplit(toString(perm), split=""))))
 }
- 
-as(convert(perms[1]), "pMatrix"); perms[1]
+kendallTauDistance(c(1,2,4,3), convert(perms[1]))
+kt_scores <- c()
+for(perm in perms){
+  kt_scores <- c(kt_scores, kendallTauDistance(c(1,2,4,3), convert(perm)))
+}
+
+table <- matrix(scores, ncol=5, byrow=TRUE)
+colnames(table) <- c("Metric 1","Metric 2a", "Metric 2b", "Metric 2c", "Metrics 1,2 average")#, "Kendall tau distance")
+rownames(table) <- perms
+table <- as.table(table)
+table
+
+table_2 <- matrix(kt_scores, ncol=1, byrow=TRUE)
+colnames(table_2) <- c("Kendall tau distance")
+rownames(table_2) <- perms
+table_2 <- as.table(table_2)
+table_2
+
+```
+
+```{r}
+as(convert(perms[1]), "pMatrix"); convert(perms[1])
 as(convert(perms[2]), "pMatrix"); perms[2]
 as(convert(perms[3]), "pMatrix"); perms[3]
 as(convert(perms[4]), "pMatrix"); perms[4]

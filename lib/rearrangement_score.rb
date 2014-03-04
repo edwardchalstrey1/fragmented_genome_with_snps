@@ -3,13 +3,20 @@ class RearrangementScore
 	# Input 0: Array of objects in the correct order
 	# Input 1: Array of the same objects as an incorrect permutation
 	# Output 0: Ordinal similarity score value (0 = correct order)
-	def self.rearrangement_score(original, permutation)
+	def self.rearrangement_score(original, permutation) # TODO change name to deviation distance
 		both, difference_abs = [], []
 		both << original.map{|x| permutation.index(x)} #works out the index of original values in permutation
 		both << Array(0..(original.length - 1)) # index values that original originally at
 		difference = both.transpose.map {|x| x.reduce(:-)} # taking away old position from new position, to find the distance that the frag has moved when re-ordered
 		difference.each {|i| difference_abs << i.abs }
-		return difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
+		s = difference_abs.inject(:+) #high score = bad, score of 0 means the fragments in the right order
+		# n = permutation.length
+		# if n % 2 == 0
+		# 	score = (2 / (n ** 2)) * s # TODO normalize (0..1)
+		# else
+		# 	score = (2 / ((n ** 2) - 1)) * s
+		# end
+		return s#core
 	end
 
 	# Input 0: Array of objects in the correct order
@@ -48,6 +55,10 @@ class RearrangementScore
 
 	def self.metric_1_2_av(original, permutation)
 		(rearrangement_score(original, permutation).to_f + metric_2(original, permutation, 'a').to_f)/2
+	end
+
+	def self.normalize(score, permutation)
+		score.to_f/p.length.to_f
 	end
 
 end
