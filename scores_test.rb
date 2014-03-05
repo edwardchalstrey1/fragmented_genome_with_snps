@@ -2,12 +2,6 @@ require_relative 'lib/rearrangement_score.rb'
 require 'pp'
 require_relative 'lib/write_it'
 
-vp = [1,2,3]
-vo = [1,2,3]
-
-#puts RearrangementScore::rearrangement_score(vo, vp)
-#puts RearrangementScore::metric_2(vo, vp)
-
 orig = (1..4).to_a
 a = []
 orig.permutation.map(&:join).each {|i| a << i.split(//)}
@@ -18,17 +12,24 @@ a.each do |i|
 	x+=1
 end
 
-m1_scores, m2a_scores, m2b_scores, m2c_scores, m12av_scores = [], [], [], [], []
+=begin
+	
+a is all the possible permutations of 1,2,3,4
+	
+=end
+
+dev, sq_dev, ham, mod_ham, r, lcs, kt = [], [], [], [], [], [], []
 a.each do |perm|
-	m1_scores << RearrangementScore::rearrangement_score(orig, perm)
-	m2a_scores << RearrangementScore::metric_2(orig, perm, 'a')
-	m2b_scores << RearrangementScore::metric_2(orig, perm, 'b')
-	m2c_scores << RearrangementScore::metric_2(orig, perm, 'c')
-	m12av_scores << RearrangementScore::metric_1_2_av(orig, perm)
+	dev << RearrangementScore::dev_dist(orig, perm)
+	sq_dev << RearrangementScore::sq_dev_dist(orig, perm)
+	ham << RearrangementScore::gen_ham_dist(orig, perm)
+	mod_ham << RearrangementScore::mod_ham_dist(orig, perm)
+	r << RearrangementScore::r_dist(orig, perm)
+	lcs << RearrangementScore::lcs(orig, perm)
+	kt << RearrangementScore::kendalls_tau(orig, perm)
 end
 
-scores = m1_scores.zip(m2a_scores).zip(m2b_scores).zip(m2c_scores).zip(m12av_scores).flatten
-
+scores = dev.zip(sq_dev).zip(ham).zip(mod_ham).zip(r).zip(lcs).zip(kt).flatten
 perms = []
 a.each {|perm| perms << perm.join.to_s}
 

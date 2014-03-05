@@ -65,23 +65,11 @@ perms <- as.vector(as.matrix(read.table("~/fragmented_genome_with_snps/test/1-4_
 convert <- function(perm){
   return(strtoi(unlist(strsplit(toString(perm), split=""))))
 }
-kendallTauDistance(c(1,2,4,3), convert(perms[1]))
-kt_scores <- c()
-for(perm in perms){
-  kt_scores <- c(kt_scores, kendallTauDistance(c(1,2,4,3), convert(perm)))
-}
-
-table <- matrix(scores, ncol=5, byrow=TRUE)
-colnames(table) <- c("Metric 1","Metric 2a", "Metric 2b", "Metric 2c", "Metrics 1,2 average")#, "Kendall tau distance")
+table <- round(matrix(scores, ncol=7, byrow=TRUE),2) # rounded values to 2dp
+colnames(table) <- c("dev","sq_dev","ham","mod_ham","r","lcs","kt")
 rownames(table) <- perms
 table <- as.table(table)
 table
-
-table_2 <- matrix(kt_scores, ncol=1, byrow=TRUE)
-colnames(table_2) <- c("Kendall tau distance")
-rownames(table_2) <- perms
-table_2 <- as.table(table_2)
-table_2
 
 ```
 

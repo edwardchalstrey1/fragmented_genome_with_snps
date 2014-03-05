@@ -296,84 +296,38 @@ perms &lt;- as.vector(as.matrix(read.table(&quot;~/fragmented_genome_with_snps/t
 convert &lt;- function(perm) {
     return(strtoi(unlist(strsplit(toString(perm), split = &quot;&quot;))))
 }
-kendallTauDistance(c(1, 2, 4, 3), convert(perms[1]))
-</code></pre>
-
-<pre><code>## [1] 1
-</code></pre>
-
-<pre><code class="r">kt_scores &lt;- c()
-for (perm in perms) {
-    kt_scores &lt;- c(kt_scores, kendallTauDistance(c(1, 2, 4, 3), convert(perm)))
-}
-
-table &lt;- matrix(scores, ncol = 5, byrow = TRUE)
-colnames(table) &lt;- c(&quot;Metric 1&quot;, &quot;Metric 2a&quot;, &quot;Metric 2b&quot;, &quot;Metric 2c&quot;, &quot;Metrics 1,2 average&quot;)  #, &#39;Kendall tau distance&#39;)
+table &lt;- round(matrix(scores, ncol = 7, byrow = TRUE), 2)  # rounded values to 2dp
+colnames(table) &lt;- c(&quot;dev&quot;, &quot;sq_dev&quot;, &quot;ham&quot;, &quot;mod_ham&quot;, &quot;r&quot;, &quot;lcs&quot;, &quot;kt&quot;)
 rownames(table) &lt;- perms
 table &lt;- as.table(table)
 table
 </code></pre>
 
-<pre><code>##      Metric 1 Metric 2a Metric 2b Metric 2c Metrics 1,2 average
-## 1234     0.00      0.00      0.00      0.00                0.00
-## 1243     2.00      2.00      0.50      2.00                2.00
-## 1324     2.00      2.00      0.50      2.00                2.00
-## 1342     4.00      3.00      0.75      3.00                3.50
-## 1423     4.00      3.00      0.75      3.00                3.50
-## 1432     4.00      2.00      0.50      2.00                3.00
-## 2134     2.00      4.00      1.75      3.25                3.00
-## 2143     4.00      3.00      1.50      2.25                3.50
-## 2314     4.00      5.00      2.75      3.50                4.50
-## 2341     6.00      3.00      3.00      0.75                4.50
-## 2413     6.00      4.00      2.50      2.50                5.00
-## 2431     6.00      5.00      3.50      2.75                5.50
-## 3124     4.00      3.00      1.50      2.25                3.50
-## 3142     6.00      4.00      1.75      3.25                5.00
-## 3214     4.00      4.00      2.50      2.50                4.00
-## 3241     6.00      5.00      3.50      2.75                5.50
-## 3412     8.00      2.00      2.00      0.50                5.00
-## 3421     8.00      6.00      3.75      3.75                7.00
-## 4123     6.00      1.00      1.00      0.25                3.50
-## 4132     6.00      3.00      1.50      2.25                4.50
-## 4213     6.00      5.00      2.75      3.50                5.50
-## 4231     6.00      6.00      3.75      3.75                6.00
-## 4312     8.00      4.00      2.50      2.50                6.00
-## 4321     8.00      5.00      3.50      2.75                6.50
-</code></pre>
-
-<pre><code class="r">
-table_2 &lt;- matrix(kt_scores, ncol = 1, byrow = TRUE)
-colnames(table_2) &lt;- c(&quot;Kendall tau distance&quot;)
-rownames(table_2) &lt;- perms
-table_2 &lt;- as.table(table_2)
-table_2
-</code></pre>
-
-<pre><code>##      Kendall tau distance
-## 1234                    1
-## 1243                    0
-## 1324                    2
-## 1342                    3
-## 1423                    1
-## 1432                    2
-## 2134                    2
-## 2143                    1
-## 2314                    3
-## 2341                    4
-## 2413                    2
-## 2431                    3
-## 3124                    3
-## 3142                    4
-## 3214                    4
-## 3241                    5
-## 3412                    5
-## 3421                    6
-## 4123                    2
-## 4132                    3
-## 4213                    3
-## 4231                    4
-## 4312                    4
-## 4321                    5
+<pre><code>##       dev sq_dev  ham mod_ham    r  lcs   kt
+## 1234 0.00   0.00 0.00    0.00 0.00 0.00 0.00
+## 1243 0.25   0.10 0.50    0.33 0.67 0.33 0.17
+## 1324 0.25   0.10 0.50    0.33 1.00 0.33 0.17
+## 1342 0.50   0.30 0.75    0.50 0.67 0.33 0.33
+## 1423 0.50   0.30 0.75    0.50 0.67 0.33 0.33
+## 1432 0.50   0.40 0.50    0.33 1.00 0.67 0.50
+## 2134 0.25   0.10 0.50    0.67 0.67 0.33 0.17
+## 2143 0.50   0.20 1.00    0.50 1.00 0.67 0.33
+## 2314 0.50   0.30 0.75    0.83 0.67 0.33 0.33
+## 2341 0.75   0.60 1.00    0.50 0.33 0.33 0.50
+## 2413 0.75   0.50 1.00    0.67 1.00 0.67 0.50
+## 2431 0.75   0.70 0.75    0.83 1.00 0.67 0.67
+## 3124 0.50   0.30 0.75    0.50 0.67 0.33 0.33
+## 3142 0.75   0.50 1.00    0.67 1.00 0.67 0.50
+## 3214 0.50   0.40 0.50    0.67 1.00 0.67 0.50
+## 3241 0.75   0.70 0.75    0.83 1.00 0.67 0.67
+## 3412 1.00   0.80 1.00    0.33 0.33 0.67 0.67
+## 3421 1.00   0.90 1.00    1.00 0.67 0.67 0.83
+## 4123 0.75   0.60 1.00    0.17 0.33 0.33 0.50
+## 4132 0.75   0.70 0.75    0.50 1.00 0.67 0.67
+## 4213 0.75   0.70 0.75    0.83 1.00 0.67 0.67
+## 4231 0.75   0.90 0.50    1.00 0.67 0.67 0.83
+## 4312 1.00   0.90 1.00    0.67 0.67 0.67 0.83
+## 4321 1.00   1.00 1.00    0.83 1.00 1.00 1.00
 </code></pre>
 
 <pre><code class="r">as(convert(perms[1]), &quot;pMatrix&quot;)
