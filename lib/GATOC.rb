@@ -8,7 +8,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 	#require 'parallel'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
-	require_relative 'rearrangement_score'
 
 	myr = RinRuby.new(echo = false)
 	myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
@@ -193,7 +192,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		fits = fits.sort_by {|k,v| v}
 		pop_fits = []
 		fits.each {|i| pop_fits << i.reverse} # swapping the "key/values" around
-		initial_size = pop_fits.size
+		initial_pf = pop_fits
 		sliced = pop_fits.reverse.each_slice(num).to_a
 		pop_fits = sliced[0].reverse
 		if sliced[-1].length != sliced[0].length # if there is a remainder slice
@@ -201,8 +200,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		else 
 			leftover = 0
 		end
-		#puts "Selected #{pop_fits.size} of #{initial_size} permutations"
-		return pop_fits, leftover
+		return pop_fits, leftover, initial_pf
 	end
 
 	# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
@@ -215,7 +213,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output: New population of mutants, recombinants etc - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 	def self.new_population(pop_fits, size, mut_num, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
 		x = (size-leftover)/select_num
-		pop_fits = pop_fits*x
+		pop_fits = pop_fits * x
 		if leftover != 0
 			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) #add leftover number of frags (best)
 			puts "#{leftover} leftover frags added"
@@ -231,7 +229,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 		mut_num.times{pop << mini_mutate(pop_fits[-1][1])} # mini_mutating the best permutations
 		ran.times{pop << pop_fits[0][1].shuffle}
 		new_pop_msg = "Population size = #{pop.size}, with #{size - ((mut_num * 2) + save + ran)} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
-		#puts new_pop_msg
 		return pop, new_pop_msg
 	end
 
@@ -251,6 +248,20 @@ class GATOC # Genetic Algorithm To Order Contigs
 		return average
 	end
 
+	def self.save_perms(pop_fits, gen)
+		Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}"))
+		x = 1
+		pop_fits.each do |fitness, perm|
+			ids = ReformRatio::fasta_id_n_lengths(perm)[0]
+			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}/permutation#{x}", [fitness, ids].flatten)
+			x+=1
+		end
+		if gen != 0
+			ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
+			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}/best_permutation", [pop_fits[-1][0], ids].flatten)
+		end
+	end
+
 	# Input 0: FASTA file
 	# Input 1: VCF file
 	# Input 2: Correctly ordered array of Bio::FastaFormat entries
@@ -265,6 +276,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 2: A saved figure of the algorithm's performance
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
 	def self.evolve(fasta_file, vcf_file, ordered_fasta, parameters)
+		Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}")) # make the directory to put data files into
+		
 		opts = {
 			:gen => 200,
 			:pop_size => 100,
@@ -278,65 +291,67 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 		gen_fits = [] # array of the best fitness in each generation
 		ordered_ids = ReformRatio::fasta_id_n_lengths(ordered_fasta)[0]
-		WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation", ordered_ids)
 		snp_data = ReformRatio::get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
-		original_order_cor = "Original order correlation = #{fitness(ordered_fasta, snp_data, "same")}"
-		puts "#{original_order_cor} \n \nGen 0"
+		original_order_cor = fitness(ordered_fasta, snp_data, 'same')
+		WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation", [original_order_cor, ordered_ids].flatten)
 		fasta = ReformRatio::fasta_array(fasta_file) #array of fasta format fragments
 		pop = initial_population(fasta, opts[:pop_size])
+
 		pop_fits_n_leftover = select(pop, snp_data, opts[:select_num])
 		pop_fits = pop_fits_n_leftover[0]
 		leftover = pop_fits_n_leftover[1]
-		best_perm = pop_fits[-1][1]
-		puts "Best correlation = #{pop_fits[-1][0]}\n \n"
+		fitness(pop_fits[-1][1], snp_data, 0) # makes figure of ratio density distribution for the best permutation in each generation
+		puts "Gen0 \n Best correlation = #{pop_fits[-1][0]}\n \n"
 		gen_fits << pop_fits[-1][0]
-		best_perm_ids = ReformRatio::fasta_id_n_lengths(best_perm)[0]
-		y=1
-		z=1
+		save_perms(pop_fits_n_leftover[2], 0)
+
+		y, z = 1, 1
 		opts[:gen].times do
-			prev_best_arr = pop_fits[-1][1]
+
 			prev_best_fit = pop_fits[-1][0]
-			puts "Gen#{y}"
 			pop_n_msg = new_population(pop_fits, opts[:pop_size], opts[:mut_num], opts[:save], opts[:ran], opts[:select_num], leftover)
 			pop_fits_n_leftover = select(pop_n_msg[0], snp_data, opts[:select_num])
 			pop_fits = pop_fits_n_leftover[0]
 			leftover = pop_fits_n_leftover[1]
-			best_perm = pop_fits[-1][1]
-			puts "Best correlation = #{pop_fits[-1][0]}"
 			gen_fits << pop_fits[-1][0]
-			best_perm_ids = ReformRatio::fasta_id_n_lengths(best_perm)[0]
-			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{y}_best_permutation", ["Ordinal Similarity: #{RearrangementScore::score(ordered_ids, best_perm_ids)}", "Fitness = #{pop_fits[-1][0]}", best_perm_ids].flatten)
+			save_perms(pop_fits_n_leftover[2], y)
+
+			puts "Gen#{y}\n Best correlation = #{pop_fits[-1][0]}"
 			if pop_fits[-1][0] <= prev_best_fit
 				puts "No fitness improvement\n \n" # If this is not called, this implies there has been some improvement
 				z+=1
 			else
 				puts "FITNESS IMPROVEMENT!\n \n"
-				z=1
+				z = 1
 			end
+
 			if pop_fits[-1][0] >= 0.998 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
 				av = average_fitness(pop_fits[-1][1], snp_data, opts[:average]) 
 				if av >= 0.999 && opts[:figures] != 'no figures'
-					best_msg = "Best possible permutation fitness: #{av}. Rearrangement score of #{RearrangementScore::rearrangement_score(ordered_ids, best_perm_ids)}"
+					best_msg = "Best possible permutation fitness: #{av}"
 					z = 10
 				end
 			end
+
 			if z >= 10 || y == opts[:gen]
 				if av == nil && y < opts[:gen]
-					best_msg = "Algorithm quit for lack of fitness improvement at generation #{y}/#{opts[:gen]}: #{pop_fits[-1][0]}. Rearrangement score of #{RearrangementScore::rearrangement_score(ordered_ids, best_perm_ids)}"
+					best_msg = "Algorithm quit for lack of fitness improvement at generation #{y}/#{opts[:gen]}: #{pop_fits[-1][0]}"
 				elsif av == nil && y == opts[:gen]
-					best_msg = "Algorithm quit as number of generations (#{y}/#{opts[:gen]}) complete: #{pop_fits[-1][0]}. Rearrangement score of #{RearrangementScore::rearrangement_score(ordered_ids, best_perm_ids)}"
+					best_msg = "Algorithm quit as number of generations (#{y}/#{opts[:gen]}) complete: #{pop_fits[-1][0]}"
 				end
-				best_msg = "#{best_msg}/#{RearrangementScore::rearrangement_score(ordered_ids, ordered_ids.reverse)}"
 				puts best_msg
-				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [opts, pop_n_msg[1], best_msg, original_order_cor, pop_fits[-1][0],'###', best_perm_ids].flatten)
+				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [opts, pop_n_msg[1], best_msg, original_order_cor, pop_fits[-1][0],'###', ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]].flatten)
 			end
-			fitness(best_perm, snp_data, y) # makes figure of ratio density distribution for the best permutation in each generation
+
+			fitness(pop_fits[-1][1], snp_data, y) # makes figure of ratio density distribution for the best permutation in each generation
+			y+=1
+
 			if z >= 10
 				then break
 			end
-			y+=1
 			Signal.trap("PIPE", "EXIT")
 		end
+
 		if opts[:figures] != 'no figures'
 			myr = RinRuby.new(echo=false)
 			myr.assign 'gen_fits', gen_fits
