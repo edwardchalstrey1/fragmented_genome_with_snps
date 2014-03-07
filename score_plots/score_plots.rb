@@ -9,10 +9,10 @@ def original_order
 	original_order[1..-1]
 end
 
-def get_perms(pop_size)
+def get_perms(gen) # number of generations to choose from
 	all_perms = []
-	pop_size.times do
-		x = 0
+	x = 0
+	gen.times do
 		pop = []
 		Dir.entries("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{x}").each do |ptxt|
 			if ptxt.include? '.txt'
@@ -29,12 +29,12 @@ end
 
 def get_metrics(all_perms)
 	orig = original_order
-	gen_pop_met = []
+	all_metrics = []
 	all_perms.each do |pop|
 		pop_met = []
 		pop.each do |perm|
 			metrics = {}
-			metrics[:fit] = perm[0]
+			metrics[:fit] = (perm[0].gsub(/\n/, "")).to_f
 			metrics[:dev] = RearrangementScore::dev_dist(orig, perm[1..-1])
 			metrics[:sq] = RearrangementScore::sq_dev_dist(orig, perm[1..-1])
 			metrics[:ham] = RearrangementScore::gen_ham_dist(orig, perm[1..-1])
@@ -44,13 +44,47 @@ def get_metrics(all_perms)
 			metrics[:kt] = RearrangementScore::kendalls_tau(orig, perm[1..-1])
 			pop_met << metrics
 		end
-		gen_pop_met << pop_met
+		all_metrics << pop_met
 	end
-	return gen_pop_met
+	return all_metrics
 end
 
-all_perms = get_perms(29) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
-gen_pop_met = get_metrics(all_perms)
+def gg_plots(all_metrics)
+	myr = RinRuby.new(echo = false)
+	myr.eval 'source("~/fragmented_genome_with_snps/score_plots/score_plots.R")'
+	x, y, se = [], [], []
+	gen = 0
+	all_metrics.each do |pop_met|
+		fit, dev, sq, ham, mod, r, lcs, kt = [],[],[],[],[],[],[],[]
+		pop_met.each do |metrics|
+			dev << metrics[:dev]
+			sq << metrics[:sq]
+		end
+		pop_y = [fit, dev, sq, ham, mod, r, lcs, kt]
+		#pop_y = [dev, sq]
+		pop_y.each do |metrics|
+			y << metrics.inject(:+) / metrics.length.to_f
+			x << gen
+			myr.assign 'metrics', metrics
+			sem = myr.pull 'st_err(metrics)'
+			se << sem
+		end
+		gen+=1
+	end
+	group = ['fit', 'dev', 'sq', 'ham', 'mod', 'r', 'lcs', 'kt'] * (all_metrics.length / 8)
+	#group = ['fit', 'dev'] * (all_metrics.length / 2)
+	myr.assign 'x', x
+	myr.assign 'y', y
+	myr.assign 'se', se
+	myr.assign 'group', group
+	myr.assign 'dataset_run', "#{ARGV[0]}/#{ARGV[1]}"
+	myr.eval 'plot_it(x, y, se, group, dataset_run)'
+	myr.quit
+end
 
-puts gen_pop_met[0][0]
+all_perms = get_perms(240) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
+all_metrics = get_metrics(all_perms)
+puts all_metrics[0][0]
+
+gg_plots(all_metrics)
 
