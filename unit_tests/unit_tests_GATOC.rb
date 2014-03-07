@@ -3,8 +3,8 @@ require 'rubygems'
 require 'bio-samtools'
 require 'bio'
 require 'rinruby'
-require_relative 'lib/reform_ratio'
-require_relative 'lib/GATOC'
+require '~/fragmented_genome_with_snps/lib/reform_ratio'
+require '~/fragmented_genome_with_snps/lib/GATOC'
 require 'test/unit'
 
 class TestGATOC < Test::Unit::TestCase
@@ -29,7 +29,7 @@ class TestGATOC < Test::Unit::TestCase
 		parent4 = parent3.shuffle
 		child2 = GATOC::recombine(parent3, parent4)
 
-		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset3/frags_shuffled.fasta').shuffle
+		fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta').shuffle
 		p2_fasta = fasta_array.shuffle
 		child3 = GATOC::recombine(fasta_array, p2_fasta)
 		
@@ -63,16 +63,16 @@ class TestGATOC < Test::Unit::TestCase
 	end
 
 	def test_fitness
-		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset3/frags.fasta')
-		snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/ratio_dataset3/snps.vcf')
+		fasta_array = ReformRatio::fasta_array('test/frags.fasta')
+		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
 		fit = GATOC::fitness(fasta_array, snp_data, "diff")
 		assert_kind_of(Float, fit)
 		assert_in_delta(0.5, fit, 0.5)
 	end
 
 	def test_average_fitness
-		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset3/frags.fasta')
-		snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/ratio_dataset3/snps.vcf')
+		fasta_array = ReformRatio::fasta_array('test/frags.fasta')
+		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
 		fit = GATOC::average_fitness(fasta_array, snp_data, 5)
 		assert_kind_of(Float, fit)
 		assert_in_delta(0.5, fit, 0.5)
@@ -85,8 +85,8 @@ class TestGATOC < Test::Unit::TestCase
 	end
 
 	def test_select
-		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset4/frags_shuffled.fasta')
-		snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/ratio_dataset4/snps.vcf')
+		fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta')
+		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
 		pop = GATOC::initial_population(fasta_array, 20)
 		selected = GATOC::select(pop, snp_data, 10)
 		assert_kind_of(Integer, selected[1], 'leftover not int') # leftover
@@ -99,8 +99,8 @@ class TestGATOC < Test::Unit::TestCase
 	end
 
 	def test_new_population
-		fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/ratio_dataset4/frags_shuffled.fasta')
-		snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/ratio_dataset4/snps.vcf')
+		fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta')
+		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
 		pop = GATOC::initial_population(fasta_array, 20)
 		selected = GATOC::select(pop, snp_data, 10)
 		new_pop  = GATOC::new_population(selected[0], 20, 1, 1, 1, 10, selected[1])

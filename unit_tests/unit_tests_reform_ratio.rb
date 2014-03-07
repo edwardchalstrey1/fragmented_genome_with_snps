@@ -3,7 +3,7 @@ require 'rubygems'
 require 'bio-samtools'
 require 'bio'
 require 'rinruby'
-require_relative 'lib/reform_ratio'
+require '~/fragmented_genome_with_snps/lib/reform_ratio'
 require 'test/unit'
 
 class FakeFasta
