@@ -22,7 +22,7 @@ def get_perms(gen) # number of generations to choose from
 			end
 		end
 		all_perms << pop
-		x+=1
+		x+=20 # TODO change back to 1
 	end
 	return all_perms
 end
@@ -34,7 +34,7 @@ def get_metrics(all_perms)
 		pop_met = []
 		pop.each do |perm|
 			metrics = {}
-			metrics[:fit] = (perm[0].gsub(/\n/, "")).to_f
+			metrics[:fit] = (1 - (perm[0].gsub(/\n/, "")).to_f)
 			metrics[:dev] = RearrangementScore::dev_dist(orig, perm[1..-1])
 			metrics[:sq] = RearrangementScore::sq_dev_dist(orig, perm[1..-1])
 			metrics[:ham] = RearrangementScore::gen_ham_dist(orig, perm[1..-1])
@@ -57,8 +57,14 @@ def gg_plots(all_metrics)
 	all_metrics.each do |pop_met|
 		fit, dev, sq, ham, mod, r, lcs, kt = [],[],[],[],[],[],[],[]
 		pop_met.each do |metrics|
+			fit << metrics[:fit]
 			dev << metrics[:dev]
 			sq << metrics[:sq]
+			ham << metrics[:ham]
+			mod << metrics[:mod]
+			r << metrics[:r]
+			lcs << metrics[:lcs]
+			kt << metrics[:kt]
 		end
 		pop_y = [fit, dev, sq, ham, mod, r, lcs, kt]
 		#pop_y = [dev, sq]
@@ -69,9 +75,9 @@ def gg_plots(all_metrics)
 			sem = myr.pull 'st_err(metrics)'
 			se << sem
 		end
-		gen+=1
+		gen+=20 # TODO change back to 1
 	end
-	group = ['fit', 'dev', 'sq', 'ham', 'mod', 'r', 'lcs', 'kt'] * (all_metrics.length / 8)
+	group = ['rev_fit', 'dev', 'sq', 'ham', 'mod', 'rev_r', 'lcs', 'kt'] * all_metrics.length
 	#group = ['fit', 'dev'] * (all_metrics.length / 2)
 	myr.assign 'x', x
 	myr.assign 'y', y
@@ -82,7 +88,7 @@ def gg_plots(all_metrics)
 	myr.quit
 end
 
-all_perms = get_perms(240) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
+all_perms = get_perms(5) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
 all_metrics = get_metrics(all_perms)
 puts all_metrics[0][0]
 

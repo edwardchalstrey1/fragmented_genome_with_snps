@@ -29,6 +29,16 @@ get_corr <- function(het_snps, hom_snps, ratio){
 	return(cor(qqp$x,qqp$y))
 }
 
+get_kol <- function(het_snps, hom_snps, ratio){
+	real_ht <- as.vector(as.matrix(het_snps))
+	real_hm <- as.vector(as.matrix(hom_snps))
+	real_hmd <- density(real_hm, from=0, to=18585056)
+	real_htd <- density(real_ht, from=0, to=18585056)
+	real_ratio <- real_hmd$y/real_htd$y
+	qqp <- qqplot(ratio, real_ratio, plot.it=FALSE)
+	return(ks.test(qqp$x,qqp$y)$p)
+}
+
 # Input 1: Array of heterozygous snp positions (from a fragment permutation)
 # Input 2: Array of homozygous snp positions (from a fragment permutation)
 # Input 3: Homozygous/heterozygous snp ratio to compare against in qq plot - vector of homozygous density estimate points divided by the heterozygous ones (from comparable_ratio)
