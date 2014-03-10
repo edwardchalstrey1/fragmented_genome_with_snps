@@ -288,8 +288,11 @@ as(c(3, 2, 1), &quot;pMatrix&quot;)
 
 <p>The first matrix above shows the correct permutation. The closer each of the other matrices is to the diagonal of ones, the &ldquo;closer&rdquo; the permutation must be to the correct order. The degree of &ldquo;closeness&rdquo; is what I am trying to establish by providing these metrics. One thing is certain, the reversed permutation ([3,2,1] here) should give the worst possible score, because it is the exact opposite of the correct order. Whilst this is the case for both metric 1 and 2, metric 1 also attributes the same score to two other permutations. Metric 2 takes into account the fact that parts of a permutation may be in consectutive order (objects within a part correctly positioned in relation to eachother), whilst out of step with their correct position in the perfect order. For example, the [2,3,1] and [3,1,2] matrices above have a better metric 2 score than [2,1,3], because they have 2,3 and 1,2 consecutively within them respectively.</p>
 
-<pre><code class="r">source(&quot;~/fragmented_genome_with_snps/lib/kendall_tau_distance.R&quot;)
-scores &lt;- as.vector(as.matrix(read.table(&quot;~/fragmented_genome_with_snps/test/1-4_metric_scores.txt&quot;, 
+<h2>Other Metrics</h2>
+
+<p><a href="http://www.researchgate.net/publication/228565454_Permutation_distance_measures_for_memetic_algorithms_with_population_management/file/d912f50a9de08542ff.pdf">Sevaux and Kenneth (2005)</a> describe a number of other distance metrics for comparing permutations. In the table below I have compared the scores for all the permutations of 4 unique objects, for 7 different metrics. Dev is the deviation distance (this is the same as metric 1 above). Sq_dev is the squared deviation distance. Ham is the Hamming distance. Mod_ham is the modified version of Hamming distance described in metric 2 above. R is the reversed version of the R distance (so that higher scores are worse). Lcs is the longest common subsequence. Kt is Kendall&#39;s tau. Each of these metrics have been normalized so that all the values fall between 0 and 1, where 0 is a perfect match to the correct permutation (1,2,3,4), and 1 is the maximum possible distance.</p>
+
+<pre><code class="r">scores &lt;- as.vector(as.matrix(read.table(&quot;~/fragmented_genome_with_snps/test/1-4_metric_scores.txt&quot;, 
     quote = &quot;\&quot;&quot;)))
 perms &lt;- as.vector(as.matrix(read.table(&quot;~/fragmented_genome_with_snps/test/1-4_perms.txt&quot;, 
     quote = &quot;\&quot;&quot;)))
