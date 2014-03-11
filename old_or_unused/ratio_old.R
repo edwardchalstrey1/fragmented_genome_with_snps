@@ -23,11 +23,17 @@ real_htd <- density(real_ht, from=0, to=18585056)
 real_y <- real_hmd$y/real_htd$y
 #plot(x, real_htd$y)
 #plot(x, real_hmd$y)
-plot(x, real_y, xlab="Arabidopsis chromosome 4 (nucleotides)", ylab="Ratio of Homozygous SNP Density/Heterozygous SNP Density")
 
-#qqplot(y, real_y)
-#qqp <-qqnorm(y)
-qqp <- qqplot(y, real_y, plot.it=FALSE)
+#plot(x, real_y, xlab="Arabidopsis chromosome 4 (nucleotides)", ylab="Ratio of Homozygous SNP Density/Heterozygous SNP Density")
+#plot(x, y, xlab="Arabidopsis chromosome 4 (nucleotides)", ylab="Ratio of Homozygous SNP Density/Heterozygous SNP Density")
+
+qqp <-qqnorm(y)
+#qqp <-qqnorm(real_y)
+
+#qqp <- qqplot(y, real_y)
+
+#qqp <- qqplot(y, y)
+
 corr <- cor(qqp$x,qqp$y)
 
 library("pracma", lib.loc="/Library/Frameworks/R.framework/Versions/3.0/Resources/library")

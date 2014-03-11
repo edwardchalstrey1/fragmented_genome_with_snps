@@ -9,9 +9,9 @@ def original_order
 	original_order[1..-1]
 end
 
-def get_perms(gen) # number of generations to choose from
+def get_perms(gen, start, inc) # number of generations to choose from
 	all_perms = []
-	x = 0
+	x = start
 	gen.times do
 		pop = []
 		Dir.entries("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{x}").each do |ptxt|
@@ -22,7 +22,7 @@ def get_perms(gen) # number of generations to choose from
 			end
 		end
 		all_perms << pop
-		x+=20 # TODO change back to 1
+		x+=inc # TODO change back to 1
 	end
 	return all_perms
 end
@@ -49,11 +49,11 @@ def get_metrics(all_perms)
 	return all_metrics
 end
 
-def gg_plots(all_metrics)
+def gg_plots(all_metrics, start, inc)
 	myr = RinRuby.new(echo = false)
 	myr.eval 'source("~/fragmented_genome_with_snps/score_plots/score_plots.R")'
 	x, y, se = [], [], []
-	gen = 0
+	gen = start
 	all_metrics.each do |pop_met|
 		fit, dev, sq, ham, mod, r, lcs, kt = [],[],[],[],[],[],[],[]
 		pop_met.each do |metrics|
@@ -75,7 +75,7 @@ def gg_plots(all_metrics)
 			sem = myr.pull 'st_err(metrics)'
 			se << sem
 		end
-		gen+=20 # TODO change back to 1
+		gen+=inc # TODO change back to 1
 	end
 	group = ['rev_fit', 'dev', 'sq', 'ham', 'mod', 'rev_r', 'lcs', 'kt'] * all_metrics.length
 	#group = ['fit', 'dev'] * (all_metrics.length / 2)
@@ -88,9 +88,9 @@ def gg_plots(all_metrics)
 	myr.quit
 end
 
-all_perms = get_perms(5) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
+all_perms = get_perms(3, 0, 125) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
 all_metrics = get_metrics(all_perms)
 puts all_metrics[0][0]
 
-gg_plots(all_metrics)
+gg_plots(all_metrics, 0, 125)
 

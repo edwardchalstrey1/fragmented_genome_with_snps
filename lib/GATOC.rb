@@ -143,11 +143,13 @@ class GATOC # Genetic Algorithm To Order Contigs
 			ratio = RATIO
 		end
 		myr.assign 'ratio', ratio
-		if same == 'kol'
-			myr.eval 'correlation <- get_kol(het_snps, hom_snps, ratio)' ### TODO temporary if!
-		else
-			myr.eval 'correlation <- get_corr(het_snps, hom_snps, ratio)'
-		end
+		# if same == 'kol'
+		# 	myr.eval 'correlation <- get_kol(het_snps, hom_snps, ratio)' ### TODO temporary if!
+		# elsif same == 'same' || 'pearson'
+		# 	myr.eval 'correlation <- get_corr(het_snps, hom_snps, ratio)'
+		# elsif same == 'spearman'
+		myr.eval 'correlation <- get_sp(het_snps, hom_snps, ratio)'
+		# end
 		if Integer === same
 			myr.assign 'dataset', "#{ARGV[0]}/#{ARGV[1]}"
 			myr.assign 'gen', same
