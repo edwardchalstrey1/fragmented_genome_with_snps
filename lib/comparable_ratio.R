@@ -1,3 +1,4 @@
+#encoding: utf-8
 # Input: Any argument (to make function work)
 # Output: Expected distribution: homozygous/heterozygous snp ratio - vector of the homozygous density estimate points divided by the heterozygous ones
 comparable_ratio <- function(a){

@@ -41,4 +41,4 @@ vcf = ModelGenome::vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
 
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags.fasta", fastaformat_array)
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/snps.vcf", vcf)
-WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags_shuffledF.fasta", fastaformat_array_shuf)
+WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags_shuffled.fasta", fastaformat_array_shuf)

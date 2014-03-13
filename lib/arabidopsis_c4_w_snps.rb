@@ -19,16 +19,12 @@ class ModelGenome
 	# Output 0: List of SNP positions
 	# Output 1: List of homozygous SNP positions
 	# Output 2: List of heterozygous SNP positions
-	def self.normal_dist
+	def self.snp_dist
 		output = []
 		1.times do 
 			myr = RinRuby.new(echo = false) # output from R is suppressed
 			myr.eval "hm <- rnorm(35, 10000000, 5000000)"
-			myr.eval "ht1a <- rnorm(1500, 5000000, 1000000)"
-			myr.eval "ht1 <- ht1a[which(ht1a < 7.5e+06)]"  #non-recombinant region = 7.5m-12.5m, don't want heterozygous SNPs here
-			myr.eval "ht2a <- rnorm(1500, 15000000, 1000000)"
-			myr.eval "ht2 <- ht2a[which(ht2a > 1.25e+07)]"
-			myr.eval "ht <- c(ht1, ht2)"
+			myr.eval "ht <- runif(3000, 1, 18585056)"
 			hm = myr.pull "hm"
 			ht = myr.pull "ht"
 			hm_int, ht_int = [], []
