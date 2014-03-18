@@ -23,7 +23,7 @@ ht <- runif(10000, 1, 18585056)
 ratio  <- sample(hm,1000)/sample(ht,1000)   # numer. and denom. must be same length
 ```
 
-I have decided that a good way to work out the ratio is by taking samples of the SNP distributions, then calculating the ratio of the sample vectors. With the SNP lists I was using in [New_Model_Genome](), this would not have been useful, as the number of homozygous SNPs in the model was so low.
+I have decided that a good way to work out the ratio is by taking samples of the SNP distributions, then calculating the ratio of the sample vectors. With the SNP lists I was using in [New_Model_Genome](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/Progress/New_Model_Genome.md), this would not have been useful, as the number of homozygous SNPs in the model was so low.
 From consulting literature that describes the kind of back-cross experiment I am modelling, including [Uchida et al (2011)](http://pcp.oxfordjournals.org/content/52/4/716.long), I have concluded that the actual numbers of SNPs can vary largely, based on the specific experiment. For subsequent versions of my model genome, I will use 10,000 of each kind of SNP. I can try and use experimental SNP data once I have got the genetic algorithm to re-order contigs from the model.
 
 

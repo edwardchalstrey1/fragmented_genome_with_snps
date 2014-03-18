@@ -56,7 +56,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9545
+## [1] 0.9739
 ```
 
 ```r
@@ -72,7 +72,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9751
+## [1] 0.9767
 ```
 
 ```r
@@ -85,7 +85,7 @@ shapiro.test(hmd$y)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  hmd$y
-## W = 0.8864, p-value < 2.2e-16
+## W = 0.9083, p-value < 2.2e-16
 ```
 
 ```r
@@ -99,7 +99,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9422
+## [1] 0.9537
 ```
 
 ```r
@@ -112,7 +112,7 @@ shapiro.test(htd$y)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  htd$y
-## W = 0.7546, p-value < 2.2e-16
+## W = 0.8725, p-value < 2.2e-16
 ```
 
 ```r
@@ -126,7 +126,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.8689
+## [1] 0.9344
 ```
 
 ```r
@@ -139,7 +139,7 @@ shapiro.test(ratio)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  ratio
-## W = 0.9214, p-value = 1.067e-15
+## W = 0.86, p-value < 2.2e-16
 ```
 
 ```r
@@ -153,7 +153,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9606
+## [1] 0.9281
 ```
 
 ```r
@@ -166,7 +166,7 @@ hm_test
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  hm
-## W = 0.9038, p-value = 0.01212
+## W = 0.9436, p-value = 0.08655
 ```
 
 ```r
@@ -174,7 +174,7 @@ hm_test$p
 ```
 
 ```
-## [1] 0.01212
+## [1] 0.08655
 ```
 
 ```r
@@ -187,7 +187,7 @@ ht_test
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  ht
-## W = 0.9506, p-value < 2.2e-16
+## W = 0.9537, p-value < 2.2e-16
 ```
 
 ```r
@@ -195,7 +195,7 @@ ht_test$p
 ```
 
 ```
-## [1] 1.115e-30
+## [1] 7.847e-30
 ```
 
 
@@ -211,3 +211,5 @@ hmc <- hist(hm, breaks = breaks, plot = FALSE)$counts
 htc <- hist(ht, breaks = breaks, plot = FALSE)$counts
 ```
 
+
+I have decided to abandon this count idea that I have explored in my ruby class [SNPdist](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/lib/snp_dist.rb), see [slash](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/Progress/Slash.md) for continutation.

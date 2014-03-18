@@ -71,4 +71,4 @@ htc <- hist(ht, breaks=breaks, plot=FALSE)$counts
 
 ```
 
-I have decided to abandon this count idea that I have explored in my ruby class [SNPdist](), see [slash]() for continutation.
+I have decided to abandon this count idea that I have explored in my ruby class [SNPdist](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/lib/snp_dist.rb), see [slash](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/Progress/Slash.md) for continutation.
