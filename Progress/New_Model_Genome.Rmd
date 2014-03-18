@@ -16,52 +16,59 @@ for(i in hm){
   x <- x+1
 }
 hm <- hm[-c(remove)]
-
 ht <- runif(3000, 1, 18585056)
+
 hmd <- density(hm, from=0, to=18585056)
 htd <- density(ht, from=0, to=18585056)
 ratio <- hmd$y/htd$y
 x <- (1:512)*36298.9375
+plot(x,htd$y)
+plot(x,hmd$y)
 plot(x,ratio)
+
 ```
 
 I have found a problem: I can test `hm` and `ht` with the `shapiro-wilks` test and `qqnorm` and show that `hm` is indeed normally distributed, and `ht` isn't. I don't have a way of testing the density vectors (and by extention the ratio) for normality. What I want is a way of testing normality of ratio. Ideally this method would work out the "normality" for hmd$y in the same way as shapiro and qqnorm do for hm, then this could be applied to the ratio.
 
 ```{r}
-shapiro.test(hm)
+hm_test <- shapiro.test(hm)
 qqp <- qqnorm(hm)
 cor(qqp$x,qqp$y)
 
-shapiro.test(hm)
-qqp <- qqnorm(hm)
+ht_test <- shapiro.test(ht)
+qqp <- qqnorm(ht)
 cor(qqp$x,qqp$y)
 
 shapiro.test(hmd$y)
 qqp <- qqnorm(hmd$y)
 cor(qqp$x,qqp$y)
 
+shapiro.test(htd$y)
+qqp <- qqnorm(htd$y)
+cor(qqp$x,qqp$y)
+
 shapiro.test(ratio)
 qqp <- qqnorm(ratio)
 cor(qqp$x,qqp$y)
-```
 
+hm_test
+hm_test$p
+
+ht_test
+ht_test$p
+
+```
 
 ```{r}
+div <- 1000
 l <- 18585056
-div <- 100#l/10000
 breaks <- c(0)
 for(i in 1:div){
-  breaks <- c(breaks,(l/div)*i)
+	breaks <- c(breaks,(l/div)*i)
 }
-fhm <- summary(cut(hm, breaks))
-fht <- summary(cut(ht, breaks))
-fratio <- fhm/fht
-hm
-fhm
-fht
-fratio
+hmc <- hist(hm, breaks=breaks, plot=FALSE)$counts
+htc <- hist(ht, breaks=breaks, plot=FALSE)$counts
 
-for(f in fratio){
-  
-}
 ```
+
+I have decided to abandon this count idea that I have explored in my ruby class [SNPdist](), see [slash]() for continutation.

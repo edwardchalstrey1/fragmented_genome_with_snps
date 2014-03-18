@@ -5,6 +5,7 @@ class SNPdist
 	
 	### Model Genome ###
 
+	# Make a list that models homozygous SNP positions
 	def self.hm
 		myr = RinRuby.new(echo = false)
 		myr.eval 'hm <- rnorm(35, 10000000, 5000000)
@@ -27,6 +28,7 @@ class SNPdist
 		return hm
 	end
 
+	# Make a list that models heterozygous SNP positions
 	def self.ht
 		myr = RinRuby.new(echo = false)
 		myr.eval 'ht <- runif(3000, 1, 18585056)'
@@ -37,6 +39,8 @@ class SNPdist
 
 	### Fitness of re-order contigs algorithm ###
 
+	# Gets the frequency of SNPs at breaks of div length for the homozygous and heterozygous SNP arrays
+	# Divides to get the frequency ratio for each break (fratio)
 	def self.fratio(hm, ht, div)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'hm', hm
@@ -91,6 +95,7 @@ class SNPdist
 	# 	return corr
 	# end
 
+	# Perform Shapiro-Wilks test for normality on a list
 	def self.swtest(hyp)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'hyp', hyp
@@ -100,9 +105,13 @@ class SNPdist
 		return p_val
 	end
 
+	# Make plots of the hypothetical SNP density and the ratio of hm to ht density to compare
 	def self.plot_hyp(hyp, hm, ht)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'hyp', hyp
+		myr.assign 'hm', hm
+		myr.assign 'ht', ht
+
 		myr.eval 'png("~/fragmented_genome_with_snps/test/hypothetical_snps/hyp.png")
 		plot((1:512)*36298.9375, density(hyp)$y, xlab="Hyp snps dist")
 		dev.off()'
