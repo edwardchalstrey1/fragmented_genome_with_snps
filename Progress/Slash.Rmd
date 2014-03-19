@@ -61,8 +61,12 @@ If the ratio follows the slash distribution, then we should be able to use Q-Q p
 
 ```{r}
 plot(density(ratio))
-ratio
 library("VGAM", lib.loc="/Library/Frameworks/R.framework/Versions/3.0/Resources/library")
 slash <- rslash(1000, mu=10000000, sigma=5000000)
+plot(density(slash))
 qqp <- qqplot(slash, ratio)
+qqplot(ratio,ratio)
+ratio
 ```
+
+So far, I have not found a way to use a slash ratio to compare against in the Q-Q plot, so for now I will use the example ratio itself, which is based on the SNP distributions put into the model genome.

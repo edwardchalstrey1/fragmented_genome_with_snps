@@ -2,7 +2,6 @@
 class ModelGenome
 
 	require 'rubygems'
-	require 'rinruby'
 	require 'bio-samtools'
 	require 'bio'
 
@@ -10,36 +9,13 @@ class ModelGenome
 	# Output: Character array for all the bases in the first entry of the input FASTA
 	def self.fasta_to_char_array (fasta)
 		fasta_array = []
+		x = 1
 		Bio::FastaFormat.open(fasta).each do |i|
 			fasta_array << i.seq
+			puts "f #{(x/fasta.length)*100}%"
+			x+=1
 		end
 		return fasta_array[0].split(//)
-	end
-
-	# Output 0: List of SNP positions
-	# Output 1: List of homozygous SNP positions
-	# Output 2: List of heterozygous SNP positions
-	def self.snp_dist
-		output = []
-		1.times do 
-			myr = RinRuby.new(echo = false) # output from R is suppressed
-			myr.eval "hm <- rnorm(35, 10000000, 5000000)"
-			myr.eval "ht <- runif(3000, 1, 18585056)"
-			hm = myr.pull "hm"
-			ht = myr.pull "ht"
-			hm_int, ht_int = [], []
-			hm.each{|i| hm_int << i.abs.to_i}
-			ht.each{|i| ht_int << i.abs.to_i}
-			snp_pos = [ht_int,hm_int].flatten
-			myr.quit
-			if snp_pos != snp_pos.uniq
-				redo
-			end
-			output[0] = snp_pos; output[1] = hm_int; output[2] = ht_int
-		end
-		puts "There are #{output[1].length} homozygous SNPs"
-		puts "There are #{output[2].length} heterozygous SNPs"
-		return output
 	end
 
 	# Input 0: Character array of genome sequence e.g. ['A','T', 'C'...]
@@ -47,12 +23,14 @@ class ModelGenome
 	# Output: Fragmented genome: Character array split into chunks and put into super array e.g. [['A', 'T'], ['C', 'G']...]
 	def self.get_frags (seq, size)
 		frags = []
-		rt = 0
+		rt, x = 0, 1
 		while frags.flatten.length < seq.length
 			frag_length = rand(size) + size # fragments of 10kb - 20kb
 			frag = seq[rt..(rt + frag_length)]
 			frags << frag
 			rt = rt + frag_length
+			puts "frag#{x}"
+			x+=1
 		end
 		frags = frags[0..-2]
 		if frags.flatten.length < seq.length

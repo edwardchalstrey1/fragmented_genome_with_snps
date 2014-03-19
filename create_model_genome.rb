@@ -1,28 +1,27 @@
 #encoding: utf-8
 require_relative 'lib/arabidopsis_c4_w_snps'
 require_relative 'lib/write_it'
-
-=begin
-	
-Use a uniform distribution for the heterozygous snps http://astrostatistics.psu.edu/su07/R/html/stats/html/Uniform.html
-	
-=end
-
+require_relative 'lib/snp_dist'
 
 # make the directory to put data files into
 Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}"))
 
 # Create the lists of homozygous and heterozygous SNPs
-snpz = ModelGenome::snp_dist
-snp_pos = snpz[0]
-hm = snpz[1]
-ht = snpz[2]
+hm_str = SNPdist::hm
+ht_str = SNPdist::ht
+hm = hm_str[0]
+ht = ht_str[0]
+snp_pos = [ht, hm].flatten
 
-puts "Is there a SNP at the causative mutation position? -- #{snp_pos.include?(10000000)}"
+puts "There are #{hm.length} homozygous SNPs"
+puts "There are #{ht.length} heterozygous SNPs"
+
+puts "Is there a SNP at the centre of the distribution? -- #{snp_pos.include?(10000000)}"
 
 arabidopsis_c4 = ModelGenome::fasta_to_char_array("TAIR10_chr4.fasta")
 
 contig_size = 10000 # 10-20kb
+puts "Contig sizes = #{contig_size} to #{contig_size * 2}"
 frags = ModelGenome::get_frags(arabidopsis_c4, contig_size)
 
 puts "Arabidopsis chr4 length: #{arabidopsis_c4.length} bases"
@@ -42,3 +41,4 @@ vcf = ModelGenome::vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags.fasta", fastaformat_array)
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/snps.vcf", vcf)
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags_shuffled.fasta", fastaformat_array_shuf)
+WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/info", [hm_str[1], ht_str[1], "Contig size = #{contig_size}"])

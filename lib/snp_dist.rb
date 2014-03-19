@@ -8,7 +8,7 @@ class SNPdist
 	# Make a list that models homozygous SNP positions
 	def self.hm
 		myr = RinRuby.new(echo = false)
-		myr.eval 'hm <- rnorm(35, 10000000, 5000000)
+		r_str = 'hm <- rnorm(10000, 10000000, 1000000)
 		remove <- c()
 		x <- 1
 		for(i in hm){
@@ -18,6 +18,7 @@ class SNPdist
 		  x <- x+1
 		}
 		hm <- hm[-c(remove)]'
+		myr.eval r_str
 		hm = myr.pull 'hm'
 		x = 0
 		hm.each do |snp|
@@ -25,16 +26,17 @@ class SNPdist
 			x+=1
 		end
 		myr.quit
-		return hm
+		return hm.uniq.map(&:abs).map(&:to_i), r_str # a few SNPs may be removed but doesn't affect distribution much, AND the R code string
 	end
 
 	# Make a list that models heterozygous SNP positions
 	def self.ht
 		myr = RinRuby.new(echo = false)
-		myr.eval 'ht <- runif(3000, 1, 18585056)'
+		r_str = 'ht <- runif(10000, 1, 18585056)'
+		myr.eval r_str
 		ht = myr.pull 'ht'
 		myr.quit
-		return ht
+		return ht.uniq.map(&:abs).map(&:to_i), r_str
 	end
 
 	### Fitness of re-order contigs algorithm ###
@@ -85,26 +87,6 @@ class SNPdist
 		return hyp
 	end
 
-	# def self.qq(hyp)
-	# 	myr = RinRuby.new(echo = false)
-	# 	myr.assign 'hyp', hyp
-	# 	myr.eval 'qqp <- qqnorm(hyp, plot.it=FALSE)'
-	# 	myr.eval 'corr <- cor(qqp$x,qqp$y)'
-	# 	corr = myr.pull 'corr'
-	# 	myr.quit
-	# 	return corr
-	# end
-
-	# Perform Shapiro-Wilks test for normality on a list
-	def self.swtest(hyp)
-		myr = RinRuby.new(echo = false)
-		myr.assign 'hyp', hyp
-		myr.eval 'test <- shapiro.test(hyp)'
-		p_val = myr.pull 'test$p'
-		myr.quit
-		return p_val
-	end
-
 	# Make plots of the hypothetical SNP density and the ratio of hm to ht density to compare
 	def self.plot_hyp(hyp, hm, ht)
 		myr = RinRuby.new(echo = false)
@@ -125,20 +107,26 @@ class SNPdist
 		dev.off()'
 		myr.quit
 	end
+
+	def self.sample_ratio(hm, ht)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'hm', hm
+		myr.assign 'ht', ht
+		myr.eval 'ratio  <- sample(hm,1000)/sample(ht,1000)'
+		ratio = myr.pull 'ratio'
+		myr.quit
+		return ratio
+	end
 end
 
-hm = SNPdist::hm
-ht = SNPdist::ht
+hm = SNPdist::hm[0]
+ht = SNPdist::ht[0]
 
-fratio_breaks = SNPdist::fratio(hm, ht, 1000)
-# puts fratio_breaks[0]
-hyp = SNPdist::hyp_snps(fratio_breaks, 1000)
-puts hyp == hyp.uniq
-puts hyp.length
-# puts hyp
-
-puts SNPdist::swtest(ht)
-puts SNPdist::swtest(hm)
-puts SNPdist::swtest(hyp)
+fratio_breaks = SNPdist::fratio(hm, ht, 10000)
+hyp = SNPdist::hyp_snps(fratio_breaks, 10000)
 
 SNPdist::plot_hyp(hyp,hm,ht)
+
+puts hm.length
+puts ht.length
+#puts SNPdist::ht[1]
