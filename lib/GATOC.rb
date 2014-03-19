@@ -5,7 +5,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require 'bio-samtools'
 	require 'bio'
 	require 'rinruby'
-	#require 'parallel'
+	require_relative 'snp_dist'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 
@@ -13,6 +13,14 @@ class GATOC # Genetic Algorithm To Order Contigs
 	myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
 	RATIO = myr.pull "comparable_ratio(1)" # this is the same for every instance of the class
 	myr.quit
+
+	# hm = SNPdist::hm[0]
+	# ht = SNPdist::ht[0]
+	# fratio_breaks = SNPdist::fratio(hm, ht, 10000)
+	# hyp = SNPdist::hyp_snps(fratio_breaks, 10000)
+	# sample_ratio = SNPdist::sample_ratio(hm,ht)
+	# RATIO = sample_ratio
+	# RATIO = hyp
 
 	# Input: Array
 	# Output: A random integer that the length of the Input 0 array can be divided by to get another integer (the randomly chosen size of chunks that permutations will be split into, in the recombine/mutate methods)
@@ -143,13 +151,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			ratio = RATIO
 		end
 		myr.assign 'ratio', ratio
-		# if same == 'kol'
-		# 	myr.eval 'correlation <- get_kol(het_snps, hom_snps, ratio)' ### TODO temporary if!
-		# elsif same == 'same' || 'pearson'
-		# 	myr.eval 'correlation <- get_corr(het_snps, hom_snps, ratio)'
-		# elsif same == 'spearman'
-		myr.eval 'correlation <- get_sp(het_snps, hom_snps, ratio)'
-		# end
+		myr.eval 'correlation <- get_corr(het_snps, hom_snps, ratio)'
 		if Integer === same
 			myr.assign 'dataset', "#{ARGV[0]}/#{ARGV[1]}"
 			myr.assign 'gen', same

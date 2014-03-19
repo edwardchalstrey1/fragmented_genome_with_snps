@@ -117,6 +117,8 @@ class SNPdist
 		myr.quit
 		return ratio
 	end
+
+	def self.qq_
 end
 
 hm = SNPdist::hm[0]
@@ -129,4 +131,5 @@ SNPdist::plot_hyp(hyp,hm,ht)
 
 puts hm.length
 puts ht.length
-#puts SNPdist::ht[1]
+
+#puts SNPdist::sample_ratio(hm,ht)
