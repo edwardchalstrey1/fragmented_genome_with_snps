@@ -42,7 +42,7 @@ class SNPdist
 	### Fitness of re-order contigs algorithm ###
 
 	# Gets the frequency of SNPs at breaks of div length for the homozygous and heterozygous SNP arrays
-	# Divides to get the frequency ratio for each break (fratio)
+	# Divides to get the frequency ratio for each break (fratio), div = no. of breaks
 	def self.fratio(hm, ht, div)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'hm', hm
@@ -75,6 +75,7 @@ class SNPdist
 	end
 
 	# Make hypothetical SNP array to test distribution of ratio
+	# div = number of breaks
 	def self.hyp_snps(fratio_breaks, div)
 		hyp = []
 		x = 0
@@ -118,18 +119,13 @@ class SNPdist
 		return ratio
 	end
 
-	def self.qq_
+	def self.qq_cor(example_ratio, ratio)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'ex', example_ratio
+		myr.assign 'ra', ratio
+		myr.eval 'qqp <- qqplot(ex, ra, plot.it=FALSE)
+		corr <- cor(qqp$x,qqp$y)'
+		corr = myr.pull 'corr'
+		return corr
+	end
 end
-
-hm = SNPdist::hm[0]
-ht = SNPdist::ht[0]
-
-fratio_breaks = SNPdist::fratio(hm, ht, 10000)
-hyp = SNPdist::hyp_snps(fratio_breaks, 10000)
-
-SNPdist::plot_hyp(hyp,hm,ht)
-
-puts hm.length
-puts ht.length
-
-#puts SNPdist::sample_ratio(hm,ht)
