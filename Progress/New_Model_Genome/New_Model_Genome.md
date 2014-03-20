@@ -17,6 +17,13 @@ for (i in hm) {
     x <- x + 1
 }
 hm <- hm[-c(remove)]
+```
+
+```
+## Error: invalid argument to unary operator
+```
+
+```r
 ht <- runif(3000, 1, 18585056)
 
 hmd <- density(hm, from = 0, to = 18585056)
@@ -56,7 +63,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9739
+## [1] 0.9889
 ```
 
 ```r
@@ -72,7 +79,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9767
+## [1] 0.9783
 ```
 
 ```r
@@ -85,7 +92,7 @@ shapiro.test(hmd$y)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  hmd$y
-## W = 0.9083, p-value < 2.2e-16
+## W = 0.9398, p-value = 1.541e-13
 ```
 
 ```r
@@ -99,7 +106,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9537
+## [1] 0.9701
 ```
 
 ```r
@@ -112,7 +119,7 @@ shapiro.test(htd$y)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  htd$y
-## W = 0.8725, p-value < 2.2e-16
+## W = 0.6836, p-value < 2.2e-16
 ```
 
 ```r
@@ -126,7 +133,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9344
+## [1] 0.827
 ```
 
 ```r
@@ -139,7 +146,7 @@ shapiro.test(ratio)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  ratio
-## W = 0.86, p-value < 2.2e-16
+## W = 0.8868, p-value < 2.2e-16
 ```
 
 ```r
@@ -153,7 +160,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9281
+## [1] 0.9424
 ```
 
 ```r
@@ -166,7 +173,7 @@ hm_test
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  hm
-## W = 0.9436, p-value = 0.08655
+## W = 0.971, p-value = 0.4724
 ```
 
 ```r
@@ -174,7 +181,7 @@ hm_test$p
 ```
 
 ```
-## [1] 0.08655
+## [1] 0.4724
 ```
 
 ```r
@@ -187,7 +194,7 @@ ht_test
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  ht
-## W = 0.9537, p-value < 2.2e-16
+## W = 0.9569, p-value < 2.2e-16
 ```
 
 ```r
@@ -195,7 +202,7 @@ ht_test$p
 ```
 
 ```
-## [1] 7.847e-30
+## [1] 6.059e-29
 ```
 
 

@@ -66,7 +66,6 @@ slash <- rslash(1000, mu=10000000, sigma=5000000)
 plot(density(slash))
 qqp <- qqplot(slash, ratio)
 qqplot(ratio,ratio)
-ratio
 ```
 
 So far, I have not found a way to use a slash ratio to compare against in the Q-Q plot, so for now I will use the example ratio itself, which is based on the SNP distributions put into the model genome.
