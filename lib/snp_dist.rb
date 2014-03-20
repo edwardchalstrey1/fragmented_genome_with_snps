@@ -79,7 +79,7 @@ class SNPdist
 	def self.hyp_snps(fratio_breaks, div)
 		hyp = []
 		x = 0
-		fratio_breaks[0].each do |freq|
+		fratio_breaks[0].each do |freq| 
 			freq.times do
 				hyp << rand(18585056.0/div.to_f) + fratio_breaks[1][x] # random value from within the range that the freq has been taken
 			end
@@ -89,20 +89,22 @@ class SNPdist
 	end
 
 	# Make plots of the hypothetical SNP density and the ratio of hm to ht density to compare
-	def self.plot_hyp(hyp, hm, ht)
+	def self.plot_hyp(hyp)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'hyp', hyp
-		myr.assign 'hm', hm
-		myr.assign 'ht', ht
-
 		myr.eval 'png("~/fragmented_genome_with_snps/test/hypothetical_snps/hyp.png")
 		plot((1:512)*36298.9375, density(hyp)$y, xlab="Hyp snps dist")
-		dev.off()'
+		dev.off()'		
+		myr.quit
+	end
 
+	def self.plot_dens(hm, ht)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'hm', hm
+		myr.assign 'ht', ht
 		myr.eval 'hmd <- density(hm, from=0, to=18585056)
 		htd <- density(ht, from=0, to=18585056)
 		ratio <- hmd$y/htd$y'
-
 		myr.eval 'png("~/fragmented_genome_with_snps/test/hypothetical_snps/d_ratio.png")
 		plot((1:512)*36298.9375, ratio)
 		dev.off()'
@@ -119,11 +121,14 @@ class SNPdist
 		return ratio
 	end
 
+	# Q-Q correlaion: ### TODO get rid of plot
 	def self.qq_cor(example_ratio, ratio)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'ex', example_ratio
 		myr.assign 'ra', ratio
-		myr.eval 'qqp <- qqplot(ex, ra, plot.it=FALSE)
+		myr.eval '# png("~/fragmented_genome_with_snps/test/hypothetical_snps/qqplot.png")
+		qqp <- qqplot(ex, ra, plot.it=FALSE)
+		# dev.off()
 		corr <- cor(qqp$x,qqp$y)'
 		corr = myr.pull 'corr'
 		return corr

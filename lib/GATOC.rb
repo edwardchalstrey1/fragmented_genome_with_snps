@@ -9,20 +9,10 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 
-	# myr = RinRuby.new(echo = false)
-	# myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
-	# RATIO = myr.pull "comparable_ratio(1)" # this is the same for every instance of the class
-	# myr.quit
-
 	hm = SNPdist::hm[0]
 	ht = SNPdist::ht[0]
-
 	fratio_breaks = SNPdist::fratio(hm, ht, 10000)
-	hyp = SNPdist::hyp_snps(fratio_breaks, 10000)
-	RATIO = hyp
-
-	# sample_ratio = SNPdist::sample_ratio(hm,ht)
-	# RATIO = sample_ratio
+	RATIO = SNPdist::hyp_snps(fratio_breaks, 10000)
 
 	# Input: Array
 	# Output: A random integer that the length of the Input 0 array can be divided by to get another integer (the randomly chosen size of chunks that permutations will be split into, in the recombine/mutate methods)
@@ -143,47 +133,28 @@ class GATOC # Genetic Algorithm To Order Contigs
 		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) #get snp positions for each frag in array of arrays
 		actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
 		het_hom_snps = ReformRatio::het_hom(actual_pos, pos_n_info[1])
+		fratio_breaks_perm = SNPdist::fratio(het_hom_snps[1], het_hom_snps[0], 10000)
+		perm_ratio = SNPdist::hyp_snps(fratio_breaks_perm, 10000)
 
 		myr = RinRuby.new(echo = false)
-		# myr.assign 'het_snps', het_hom_snps[0]
-		# myr.assign 'hom_snps', het_hom_snps[1]
-		# myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
-
 		if same == 'diff'
-			# ratio = myr.pull 'comparable_ratio(1)'
-
 			hm = SNPdist::hm[0]
 			ht = SNPdist::ht[0]
-
 			fratio_breaks = SNPdist::fratio(hm, ht, 10000)
 			ratio = SNPdist::hyp_snps(fratio_breaks, 10000)
-
-			# ratio = SNPdist::sample_ratio(hm,ht)
 		else
 			ratio = RATIO
 		end
 
-		# myr.assign 'ratio', ratio
-		# myr.eval 'correlation <- get_corr(het_snps, hom_snps, ratio)'
+		correlation = SNPdist::qq_cor(ratio, perm_ratio)
 
-		fratio_breaks = SNPdist::fratio(het_hom_snps[1], het_hom_snps[0], 10000)
-		hyp = SNPdist::hyp_snps(fratio_breaks, 10000)
-		correlation = SNPdist::qq_cor(ratio, hyp)
-
-		# sample_ratio = SNPdist::sample_ratio(het_hom_snps[1], het_hom_snps[0])
-		# correlation = SNPdist::qq_cor(ratio, sample_ratio)
-
-		if Integer === same ### TODO this bit!
+		if Integer === same
 			myr.assign 'dataset', "#{ARGV[0]}/#{ARGV[1]}"
 			myr.assign 'gen', same
-			# myr.eval 'real_ratio <- get_real_ratio(het_snps, hom_snps, ratio)'
-			# myr.eval 'plot_distribution(real_ratio, dataset, gen)' # plot of the real_ratio
-
 			myr.assign 'hyp', hyp
+			myr.eval 'source("~/fragmented_genome_with_snps/lib/comparable_ratio.R")'
 			myr.eval 'plot_distribution(density(hyp)$y, dataset, gen)' # plot of density of hypothetical snp ratio vector
 		end
-
-		# correlation = myr.pull 'correlation'
 		myr.quit
 		return correlation
 	end
