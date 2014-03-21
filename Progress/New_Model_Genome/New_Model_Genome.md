@@ -63,7 +63,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9889
+## [1] 0.9769
 ```
 
 ```r
@@ -79,7 +79,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9783
+## [1] 0.9774
 ```
 
 ```r
@@ -92,7 +92,7 @@ shapiro.test(hmd$y)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  hmd$y
-## W = 0.9398, p-value = 1.541e-13
+## W = 0.91, p-value < 2.2e-16
 ```
 
 ```r
@@ -106,7 +106,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9701
+## [1] 0.9547
 ```
 
 ```r
@@ -119,7 +119,7 @@ shapiro.test(htd$y)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  htd$y
-## W = 0.6836, p-value < 2.2e-16
+## W = 0.629, p-value < 2.2e-16
 ```
 
 ```r
@@ -133,7 +133,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.827
+## [1] 0.7932
 ```
 
 ```r
@@ -146,7 +146,7 @@ shapiro.test(ratio)
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  ratio
-## W = 0.8868, p-value < 2.2e-16
+## W = 0.9115, p-value < 2.2e-16
 ```
 
 ```r
@@ -160,7 +160,7 @@ cor(qqp$x, qqp$y)
 ```
 
 ```
-## [1] 0.9424
+## [1] 0.9555
 ```
 
 ```r
@@ -173,7 +173,7 @@ hm_test
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  hm
-## W = 0.971, p-value = 0.4724
+## W = 0.9463, p-value = 0.08698
 ```
 
 ```r
@@ -181,7 +181,7 @@ hm_test$p
 ```
 
 ```
-## [1] 0.4724
+## [1] 0.08698
 ```
 
 ```r
@@ -194,7 +194,7 @@ ht_test
 ## 	Shapiro-Wilk normality test
 ## 
 ## data:  ht
-## W = 0.9569, p-value < 2.2e-16
+## W = 0.9551, p-value < 2.2e-16
 ```
 
 ```r
@@ -202,7 +202,7 @@ ht_test$p
 ```
 
 ```
-## [1] 6.059e-29
+## [1] 1.876e-29
 ```
 
 
