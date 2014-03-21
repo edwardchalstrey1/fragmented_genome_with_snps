@@ -140,7 +140,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		if same == 'diff'
 			hm = SNPdist::hm[0]
 			ht = SNPdist::ht[0]
-			fratio_breaks = SNPdist::fratio(hm, ht, 10000)
+			fratio_breaks = SNPdist::fratio(hm, ht, 10000) # TODO Later on if algorithm works we can make breaks a parameter
 			ratio = SNPdist::hyp_snps(fratio_breaks, 10000)
 		else
 			ratio = RATIO
@@ -151,7 +151,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		if Integer === same
 			myr.assign 'dataset', "#{ARGV[0]}/#{ARGV[1]}"
 			myr.assign 'gen', same
-			myr.assign 'hyp', hyp
+			myr.assign 'hyp', perm_ratio
 			myr.eval 'source("~/fragmented_genome_with_snps/lib/comparable_ratio.R")'
 			myr.eval 'plot_distribution(density(hyp)$y, dataset, gen)' # plot of density of hypothetical snp ratio vector
 		end

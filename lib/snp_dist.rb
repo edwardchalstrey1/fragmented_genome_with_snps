@@ -8,16 +8,7 @@ class SNPdist
 	# Make a list that models homozygous SNP positions
 	def self.hm
 		myr = RinRuby.new(echo = false)
-		r_str = 'hm <- rnorm(10000, 10000000, 1000000)
-		remove <- c()
-		x <- 1
-		for(i in hm){
-		  if(i < 0 || i > 18585056){
-		    remove <- c(remove, x)
-		  }
-		  x <- x+1
-		}
-		hm <- hm[-c(remove)]'
+		r_str = 'hm <- rnorm(10000, 10000000, 1000000)' # be careful when changing, check that values fall within genome range
 		myr.eval r_str
 		hm = myr.pull 'hm'
 		x = 0
