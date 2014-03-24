@@ -122,6 +122,7 @@ class SNPdist
 		# dev.off()
 		corr <- cor(qqp$x,qqp$y)'
 		corr = myr.pull 'corr'
+		myr.quit
 		return corr
 	end
 end
