@@ -39,10 +39,12 @@ class MetricPlot
 	# Input 2: The number of generations to increment by
 	# Input 3: String with the id of the metric to plot (see case below)
 	# Input 4: String - name of the plot
+	# Input 5: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids)
+	# Input 6: Type: example or performance figures
 	# Output: ggplot of the fitness over generations of the genetic algorithm, with a permutation distance metric for comparison
-	def self.gg_plots(gen, start, inc, met, filename)
+	def self.gg_plots(gen, start, inc, met, filename, all_perms, type)
 		orig = original_order
-		all_perms = get_perms(gen, start, inc)
+		# all_perms = get_perms(gen, start, inc)
 		myr = RinRuby.new(echo = false)
 		myr.eval 'source("~/fragmented_genome_with_snps/score_plots/score_plots.R")'
 		x, y, se = [], [], []
@@ -50,22 +52,27 @@ class MetricPlot
 		all_perms.each do |pop|
 			fitness, metric = [], []
 			pop.each do |perm|
-				fitness << (1 - (perm[0].gsub(/\n/, "")).to_f) # the compliment proportion of the fitness value
+				if type != 'example'
+					fitness << ### TODO this needs to be fitness of example
+				else
+					fitness << (1 - (perm[0].gsub(/\n/, "")).to_f) # the compliment proportion of the fitness value
+					perm = perm[1..-1]
+				end
 				case met
 				when 'dev'
-					metric << RearrangementScore::dev_dist(orig, perm[1..-1])
+					metric << RearrangementScore::dev_dist(orig, perm) ### TODO make sure what is going in here makes sense for example
 				when 'sq'
-					metric << RearrangementScore::sq_dev_dist(orig, perm[1..-1])
+					metric << RearrangementScore::sq_dev_dist(orig, perm)
 				when 'ham'
-					metric << RearrangementScore::gen_ham_dist(orig, perm[1..-1])
+					metric << RearrangementScore::gen_ham_dist(orig, perm)
 				when 'mod'
-					metric << RearrangementScore::mod_ham_dist(orig, perm[1..-1])
+					metric << RearrangementScore::mod_ham_dist(orig, perm)
 				when 'r'
-					metric << RearrangementScore::r_dist(orig, perm[1..-1])
+					metric << RearrangementScore::r_dist(orig, perm)
 				when 'lcs'
-					metric << RearrangementScore::lcs(orig, perm[1..-1])
+					metric << RearrangementScore::lcs(orig, perm)
 				when 'kt'
-					metric << RearrangementScore::kendalls_tau(orig, perm[1..-1])
+					metric << RearrangementScore::kendalls_tau(orig, perm)
 				end
 			end
 			pop_y = [fitness, metric]

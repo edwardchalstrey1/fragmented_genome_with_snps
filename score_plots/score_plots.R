@@ -8,7 +8,7 @@ plot_it <- function(x, y, se, group, dataset_run, filename){
 	  )
 	limits <- aes(ymax = metric_score + se, ymin=metric_score - se)
 	p <- ggplot(df, aes(colour=group, y=metric_score, x=generation))
-	p <- p + geom_point() + geom_crossbar(limits, width=0.2) + facet_grid(.~group, scales="fixed", space="fixed")
+	p <- p + geom_point() + geom_crossbar(limits, width=0.2) + facet_grid(group~., scales="free_y", space="fixed")
 	ggsave(p, file = paste("~/fragmented_genome_with_snps/arabidopsis_datasets/", dataset_run,"/", filename,".png", sep=""))
 }
 
