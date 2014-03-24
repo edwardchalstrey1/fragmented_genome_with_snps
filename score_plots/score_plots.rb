@@ -88,9 +88,9 @@ def gg_plots(all_metrics, start, inc)
 	myr.quit
 end
 
-all_perms = get_perms(3, 0, 125) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
+all_perms = get_perms(1, 0, 1) # [][][0] is the fitness of the permutation [][][1..-1] is the permutation (frag ids)
 all_metrics = get_metrics(all_perms)
 puts all_metrics[0][0]
 
-gg_plots(all_metrics, 0, 125)
+gg_plots(all_metrics, 0, 1)
 
