@@ -3,6 +3,9 @@ class ExamplePerms
 	require '~/fragmented_genome_with_snps/lib/reform_ratio.rb'
 	require '~/fragmented_genome_with_snps/lib/GATOC.rb'
 
+	# Input 0: Array of fasta format fragments
+	# Input 1: Permutation: txt file saved with frag ids
+	# Output: Array of the fitness for the permutation with the fatsa frags re-ordered by the permutation
 	def self.fasta_p(fasta, perm)
 		perm_ids = []
 		IO.foreach(perm) { |line| perm_ids << line.gsub(/\n/,'') }
@@ -17,14 +20,24 @@ class ExamplePerms
 				end
 			end
 		end
-		return fasta_perm, fitness
+		return [fitness, fasta_perm].flatten
 	end
 
-	def self.get_perms(fasta, pop_size)
+	# Input 0: Array of fasta format fragments
+	# Input 1: Integer of the number of permutations desired for each population
+	# Output: Array of populations, each population contains permutations of a certain type. Permutations are arrays of fasta frags, with fitness
+	def self.get_perms(fasta, pop_size, snp_data)
 		mut_pop, shuf_pop = [], []
 		pop_size.times do
-			mut_pop << ReformRatio::fasta_id_n_lengths(GATOC::mutate(fasta))[0]
-			shuf_pop << ReformRatio::fasta_id_n_lengths(fasta.shuffle)[0]
+			mut_perm = GATOC::mutate(fasta)
+			fitness = GATOC::fitness(mut_perm, snp_data, 'same')
+			mut_perm_id = [fitness, ReformRatio::fasta_id_n_lengths(mut_perm)[0]].flatten
+			mut_pop << mut_perm_id
+
+			shuf_perm = fasta.shuffle
+			fitness = GATOC::fitness(shuf_perm, snp_data, 'same')
+			shuf_perm_id = [fitness, ReformRatio::fasta_id_n_lengths(shuf_perm)[0]].flatten
+			shuf_pop << shuf_perm_id
 		end
 		return mut_pop, shuf_pop
 	end

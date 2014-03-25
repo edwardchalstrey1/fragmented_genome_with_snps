@@ -8,7 +8,7 @@ class MetricPlot
 	# Output: The correctly ordered permutation of frag ids
 	def self.original_order
 		original_order = []
-		IO.foreach("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation.txt") { |line| original_order << line }
+		IO.foreach("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation.txt") { |line| original_order << line.gsub(/\n/,'') }
 		original_order[1..-1]
 	end
 
@@ -24,7 +24,7 @@ class MetricPlot
 			Dir.entries("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{n}").each do |ptxt|
 				if ptxt.include? '.txt'
 					perm = []
-					IO.foreach("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{n}/#{ptxt}") { |line| perm << line }
+					IO.foreach("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{n}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
 					pop << perm
 				end
 			end
@@ -34,17 +34,14 @@ class MetricPlot
 		return all_perms
 	end
 
-	# Input 0: Number of generations to plot
-	# Input 1: The generation to start with
-	# Input 2: The number of generations to increment by
-	# Input 3: String with the id of the metric to plot (see case below)
-	# Input 4: String - name of the plot
-	# Input 5: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids)
-	# Input 6: Type: example or performance figures
+	# Input 0: The generation to start with
+	# Input 1: The number of generations to increment by
+	# Input 2: String with the id of the metric to plot (see case below)
+	# Input 3: String - name of the plot
+	# Input 4: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids)
 	# Output: ggplot of the fitness over generations of the genetic algorithm, with a permutation distance metric for comparison
-	def self.gg_plots(gen, start, inc, met, filename, all_perms, type)
+	def self.gg_plots(start, inc, met, filename, all_perms)
 		orig = original_order
-		# all_perms = get_perms(gen, start, inc)
 		myr = RinRuby.new(echo = false)
 		myr.eval 'source("~/fragmented_genome_with_snps/score_plots/score_plots.R")'
 		x, y, se = [], [], []
@@ -52,27 +49,23 @@ class MetricPlot
 		all_perms.each do |pop|
 			fitness, metric = [], []
 			pop.each do |perm|
-				if type != 'example'
-					fitness << ### TODO this needs to be fitness of example
-				else
-					fitness << (1 - (perm[0].gsub(/\n/, "")).to_f) # the compliment proportion of the fitness value
-					perm = perm[1..-1]
-				end
+				fitness << (1.0 - perm[0]) # the compliment proportion of the fitness value
+				red_perm = perm[1..-1] # red_perm is just the permutaion, reduced in length by one to not have the fitness float
 				case met
 				when 'dev'
-					metric << RearrangementScore::dev_dist(orig, perm) ### TODO make sure what is going in here makes sense for example
+					metric << RearrangementScore::dev_dist(orig, red_perm)
 				when 'sq'
-					metric << RearrangementScore::sq_dev_dist(orig, perm)
+					metric << RearrangementScore::sq_dev_dist(orig, red_perm)
 				when 'ham'
-					metric << RearrangementScore::gen_ham_dist(orig, perm)
+					metric << RearrangementScore::gen_ham_dist(orig, red_perm)
 				when 'mod'
-					metric << RearrangementScore::mod_ham_dist(orig, perm)
+					metric << RearrangementScore::mod_ham_dist(orig, red_perm)
 				when 'r'
-					metric << RearrangementScore::r_dist(orig, perm)
+					metric << RearrangementScore::r_dist(orig, red_perm)
 				when 'lcs'
-					metric << RearrangementScore::lcs(orig, perm)
+					metric << RearrangementScore::lcs(orig, red_perm)
 				when 'kt'
-					metric << RearrangementScore::kendalls_tau(orig, perm)
+					metric << RearrangementScore::kendalls_tau(orig, red_perm)
 				end
 			end
 			pop_y = [fitness, metric]
