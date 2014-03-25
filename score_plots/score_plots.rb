@@ -49,7 +49,7 @@ class MetricPlot
 		all_perms.each do |pop|
 			fitness, metric = [], []
 			pop.each do |perm|
-				fitness << (1.0 - perm[0]) # the compliment proportion of the fitness value
+				fitness << (1.0 - perm[0].to_f) # the compliment proportion of the fitness value
 				red_perm = perm[1..-1] # red_perm is just the permutaion, reduced in length by one to not have the fitness float
 				case met
 				when 'dev'
