@@ -56,7 +56,7 @@ One permutation is taken as input (the permutation to be mutated). It is split i
 
 ### Permutation Fitness: Q-Q plot
 
-Genetic algorithms require a fitness method, in order to tell how close each solution comes to solving the given problem. With a permutation problem, the fitness method should score the permutation based on how correct the ordering of elements is. In my algorithm, I want to identify a mutation based on the ratio of homozygous to heterozygous SNP distributions in a genome. I will therefore use the ratio as a way of telling how close a given fragment permutation is to the correct order. My algorithm does this by working out where the SNP positions are in the genome, assuming the fragments are ordered in the way of a given permutation (the position of SNPs on each fragment are known). The idea here, is that the more correct the arrangement of fragments, the closer the ratio distribution will be to the expected distribution (e.g. normal distribution).
+Genetic algorithms require a fitness method, in order to tell how close each solution comes to solving the given problem. With a permutation problem, the fitness method should score the permutation based on how correct the ordering of elements is. In my algorithm, I want to identify a mutation based on the ratio of homozygous to heterozygous SNP distributions in a genome. I will therefore use the ratio as a way of telling how close a given fragment permutation is to the correct order. My algorithm does this by working out where the SNP positions are in the genome, assuming the fragments are ordered in the way of a given permutation (the position of SNPs on each fragment are known). The idea here, is that the more correct the arrangement of fragments, the closer the ratio distribution will be to the expected distribution.
 
 To calculate how similar the reformed SNP ratio (from a given fragment permutation) is to the expected ratio, a Q-Q plot is used. A Q-Q plot is a graphical method for comparing two probability distributions by plotting their quantiles against each other. By plotting the reformed distribution against the expected distribution, a correleation value is obtained (see Re-ordering the genome: [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/comparable_ratio.R) above). This is the value returned by the fitness method.
 
@@ -70,6 +70,11 @@ First an initial population of fragment order permutations is generated, by shuf
 USE PEAK FINDING IN R
 
 Using the R library pracma, the findpeaks function can be used to identify the peaks in a distribution vector.
+
+Assesing the Genetic Algorithm's performance
+---------------------------------------
+
+To determine how close each permutation outputted by the genetic algorithm is to being correct, I use a number of [distance metrics](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/Comparing%20Permutations/comparing_permutations.md). To generate figures of how the algorithm performs over generations with regard to fitness and these metrics run: **ruby [ga_performance.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/ga_performance.rb) ARGV[0] = dataset name ARGV[1] = run **, where the dataset name is the same as the one used to create the model genome, and the run is the run of the algorithm you wish to generate the figures for.
 
 Project Background Information
 ------------
