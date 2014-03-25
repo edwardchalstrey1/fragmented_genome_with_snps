@@ -7,7 +7,7 @@ require 'pp'
 
 s = 0 # First generation in figure (start)
 i = 4 # Number of generations to increment by
-g = 48 # Last generation in plot
+g = 13 # Number of generations in the plot
 
 all_perms = MetricPlot::get_perms(g, s, i)
 
