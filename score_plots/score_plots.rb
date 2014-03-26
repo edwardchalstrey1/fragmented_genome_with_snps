@@ -44,7 +44,7 @@ class MetricPlot
 		orig = original_order
 		myr = RinRuby.new(echo = false)
 		myr.eval 'source("~/fragmented_genome_with_snps/score_plots/score_plots.R")'
-		x, y, se = [], [], []
+		x, y, se, best_sc = [], [], [], []
 		n = start
 		all_perms.each do |pop|
 			fitness, metric = [], []
@@ -76,6 +76,8 @@ class MetricPlot
 				sem = myr.pull 'st_err(scores)'
 				se << sem
 			end
+			best_sc << fitness.sort[0] # The best fitness score, lowest is best
+			best_sc << metric[fitness.index(fitness.sort[0])] # The metric score of the same permutation that has best fitness
 			n+=inc
 		end
 		group = ['comp_fit', met] * all_perms.length
@@ -83,9 +85,10 @@ class MetricPlot
 		myr.assign 'y', y
 		myr.assign 'se', se
 		myr.assign 'group', group
+		myr.assign 'best_sc', best_sc
 		myr.assign 'dataset_run', "#{ARGV[0]}/#{ARGV[1]}"
 		myr.assign 'filename', filename
-		myr.eval 'plot_it(x, y, se, group, dataset_run, filename)'
+		myr.eval 'plot_it(x, y, se, group, best_sc, dataset_run, filename)'
 		myr.quit
 	end
 end
