@@ -1,29 +1,28 @@
 #encoding: utf-8
 require_relative 'lib/arabidopsis_c4_w_snps'
 require_relative 'lib/write_it'
-require_relative 'lib/snp_dist'
+require_relative 'lib/model_genome'
 
 # make the directory to put data files into
 Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}"))
 
 # Create the lists of homozygous and heterozygous SNPs
-hm_str = SNPdist::hm
-ht_str = SNPdist::ht
-hm = hm_str[0]
-ht = ht_str[0]
-snp_pos = [ht, hm].flatten
+hm_r = 'hm <- rnorm(50, 1000, 100)'
+ht_r = 'ht <- runif(50, 1, 2000)'
+hm, ht = ModelGenome::get_snps(hm_r, ht_r)
+snp_pos = [hm, ht].flatten
 
 puts "There are #{hm.length} homozygous SNPs"
 puts "There are #{ht.length} heterozygous SNPs"
-
-puts "Is there a SNP at the centre of the distribution? -- #{snp_pos.include?(10000000)}"
+puts "Is there a SNP at the centre of the distribution? -- #{snp_pos.include?(1000)}"
 
 arabidopsis_c4 = ModelGenome::fasta_to_char_array("TAIR10_chr4.fasta")
+small_genome = arabidopsis_c4[0..1999] # Genome length of 2Kb
 
-contig_size = 10000 # 10-20kb
-frags = ModelGenome::get_frags(arabidopsis_c4, contig_size)
+contig_size = 25 # 25-50kb
+frags = ModelGenome::get_frags(small_genome, contig_size)
 
-puts "Arabidopsis chr4 length: #{arabidopsis_c4.length} bases"
+puts "Small genome     length: #{arabidopsis_c4.length} bases"
 puts "Fragmented seq   length: #{frags.join.length} = close enough? You decide."
 puts "You have created #{frags.length} fragments of sizes #{contig_size}-#{contig_size*2}"
 
@@ -31,11 +30,11 @@ puts "You have created #{frags.length} fragments of sizes #{contig_size}-#{conti
 pos_on_frags, snp_pos_all = ModelGenome::pos_each_frag(snp_pos, frags)
 
 fastaformat_array = ModelGenome::fasta_array(frags)
-fastaformat_array_shuf = fastaformat_array.shuffle #shuffle it to show that the order doesn't need to be conserved when working out density later on
+fastaformat_array_shuf = fastaformat_array.shuffle # shuffle it to show that the order doesn't need to be conserved when working out density later on
 
 vcf = ModelGenome::vcf_array(frags, pos_on_frags, snp_pos_all, hm, ht)
 
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags.fasta", fastaformat_array)
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/snps.vcf", vcf)
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags_shuffled.fasta", fastaformat_array_shuf)
-WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/info", [hm_str[1], ht_str[1], "Contig size = #{contig_size}"])
+WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/info", [hm_r, ht_r, "Contig size = #{contig_size}"])

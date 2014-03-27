@@ -6,13 +6,19 @@ class ModelGenome
 	require 'bio'
 	require 'rinruby'
 
-	# Make a list that models homozygous SNP positions
-	def self.hm(r_code)
+	# Make a list that models SNP positions
+	# Input 0: String of r code for the desired homozygous SNP distribution
+	# Input 1: String of r code for the desired heterozygous SNP distribution
+	# Output 0: List of homozygous SNPs
+	# Output 1: List of heterozygous SNPs
+	def self.get_snps(hm_code, ht_code)
 		myr = RinRuby.new(echo = false)
-		myr.eval r_code
+		myr.eval hm_code
+		myr.eval ht_code
 		hm = myr.pull 'hm'
-
-		return hm.uniq.map(&:abs).map(&:to_i), r_str # a few SNPs may be removed but doesn't affect distribution much, AND the R code string
+		ht = myr.pull 'ht'
+		myr.quit
+		return hm.uniq.map(&:abs).map(&:to_i), ht.uniq.map(&:abs).map(&:to_i)# a few SNPs may be removed but doesn't affect distribution much, AND the R code string
 	end
 
 	# Input: FASTA file

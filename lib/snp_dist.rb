@@ -5,14 +5,14 @@ class SNPdist
 	
 	### Model Genome ###
 
-	# Make a list that models homozygous SNP positions
+	# Make a list that models homozygous SNP positions ## TODO delete hm and ht methods, now in arabidopsis_c4_with_snps.rb, and change GATOC
 	def self.hm
 		myr = RinRuby.new(echo = false)
 		r_str = 'hm <- rnorm(10000, 10000000, 1000000)' # be careful when changing, check that values fall within genome range
 		myr.eval r_str
 		hm = myr.pull 'hm'
 		x = 0
-		hm.each do |snp|
+		hm.each do |snp| # TODO wtf, you've done this twice!!
 			hm[x] = snp.to_i
 			x+=1
 		end
