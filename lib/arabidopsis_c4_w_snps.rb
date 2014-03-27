@@ -4,6 +4,16 @@ class ModelGenome
 	require 'rubygems'
 	require 'bio-samtools'
 	require 'bio'
+	require 'rinruby'
+
+	# Make a list that models homozygous SNP positions
+	def self.hm(r_code)
+		myr = RinRuby.new(echo = false)
+		myr.eval r_code
+		hm = myr.pull 'hm'
+
+		return hm.uniq.map(&:abs).map(&:to_i), r_str # a few SNPs may be removed but doesn't affect distribution much, AND the R code string
+	end
 
 	# Input: FASTA file
 	# Output: Character array for all the bases in the first entry of the input FASTA
