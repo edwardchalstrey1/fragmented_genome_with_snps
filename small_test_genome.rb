@@ -1,5 +1,5 @@
 #encoding: utf-8
-require_relative 'lib/arabidopsis_c4_w_snps'
+require_relative 'lib/model_genome'
 require_relative 'lib/write_it'
 require_relative 'lib/model_genome'
 
@@ -17,12 +17,12 @@ puts "There are #{ht.length} heterozygous SNPs"
 puts "Is there a SNP at the centre of the distribution? -- #{snp_pos.include?(1000)}"
 
 arabidopsis_c4 = ModelGenome::fasta_to_char_array("TAIR10_chr4.fasta")
-small_genome = arabidopsis_c4[0..1999] # Genome length of 2Kb
+small_genome = arabidopsis_c4[-2000..-1] # Genome length of 2Kb
 
 contig_size = 25 # 25-50kb
 frags = ModelGenome::get_frags(small_genome, contig_size)
 
-puts "Small genome     length: #{arabidopsis_c4.length} bases"
+puts "Small genome     length: #{small_genome.length} bases"
 puts "Fragmented seq   length: #{frags.join.length} = close enough? You decide."
 puts "You have created #{frags.length} fragments of sizes #{contig_size}-#{contig_size*2}"
 
