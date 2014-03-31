@@ -2,35 +2,6 @@
 
 class SNPdist
 	require 'rinruby'
-	
-	### Model Genome ###
-
-	# Make a list that models homozygous SNP positions ## TODO delete hm and ht methods, now in arabidopsis_c4_with_snps.rb, and change GATOC
-	def self.hm
-		myr = RinRuby.new(echo = false)
-		r_str = 'hm <- rnorm(10000, 10000000, 1000000)' # be careful when changing, check that values fall within genome range
-		myr.eval r_str
-		hm = myr.pull 'hm'
-		x = 0
-		hm.each do |snp| # TODO wtf, you've done this twice!!
-			hm[x] = snp.to_i
-			x+=1
-		end
-		myr.quit
-		return hm.uniq.map(&:abs).map(&:to_i), r_str # a few SNPs may be removed but doesn't affect distribution much, AND the R code string
-	end
-
-	# Make a list that models heterozygous SNP positions
-	def self.ht
-		myr = RinRuby.new(echo = false)
-		r_str = 'ht <- runif(10000, 1, 18585056)'
-		myr.eval r_str
-		ht = myr.pull 'ht'
-		myr.quit
-		return ht.uniq.map(&:abs).map(&:to_i), r_str
-	end
-
-	### Fitness of re-order contigs algorithm ###
 
 	# Gets the frequency of SNPs at breaks of div length for the homozygous and heterozygous SNP arrays
 	# Divides to get the frequency ratio for each break (fratio), div = no. of breaks

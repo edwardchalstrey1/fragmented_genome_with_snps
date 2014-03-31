@@ -9,11 +9,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 
-	hm = SNPdist::hm[0]
-	ht = SNPdist::ht[0]
-	fratio_breaks = SNPdist::fratio(hm, ht, 10000)
-	RATIO = SNPdist::hyp_snps(fratio_breaks, 10000)
-
 	# Input: Array
 	# Output: A random integer that the length of the Input 0 array can be divided by to get another integer (the randomly chosen size of chunks that permutations will be split into, in the recombine/mutate methods)
 	def self.division(frags) #number of frags must be > 10
@@ -125,35 +120,31 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
 	# Input 1: Array of all the outputs from get_snp_data method
-	# Input 2: Any argument other than string "diff" if we wish to compare the reformed ratio to the constant RATIO, or "diff" if we wish to compare to a re-run of comparable_ratio function in comparable_ratio.R
-		# where this is an integer, the distribution across the genome is plotted for these SNP lists: see plot_distribution in comparable_ratio.R
+	# Input 2: Integer of the generation that the genetic algorithm is on, if gen is not an integer, no figure is plotted
+	# Input 3: Example ratio to compare against in Q-Q plot
+	# Input 4: Location to save plots e.g. "~/fragmented_genome_with_snps/arabidopsis_datasets"
 	# Output: A correlation value that is the fitness of the Input 0 permutation
-	def self.fitness(fasta, snp_data, same)
+	def self.fitness(fasta, snp_data, gen, comparable_ratio, location)
 		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
 		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) #get snp positions for each frag in array of arrays
 		actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
-		het_hom_snps = ReformRatio::het_hom(actual_pos, pos_n_info[1])
-		fratio_breaks_perm = SNPdist::fratio(het_hom_snps[1], het_hom_snps[0], 10000)
-		perm_ratio = SNPdist::hyp_snps(fratio_breaks_perm, 10000)
+		het_snps, hom_snps = ReformRatio::het_hom(actual_pos, pos_n_info[1])
 
-		myr = RinRuby.new(echo = false)
-		if same == 'diff'
-			hm = SNPdist::hm[0]
-			ht = SNPdist::ht[0]
-			fratio_breaks = SNPdist::fratio(hm, ht, 10000) # TODO Later on if algorithm works we can make breaks a parameter
-			ratio = SNPdist::hyp_snps(fratio_breaks, 10000)
-		else
-			ratio = RATIO
-		end
+		fratio_breaks_perm = SNPdist::fratio(hom_snps, het_snps, 10000) # frequency ratio array
+		perm_ratio = SNPdist::hyp_snps(fratio_breaks_perm, 10000) # hypothetical snp positions array
 
-		correlation = SNPdist::qq_cor(ratio, perm_ratio)
+		correlation = SNPdist::qq_cor(comparable_ratio, perm_ratio)
 
-		if Integer === same
+		myr = RinRuby.new(echo = false) # create figure of the hypothetical snp distribution over the genome, for each generation
+		if Integer === gen
+			puts "this working?"
+			myr.assign 'location', location
 			myr.assign 'dataset', "#{ARGV[0]}/#{ARGV[1]}"
-			myr.assign 'gen', same
-			myr.assign 'hyp', perm_ratio
+			myr.assign 'gen', gen
+			myr.assign 'pratio', perm_ratio # can't move this to evolve, as the perm_ratio is needed
 			myr.eval 'source("~/fragmented_genome_with_snps/lib/comparable_ratio.R")'
-			myr.eval 'plot_distribution(density(hyp)$y, dataset, gen)' # plot of density of hypothetical snp ratio vector
+			myr.eval 'plot_distribution(density(pratio)$y, location, dataset, gen)' # plot of density of hypothetical snp ratio vector
+			puts "Fig should be made..."
 		end
 		myr.quit
 		return correlation
@@ -174,13 +165,15 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 0: Population - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 	# Input 1: Array of all the outputs from get_snp_data method
 	# Input 2: Integer of the desired number of permutations to be selected for the next generation
-	# Output 1: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
-	# Output 2: Integer of leftover permutations, to be taken from the multiplied selected population
-	def self.select(pop, snp_data, num)
+	# Input 3: The example homozygous/heterozygous SNP ratio to compare against in fitness
+	# Output 0: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
+	# Output 1: Integer of leftover permutations, to be taken from the multiplied selected population
+	# Output 2: Pre-selected version of output 0
+	def self.select(pop, snp_data, num, ratio)
 		puts "Pop is unique: #{pop.uniq.length == pop.length}"
 		fits = {}
 		pop.each do |fasta_array|
-			fitn = fitness(fasta_array, snp_data, 'same')
+			fitn = fitness(fasta_array, snp_data, 'same', ratio, 'location not needed')
 			fits[fasta_array] = fitn #maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
 		if fits.size < pop.size
@@ -188,7 +181,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			x = 0
 			diff.times do
 				extra_rand = pop[0].shuffle
-				fits[extra_rand] = fitness(extra_rand, snp_data, 'same')
+				fits[extra_rand] = fitness(extra_rand, snp_data, 'same', ratio, 'location not needed')
 				x+=1
 			end
 			puts "#{x} extra random permutations added, due to multiples of the same permutation in the population"
@@ -236,52 +229,38 @@ class GATOC # Genetic Algorithm To Order Contigs
 		return pop, new_pop_msg
 	end
 
-	# Input 0: A permutation array of Bio::FastaFormat entries
-	# Input 1: snp_data
-	# Input 2: Integer of the number of times the fitness method should be called with the permutation, and to divide the sum by to get an average
-	# Output: Average fitness correlation value
-	def self.average_fitness(fasta, snp_data, num)
-		fits = []
-		num.times do
-			fits << fitness(fasta, snp_data, "diff")
-		end
-		worst = fits.sort[0]
-		average = fits.inject(:+)/num
-		# puts "Worst #{worst}"
-		# puts "Average #{average}\n \n"
-		return average
-	end
-
-	def self.save_perms(pop_fits, gen)
-		Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}"))
-		x = 1
-		pop_fits.each do |fitness, perm|
-			ids = ReformRatio::fasta_id_n_lengths(perm)[0]
-			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}/permutation#{x}", [fitness, ids].flatten)
-			x+=1
-		end
-		if gen != 0
-			ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
-			WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}/best_permutation", [pop_fits[-1][0], ids].flatten)
+	# Input 0: Fittest selection array: see output 0 for select method
+	# Input 1: Location to save files to e.g. "~/fragmented_genome_with_snps/arabidopsis_datasets" # WARNING - this might not work
+	# Input 2: Generation of the genetic algorithm
+	def self.save_perms(pop_fits, location, gen)
+		Dir.mkdir(File.join(Dir.home, "#{location}/#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}"))
+		Dir.chdir(File.join(Dir.home, "#{location}")) do
+			x = 1
+			pop_fits.each do |fitness, perm|
+				ids = ReformRatio::fasta_id_n_lengths(perm)[0]
+				WriteIt::write_txt("#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}/permutation#{x}", [fitness, ids].flatten)
+				x+=1
+			end
+			if gen != 0
+				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
+				WriteIt::write_txt("#{ARGV[0]}/#{ARGV[1]}/Gen#{gen}/best_permutation", [pop_fits[-1][0], ids].flatten) # fitness and ids
+			end
 		end
 	end
 
 	# Input 0: FASTA file
 	# Input 1: VCF file
-	# Input 2: Correctly ordered array of Bio::FastaFormat entries
-	# Input 3: parameters:
+	# Input 2: parameters:
 	# 	gen: Integer of desired number of generations - the number of times a new population is created from an old one
 	# 	pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
 	# 	mut_num: Integer of the desired number of mutant permutations in each new population (this number of mutate and mini_mutate methods)
 	# 	save: Integer of the desired number of the best permutations from each population, to be included in the next one
 	# 	ran: Integer of the desired number of randomly shuffled permutations in each new population
-	# 	figures: Any string: algorithm performance figures are created unless the string is 'no figures'
+	#   loc: Location to save output files to
 	# Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 	# Output 2: A saved figure of the algorithm's performance
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
-	def self.evolve(fasta_file, vcf_file, ordered_fasta, parameters)
-		Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}")) # make the directory to put data files into
-		
+	def self.evolve(fasta_file, vcf_file, parameters)
 		opts = {
 			:gen => 200,
 			:pop_size => 100,
@@ -289,36 +268,30 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:mut_num => 10,
 			:save => 5,
 			:ran => 5,
-			:figures => 'figures',
-			:average => 10
+			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets',
+			:comparable_ratio => 'nothing'# TODO add in default ratio
 			}.merge!(parameters)
+		Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{ARGV[0]}/#{ARGV[1]}")) # make the directory to put data files into
 
 		gen_fits = [] # array of the best fitness in each generation
-		ordered_ids = ReformRatio::fasta_id_n_lengths(ordered_fasta)[0]
 		snp_data = ReformRatio::get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
-		original_order_cor = fitness(ordered_fasta, snp_data, 'same')
-		WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation", [original_order_cor, ordered_ids].flatten)
 		fasta = ReformRatio::fasta_array(fasta_file) #array of fasta format fragments
 		pop = initial_population(fasta, opts[:pop_size])
 
-		pop_fits_n_leftover = select(pop, snp_data, opts[:select_num])
-		pop_fits = pop_fits_n_leftover[0]
-		leftover = pop_fits_n_leftover[1]
-		fitness(pop_fits[-1][1], snp_data, 0) # makes figure of ratio density distribution for the best permutation in each generation
+		pop_fits, leftover, initial_pf = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio])
+		fitness(pop_fits[-1][1], snp_data, 0, opts[:comparable_ratio], opts[:loc]) # makes figure of ratio density distribution for the best permutation in each generation
 		puts "Gen0 \n Best correlation = #{pop_fits[-1][0]}\n \n"
 		gen_fits << pop_fits[-1][0]
-		save_perms(pop_fits_n_leftover[2], 0)
+		save_perms(initial_pf, opts[:loc], 0)
 
 		y, z = 1, 1
 		opts[:gen].times do
 
 			prev_best_fit = pop_fits[-1][0]
 			pop_n_msg = new_population(pop_fits, opts[:pop_size], opts[:mut_num], opts[:save], opts[:ran], opts[:select_num], leftover)
-			pop_fits_n_leftover = select(pop_n_msg[0], snp_data, opts[:select_num])
-			pop_fits = pop_fits_n_leftover[0]
-			leftover = pop_fits_n_leftover[1]
+			pop_fits, leftover, initial_pf = select(pop_n_msg[0], snp_data, opts[:select_num], opts[:comparable_ratio])
 			gen_fits << pop_fits[-1][0]
-			save_perms(pop_fits_n_leftover[2], y)
+			save_perms(initial_pf, opts[:loc], y)
 
 			puts "Gen#{y}\n Best correlation = #{pop_fits[-1][0]}"
 			if pop_fits[-1][0] <= prev_best_fit
@@ -329,40 +302,23 @@ class GATOC # Genetic Algorithm To Order Contigs
 				z = 1
 			end
 
-			if pop_fits[-1][0] >= 0.998 # If it looks like we have a winner, IN THE FINISHED ALGORITHM, THIS SHOULD BE...
-				av = average_fitness(pop_fits[-1][1], snp_data, opts[:average]) 
-				if av >= 0.999 && opts[:figures] != 'no figures'
-					best_msg = "Best possible permutation fitness: #{av}"
-					z = 10
-				end
+			if z >= 10
+				best_msg = "Algorithm quit for lack of fitness improvement at generation #{y}/#{opts[:gen]}: #{pop_fits[-1][0]}"
+			elsif y == opts[:gen]
+				best_msg = "Algorithm quit as number of generations (#{y}/#{opts[:gen]}) complete: #{pop_fits[-1][0]}"
 			end
-
-			if z >= 10 || y == opts[:gen]
-				if av == nil && y < opts[:gen]
-					best_msg = "Algorithm quit for lack of fitness improvement at generation #{y}/#{opts[:gen]}: #{pop_fits[-1][0]}"
-				elsif av == nil && y == opts[:gen]
-					best_msg = "Algorithm quit as number of generations (#{y}/#{opts[:gen]}) complete: #{pop_fits[-1][0]}"
-				end
-				puts best_msg
-				WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", [opts, pop_n_msg[1], best_msg, original_order_cor, pop_fits[-1][0],'###', ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]].flatten)
-			end
-
-			fitness(pop_fits[-1][1], snp_data, y) # makes figure of ratio density distribution for the best permutation in each generation
+				
+			fitness(pop_fits[-1][1], snp_data, y, opts[:comparable_ratio], opts[:loc]) # makes figure of ratio density distribution for the best permutation in each generation
 			y+=1
 
-			if z >= 10
+			if z >= 10 || y == opts[:gen]
 				then break
 			end
 			Signal.trap("PIPE", "EXIT")
 		end
-
-		if opts[:figures] != 'no figures'
-			myr = RinRuby.new(echo=false)
-			myr.assign 'gen_fits', gen_fits
-			myr.eval "source('~/fragmented_genome_with_snps/lib/comparable_ratio.R')"
-			myr.assign 'dataset', "#{ARGV[0]}/#{ARGV[1]}"
-			myr.eval 'plot_performance(gen_fits, dataset)'
-			myr.quit
-		end
+		puts best_msg
+		WriteIt::write_txt("#{:loc}/#{ARGV[0]}/#{ARGV[1]}/reformed_ratio_frag_order", 
+			[opts, pop_n_msg[1], best_msg, original_order_cor, pop_fits[-1][0],'###', 
+			ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]].flatten)
 	end
 end
