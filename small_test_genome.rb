@@ -1,14 +1,13 @@
 #encoding: utf-8
 require_relative 'lib/model_genome'
 require_relative 'lib/write_it'
-require_relative 'lib/model_genome'
 
 # make the directory to put data files into
 Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}"))
 
 # Create the lists of homozygous and heterozygous SNPs
-hm_r = 'hm <- rnorm(50, 1000, 100)'
-ht_r = 'ht <- runif(50, 1, 2000)'
+hm_r = 'hm <- rnorm(50, 1000, 100)' # Causative SNP at/near 1000
+ht_r = 'ht <- runif(50, 1, 2000)'   # Genome length of 2000
 hm, ht = ModelGenome::get_snps(hm_r, ht_r)
 snp_pos = [hm, ht].flatten
 
@@ -38,3 +37,5 @@ WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags.fasta", fastaformat_a
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/snps.vcf", vcf)
 WriteIt::write_data("arabidopsis_datasets/#{ARGV[0]}/frags_shuffled.fasta", fastaformat_array_shuf)
 WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/info", [hm_r, ht_r, "Contig size = #{contig_size}"])
+WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/hm_snps", hm)
+WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/ht_snps", ht)

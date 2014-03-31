@@ -62,59 +62,59 @@ class TestGATOC < Test::Unit::TestCase
 		assert_kind_of(Array, mini_mutant)
 	end
 
-	def test_fitness
-		fasta_array = ReformRatio::fasta_array('test/frags.fasta')
-		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
-		fit = GATOC::fitness(fasta_array, snp_data, "diff")
-		assert_kind_of(Float, fit)
-		assert_in_delta(0.5, fit, 0.5)
-	end
+	# def test_fitness
+	# 	fasta_array = ReformRatio::fasta_array('test/frags.fasta')
+	# 	snp_data = ReformRatio::get_snp_data('test/snps.vcf')
+	# 	fit = GATOC::fitness(fasta_array, snp_data, "diff")
+	# 	assert_kind_of(Float, fit)
+	# 	assert_in_delta(0.5, fit, 0.5)
+	# end
 
-	def test_average_fitness
-		fasta_array = ReformRatio::fasta_array('test/frags.fasta')
-		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
-		fit = GATOC::average_fitness(fasta_array, snp_data, 5)
-		assert_kind_of(Float, fit)
-		assert_in_delta(0.5, fit, 0.5)
-	end
+	# def test_average_fitness
+	# 	fasta_array = ReformRatio::fasta_array('test/frags.fasta')
+	# 	snp_data = ReformRatio::get_snp_data('test/snps.vcf')
+	# 	fit = GATOC::average_fitness(fasta_array, snp_data, 5)
+	# 	assert_kind_of(Float, fit)
+	# 	assert_in_delta(0.5, fit, 0.5)
+	# end
 
-	def test_initial_population
-		array = %w(a b)
-		pop = GATOC::initial_population(array, 2)
-		assert(pop == [%w(a b), %w(a b)] || pop == [%w(b a), %w(a b)] || pop == [%w(a b), %w(b a)] || pop = [%w(b a), %w(b a)])
-	end
+	# def test_initial_population
+	# 	array = %w(a b)
+	# 	pop = GATOC::initial_population(array, 2)
+	# 	assert(pop == [%w(a b), %w(a b)] || pop == [%w(b a), %w(a b)] || pop == [%w(a b), %w(b a)] || pop = [%w(b a), %w(b a)])
+	# end
 
-	def test_select
-		fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta')
-		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
-		pop = GATOC::initial_population(fasta_array, 20)
-		selected = GATOC::select(pop, snp_data, 10)
-		assert_kind_of(Integer, selected[1], 'leftover not int') # leftover
-		assert_kind_of(Array, selected[0], 'permutation and correlation not array') # permutation and correlation
-		assert_equal(10, selected[0].length) # no. of permutations selcted
-		assert_kind_of(Float, selected[0][0][0], 'correlation not float') # correlation value
-		assert_in_delta(0.5, selected[0][0][0], 0.5) # correlation value
-		assert_kind_of(Array, selected[0][0][1], 'permutation not array') # permutation
-		assert_kind_of(Bio::FastaFormat, selected[0][0][1][0], 'Not a Bio::FastaFormat')
-	end
+	# def test_select
+	# 	fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta')
+	# 	snp_data = ReformRatio::get_snp_data('test/snps.vcf')
+	# 	pop = GATOC::initial_population(fasta_array, 20)
+	# 	selected = GATOC::select(pop, snp_data, 10)
+	# 	assert_kind_of(Integer, selected[1], 'leftover not int') # leftover
+	# 	assert_kind_of(Array, selected[0], 'permutation and correlation not array') # permutation and correlation
+	# 	assert_equal(10, selected[0].length) # no. of permutations selcted
+	# 	assert_kind_of(Float, selected[0][0][0], 'correlation not float') # correlation value
+	# 	assert_in_delta(0.5, selected[0][0][0], 0.5) # correlation value
+	# 	assert_kind_of(Array, selected[0][0][1], 'permutation not array') # permutation
+	# 	assert_kind_of(Bio::FastaFormat, selected[0][0][1][0], 'Not a Bio::FastaFormat')
+	# end
 
-	def test_new_population
-		fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta')
-		snp_data = ReformRatio::get_snp_data('test/snps.vcf')
-		pop = GATOC::initial_population(fasta_array, 20)
-		selected = GATOC::select(pop, snp_data, 10)
-		new_pop  = GATOC::new_population(selected[0], 20, 1, 1, 1, 10, selected[1])
-		assert_kind_of(Array, new_pop)
-		assert_kind_of(String, new_pop[1])
-		assert_kind_of(Array, new_pop[0])
-		x = 0
-		new_pop[0].each do |permutation|
-			assert_kind_of(Array, permutation, "permutation at element #{x} of population not array")
-			assert_equal(1239, permutation.length, "permutation at element #{x} of population not correct number of frags")
-			x+=1
-		end
-		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0])
-		assert_equal(new_pop.uniq.length, new_pop.length)
-	end
+	# def test_new_population
+	# 	fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta')
+	# 	snp_data = ReformRatio::get_snp_data('test/snps.vcf')
+	# 	pop = GATOC::initial_population(fasta_array, 20)
+	# 	selected = GATOC::select(pop, snp_data, 10)
+	# 	new_pop  = GATOC::new_population(selected[0], 20, 1, 1, 1, 10, selected[1])
+	# 	assert_kind_of(Array, new_pop)
+	# 	assert_kind_of(String, new_pop[1])
+	# 	assert_kind_of(Array, new_pop[0])
+	# 	x = 0
+	# 	new_pop[0].each do |permutation|
+	# 		assert_kind_of(Array, permutation, "permutation at element #{x} of population not array")
+	# 		assert_equal(1239, permutation.length, "permutation at element #{x} of population not correct number of frags")
+	# 		x+=1
+	# 	end
+	# 	assert_kind_of(Bio::FastaFormat, new_pop[0][0][0])
+	# 	assert_equal(new_pop.uniq.length, new_pop.length)
+	# end
 end
 
