@@ -8,13 +8,12 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'snp_dist'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
-	require 'pp'
 
 	# Input: Array
 	# Output: A random integer that the length of the Input 0 array can be divided by to get another integer (the randomly chosen size of chunks that permutations will be split into, in the recombine/mutate methods)
 	def self.division(frags) #number of frags must be > 10
 		x = 1.5
-		until frags.length/x == (frags.length/x).to_i && x == x.to_i && x < frags.length
+		until frags.length/x == (frags.length/x).to_i && x <= frags.length
 			x = (frags.length/10).to_f + rand(frags.length).to_f
 		end
 		return x
@@ -31,8 +30,10 @@ class GATOC # Genetic Algorithm To Order Contigs
 				redo
 			elsif x == a_parent.length # to compensate for datasets with a prime number of fragments:
 				ig = rand(a_parent.length)-1 # choose a random element of the fasta array to ignore # we can add the frag at this element back at its original position after recombination
-				a_parent_reduced = a_parent.dup.delete_at(ig)
-				b_parent_reduced = b_parent.dup.delete_at(ig)
+				a_parent_reduced = a_parent.dup
+				b_parent_reduced = b_parent.dup
+				a_parent_reduced.delete_at(ig)
+				b_parent_reduced.delete_at(ig)
 				x = division(a_parent_reduced)
 				a_parent_sliced = a_parent_reduced.each_slice(x).to_a
 				b_parent_sliced = b_parent_reduced.each_slice(x).to_a
@@ -41,7 +42,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				b_parent_sliced = b_parent.each_slice(x).to_a
 			end
 			chosen = rand(b_parent_sliced.length)-1 # choose one of the chunks of fragments to keep from b_parent
-			child = a_parent.dup
+			child = a_parent_sliced.flatten.dup
 			y = 0
 			pos_array = []
 			a_parent_sliced[chosen].each do |frag| # place each frag in the equivalent a_parent chunk into the position it's corresponding frag (from b_parent) occupies in a_parent
@@ -204,32 +205,21 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 6: Integer of leftover permutations, to be taken from the multiplied selected population
 	# Output: New population of mutants, recombinants etc - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 	def self.new_population(pop_fits, size, mut_num, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
-		puts '1'
 		x = (size-leftover)/select_num
-		puts '2'
 		pop_fits = pop_fits * x
-		puts '3'
 		if leftover != 0
 			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) #add leftover number of frags (best)
 			puts "#{leftover} leftover frags added"
 		end
 		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
-		puts '4'
 		pop = []
 		pop_save.each{|i| pop << i[1]} # adding the permutations only, not the fitness score
-		puts '5'
 		for i in pop_fits[(mut_num*2)+save+ran..-1]
 			x = rand(size-1)
-			puts '6'
-			pp i[1] # should be a permutation
 			pop << recombine(i[1], pop_fits[x][1])
-			puts '7'
 		end
-		puts '8'
 		mut_num.times{pop << mutate(pop_fits[rand(pop_fits.length)][1])} # mutating randomly selected permutations from pop_fits
-		puts '9'
 		mut_num.times{pop << mini_mutate(pop_fits[-1][1])} # mini_mutating the best permutations
-		puts '10'
 		ran.times{pop << pop_fits[0][1].shuffle}
 		new_pop_msg = "Population size = #{pop.size}, with #{size - ((mut_num * 2) + save + ran)} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
 		return pop, new_pop_msg

@@ -21,27 +21,27 @@ class TestGATOC < Test::Unit::TestCase
 	end
 
 	def test_recombination
-		parent1 = TEST_ARRAY #20
-		parent2 = parent1.reverse
-		child = GATOC::recombine(parent1, parent2)
+		# parent1 = TEST_ARRAY #20
+		# parent2 = parent1.reverse
+		# child = GATOC::recombine(parent1, parent2)
 
-		parent3 = TEST_ARRAY[0..-2] #19
-		parent4 = parent3.shuffle
-		child2 = GATOC::recombine(parent3, parent4)
+		# parent3 = TEST_ARRAY[0..-2] #19
+		# parent4 = parent3.shuffle
+		# child2 = GATOC::recombine(parent3, parent4)
 
 		fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta').shuffle
 		p2_fasta = fasta_array.shuffle
 		child3 = GATOC::recombine(fasta_array, p2_fasta)
 		
-		assert(child.uniq == child, 'Child of p1/2 not unique')
-		assert(child != parent1, 'Child same as parent1')
-		assert(child != parent2, 'Child same as parent2')
-		assert(child.sort == parent1.sort, 'Child not a permutation')
+		# assert(child.uniq == child, 'Child of p1/2 not unique')
+		# assert(child != parent1, 'Child same as parent1')
+		# assert(child != parent2, 'Child same as parent2')
+		# assert(child.sort == parent1.sort, 'Child not a permutation')
 
-		assert(child2.uniq == child2, 'Child of p3/4 not unique')
-		assert(child2 != parent3, 'Child same as parent3')
-		assert(child2 != parent4, 'Child same as parent4')
-		assert(child2.sort == parent3.sort, 'Child not a permutation')
+		# assert(child2.uniq == child2, 'Child of p3/4 not unique')
+		# assert(child2 != parent3, 'Child same as parent3')
+		# assert(child2 != parent4, 'Child same as parent4')
+		# assert(child2.sort == parent3.sort, 'Child not a permutation')
 
 		assert(child3.uniq == child3, 'Child of fasta not unique')
 		assert(child3 != fasta_array, 'Child same as fasta')
