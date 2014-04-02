@@ -3,13 +3,13 @@ class MetricPlot
 
 	require '~/fragmented_genome_with_snps/lib/write_it'
 	require '~/fragmented_genome_with_snps/lib/rearrangement_score'
+	require '~/fragmented_genome_with_snps/lib/reform_ratio'
 	require 'rinruby'
 
 	# Output: The correctly ordered permutation of frag ids
 	def self.original_order
-		original_order = []
-		IO.foreach("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation.txt") { |line| original_order << line.gsub(/\n/,'') }
-		original_order[1..-1]
+		original_fasta = ReformRatio::fasta_array("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/frags.fasta")
+		return ReformRatio::fasta_id_n_lengths(original_fasta)[0]
 	end
 
 	# Input 0: Number of generations to plot
@@ -33,6 +33,62 @@ class MetricPlot
 		end
 		return all_perms
 	end
+
+	# # Input 0: The generation to start with
+	# # Input 1: The number of generations to increment by
+	# # Input 2: String - name of the plot
+	# # Input 3: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids)
+	# # Output: ggplot of the fitness over generations of the genetic algorithm, with a permutation distance metric for comparison
+	# def self.gg_plots(start, inc, filename, all_perms)
+	# 	orig = original_order
+	# 	myr = RinRuby.new(echo = false)
+	# 	myr.eval 'source("~/fragmented_genome_with_snps/score_plots/score_plots.R")'
+	# 	x, y, se, best_sc = [], [], [], []
+	# 	n = start
+	# 	all_perms.each do |pop|
+	# 		fitness, dev, sq, ham, mod, r, lcs, kt = [], [], [], [], [], [], [], []
+	# 		pop.each do |perm|
+	# 			fitness << (1.0 - perm[0].to_f) # the compliment proportion of the fitness value
+	# 			red_perm = perm[1..-1] # red_perm is just the permutaion, reduced in length by one to not have the fitness float
+	# 			dev << RearrangementScore::dev_dist(orig, red_perm)
+	# 			sq << RearrangementScore::sq_dev_dist(orig, red_perm)
+	# 			ham << RearrangementScore::gen_ham_dist(orig, red_perm)
+	# 			mod << RearrangementScore::mod_ham_dist(orig, red_perm)
+	# 			r << RearrangementScore::r_dist(orig, red_perm)
+	# 			lcs << RearrangementScore::lcs(orig, red_perm)
+	# 			kt << RearrangementScore::kendalls_tau(orig, red_perm)
+	# 		end
+	# 		pop_y = [fitness, dev, sq, ham, mod, r, lcs, kt]
+	# 		z = 1
+	# 		pop_y.each do |scores|
+	# 			y << scores.inject(:+) / scores.length.to_f
+	# 			x << n
+	# 			myr.assign 'scores', scores
+	# 			sem = myr.pull 'st_err(scores)'
+	# 			se << sem
+	# 			if z == 1
+	# 				best_sc << scores.sort[0] # The best fitness score, lowest is best
+	# 			else
+	# 				best_sc << scores[pop_y[0].index(pop_y[0].sort[0])] # The metric score of the same permutation that has best fitness
+	# 			end
+	# 			z+=1
+	# 		end
+	# 		n+=inc
+	# 	end
+	# 	group = ['comp_fit', 'dev', 'sq', 'ham', 'mod', 'r', 'lcs', 'kt'] * all_perms.length
+	# 	myr.assign 'x', x
+	# 	myr.assign 'y', y
+	# 	myr.assign 'se', se
+	# 	myr.assign 'group', group
+	# 	myr.assign 'best_sc', best_sc
+	# 	myr.assign 'dataset_run', "#{ARGV[0]}/#{ARGV[1]}"
+	# 	myr.assign 'filename', filename
+	# 	myr.eval 'plot_it(x, y, se, group, best_sc, dataset_run, filename)'
+	# 	myr.quit
+	# end
+
+
+
 
 	# Input 0: The generation to start with
 	# Input 1: The number of generations to increment by

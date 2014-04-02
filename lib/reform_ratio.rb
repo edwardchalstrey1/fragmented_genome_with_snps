@@ -8,7 +8,7 @@ class ReformRatio
 	# Input: Array of Bio::FastaFormat entries
 	# Output 0: Array of identifiers
 	# Output 1: Array of lengths (integers)
-	def self.fasta_id_n_lengths (fasta)
+	def self.fasta_id_n_lengths(fasta)
 		ids, lengths = [], []
 		fasta.each do |i|
 			ids << i.entry_id
@@ -22,7 +22,7 @@ class ReformRatio
 	# Output 1: Array of VCF pos field (positions of snps on fragments)
 	# Output 2: Hash with fragment id keys and the corresponding number of snps as an integer values
 	# Output 3: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
-	def self.get_snp_data (vcf_file)
+	def self.get_snp_data(vcf_file)
 		vcfs_chrom, vcfs_pos, vcfs_info = [], [], []
 		File.open(vcf_file, "r").each do |line| #get array of vcf lines, you can call a method on one line
 			next if line =~ /^#/
@@ -39,7 +39,7 @@ class ReformRatio
 
 	# Input: FASTA file
 	# Output: Array of Bio::FastaFormat entries
-	def self.fasta_array (fasta_file)
+	def self.fasta_array(fasta_file)
 		fasta = [] #we have the lengths of each fasta, but the frags are different to those of the vcf/hash(this only has the frags w snps)
 		Bio::FastaFormat.open(fasta_file).each do |i| #get array of fasta format frags, ##  WE NEED TO REORDER THE FASTA FRAGS HERE, TO TEST DIFFERENT ARRANGEMENTS
 			fasta << i
@@ -47,10 +47,20 @@ class ReformRatio
 		return fasta
 	end
 
+	# Input: FASTA file
+	# Output: Integer of the length of the genome
+	def self.genome_length(fasta_file)
+		lengths = []
+		fasta_array(fasta_file).each do |frag|
+			lengths << frag.length
+		end
+		return lengths.inject(:+)
+	end
+
 	# Input 0: Hash with fragment id keys and the corresponding number of snps as an integer values
 	# Input 1: Array of Bio::FastaFormat entries
 	# Output: Array of the number of snps per fragment, in the same order as the input 1 fasta array
-	def self.snps_per_fasta_frag (snps_per_vcf_frag_hash, fasta_array)
+	def self.snps_per_fasta_frag(snps_per_vcf_frag_hash, fasta_array)
 		snps_per_frag_fasta_order = [] #use the id to identify the number of snps for that frag using the keys of snps_hash
 		fasta_array.each do |frag|
 			snps_per_frag_fasta_order << snps_per_vcf_frag_hash[frag.entry_id] #gives 0 for keys that don't exist = good, because the frags with 0 density would otherwise be missing
@@ -65,7 +75,7 @@ class ReformRatio
 	# Input 4: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency, single key/value)
 	# Output 0: The snp positions for each frag, in an array of arrays (each sub array contains the snp positions for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
 	# Output 1: The info hashes (of each snp, single key/value) for each frag, in an array of arrays (each sub array contains the info hashes for one frag, and the sub arrays are ordered according to the order of the input 1 fasta)
-	def self.get_positions (fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info)
+	def self.get_positions(fasta, vcfs_chrom, vcfs_pos, snps_per_frag, vcfs_info)
 		pos, info = [], []
 		n = 0
 		fasta.each do |frag|
@@ -89,7 +99,7 @@ class ReformRatio
 	# Input 0: The snp positions for each frag, in an array of arrays (for a given fragment permutation)
 	# Input 1: Array of fragment lengths (integers) (for the same fragment permutation as Input 0)
 	# Output: Array of the snp positions in the genome (assuming the genome is ordered according to the fragment permutation in Input 0)
-	def self.total_pos (pos, fasta_lengths)  # both args in same order as fasta = good. this all works!
+	def self.total_pos(pos, fasta_lengths)  # both args in same order as fasta = good. this all works!
 		totals = []                    
 		x = 0						   
 		pos.each do |frag|
@@ -116,7 +126,7 @@ class ReformRatio
 	# Input 1: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
 	# Output 0: Array of all the heterozygous snp positions
 	# Output 1: Array of all the homozygous snp positions
-	def self.het_hom (actual_pos, vcfs_info) #actual_pos in same order as fasta perm. now so is info
+	def self.het_hom(actual_pos, vcfs_info) #actual_pos in same order as fasta perm. now so is info
 		het, hom = [], []
 		x = 0
 		actual_pos.each do |snp|

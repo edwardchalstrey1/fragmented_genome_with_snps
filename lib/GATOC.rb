@@ -271,7 +271,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:dataset => ARGV[0],
 			:run => ARGV[1],
 			:div => 100.0,
-			:genome_length => 2000.0
+			:genome_length => 2000.0,
+			:end => 0.999
 			}.merge!(parameters)
 		Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}")) # make the directory to put data files into
 
@@ -286,12 +287,13 @@ class GATOC # Genetic Algorithm To Order Contigs
 		gen_fits << pop_fits[-1][0]
 		save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], 0)
 
-		y, z = 1, 1
+		y, z, messages = 1, 1, [] # can check messages for errors
 		opts[:gen].times do
 
 			prev_best_fit = pop_fits[-1][0]
-			pop_n_msg = new_population(pop_fits, opts[:pop_size], opts[:mut_num], opts[:save], opts[:ran], opts[:select_num], leftover)
-			pop_fits, leftover, initial_pf = select(pop_n_msg[0], snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
+			pop, msg = new_population(pop_fits, opts[:pop_size], opts[:mut_num], opts[:save], opts[:ran], opts[:select_num], leftover)
+			messages << msg
+			pop_fits, leftover, initial_pf = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 			gen_fits << pop_fits[-1][0]
 			save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], y)
 
@@ -303,24 +305,20 @@ class GATOC # Genetic Algorithm To Order Contigs
 				puts "FITNESS IMPROVEMENT!\n \n"
 				z = 1
 			end
-
-			if z >= 10
-				best_msg = "Algorithm quit for lack of fitness improvement at generation #{y}/#{opts[:gen]}: #{pop_fits[-1][0]}"
-			elsif y == opts[:gen]
-				best_msg = "Algorithm quit as number of generations (#{y}/#{opts[:gen]}) complete: #{pop_fits[-1][0]}"
-			end
 				
 			fitness(pop_fits[-1][1], snp_data, y, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio density distribution for the best permutation in each generation
-			y+=1
 
-			if z >= 10 || y == opts[:gen]
+			if z >= 10 || y >= opts[:gen] || pop_fits[-1][0] >= opts[:end]
 				then break
 			end
+			y+=1
 			Signal.trap("PIPE", "EXIT")
 		end
-		puts best_msg
-		WriteIt::write_txt("#{:loc}/#{opts[:dataset]}/#{opts[:run]}/reformed_ratio_frag_order", 
-			[opts, pop_n_msg[1], best_msg, original_order_cor, pop_fits[-1][0],'###', 
-			ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]].flatten)
+		Dir.chdir(File.join(Dir.home, opts[:loc])) do
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/reformed_ratio_frag_order", 
+				[opts, "generation #{y}/#{opts[:gen]}: #{pop_fits[-1][0]}", pop_fits[-1][0],'###', 
+				ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]].flatten)
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/messages", messages)
+		end
 	end
 end

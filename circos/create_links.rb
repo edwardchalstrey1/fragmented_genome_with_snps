@@ -3,9 +3,8 @@ require '~/fragmented_genome_with_snps/lib/write_it'
 class CircosLinks
 
 	def self.original_order
-		original_order = []
-		IO.foreach("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/correct_permutation.txt") { |line| original_order << line.gsub(/\n/,'') }
-		original_order[1..-1]
+		original_fasta = ReformRatio::fasta_array("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/frags.fasta")
+		return ReformRatio::fasta_id_n_lengths(original_fasta)[0]
 	end
 
 	def self.best_perms(start, last, step)
