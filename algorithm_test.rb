@@ -58,5 +58,5 @@ else
 	## run3/4/8/9 ## ## run5/6 ## with different snps in comparable_ratio
 	GATOC::evolve(fasta_file, vcf_file, :gen => 10000000000, :pop_size => 100, :select_num => 50, :mut_num => 10,
 	 :save => 10, :ran => 5, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
-	 :div => div, :genome_length => genome_length, :end => average)
+	 :div => div, :genome_length => genome_length, :end => average, :gen_end => 10)
 end
