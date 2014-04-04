@@ -129,7 +129,10 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 6: Name of this run of the algorithm
 	# Input 7: Length of divisions of the genome to calculate the SNP frequency of
 	# Input 8: Length of the genome
-	# Output: A correlation value that is the fitness of the Input 0 permutation
+	# Output 0: A correlation value that is the fitness of the Input 0 permutation
+	# Output 1: List of homozygous SNPs for the permutation
+	# Output 2: Heterozygous list
+	# Output 3: List aof values representing the ratio distribution
 	def self.fitness(fasta, snp_data, gen, comparable_ratio, location, dataset, run, div, genome_length)
 		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
 		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) #get snp positions for each frag in array of arrays
@@ -141,7 +144,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		if Integer === gen # create figure of the hypothetical snp distribution over the genome, for each generation
 			SNPdist::plot_hyp(perm_ratio, location, "#{dataset}/#{run}", gen, genome_length)
 		end
-		return correlation
+		return correlation, hom_snps, het_snps, perm_ratio
 	end
 
 	# Input 0: Array of Bio::FastaFormat entries (or any array)
@@ -169,7 +172,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		puts "Pop is unique: #{pop.uniq.length == pop.length}"
 		fits = {}
 		pop.each do |fasta_array|
-			fitn = fitness(fasta_array, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)
+			fitn = fitness(fasta_array, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
 			fits[fasta_array] = fitn #maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
 		if fits.size < pop.size
@@ -177,7 +180,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			x = 0
 			diff.times do
 				extra_rand = pop[0].shuffle
-				fits[extra_rand] = fitness(extra_rand, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)
+				fits[extra_rand] = fitness(extra_rand, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
 				x+=1
 			end
 			puts "#{x} extra random permutations added, due to multiples of the same permutation in the population"
@@ -290,12 +293,15 @@ class GATOC # Genetic Algorithm To Order Contigs
 		pop = initial_population(fasta, opts[:pop_size])
 
 		pop_fits, leftover, initial_pf = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
-		fitness(pop_fits[-1][1], snp_data, 0, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio density distribution for the best permutation in each generation
+		fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, 0, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio density distribution for the best permutation in each generation
+		WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hm", hm)
+		WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_ht", ht)
+		WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hyp", hyp)
 		puts "Gen0 \n Best correlation = #{pop_fits[-1][0]}\n \n"
 		gen_fits << pop_fits[-1][0]
 		save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], 0)
 
-		y, z, messages = 1, 1, [] # can check messages for errors
+		gen, z, messages = 1, 1, [] # can check messages for errors
 		opts[:gen].times do
 
 			prev_best_fit = pop_fits[-1][0]
@@ -303,9 +309,9 @@ class GATOC # Genetic Algorithm To Order Contigs
 			messages << msg
 			pop_fits, leftover, initial_pf = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 			gen_fits << pop_fits[-1][0]
-			save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], y)
+			save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen)
 
-			puts "Gen#{y}\n Best correlation = #{pop_fits[-1][0]}"
+			puts "Gen#{gen}\n Best correlation = #{pop_fits[-1][0]}"
 			if pop_fits[-1][0] <= prev_best_fit
 				puts "No fitness improvement\n \n" # If this is not called, this implies there has been some improvement
 				z+=1
@@ -314,17 +320,20 @@ class GATOC # Genetic Algorithm To Order Contigs
 				z = 1
 			end
 				
-			fitness(pop_fits[-1][1], snp_data, y, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio density distribution for the best permutation in each generation
+			fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, gen, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio densitgen distribution for the best permutation in each generation
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hm", hm)
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_ht", ht)
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hyp", hyp)
 
-			if z >= opts[:gen_end] || y >= opts[:gen] || pop_fits[-1][0] >= opts[:end]
+			if z >= opts[:gen_end] || gen >= opts[:gen] || pop_fits[-1][0] >= opts[:end]
 				then break
 			end
-			y+=1
+			gen+=1
 			Signal.trap("PIPE", "EXIT")
 		end
 		Dir.chdir(File.join(Dir.home, opts[:loc])) do
 			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/reformed_ratio_frag_order", 
-				[opts, "generation #{y}/#{opts[:gen]}: #{pop_fits[-1][0]}", pop_fits[-1][0],'###', 
+				[opts, "generation #{gen}/#{opts[:gen]}: #{pop_fits[-1][0]}", pop_fits[-1][0],'###', 
 				ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]].flatten)
 			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/messages", messages)
 		end
