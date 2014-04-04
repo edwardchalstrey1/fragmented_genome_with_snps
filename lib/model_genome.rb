@@ -18,7 +18,7 @@ class ModelGenome
 		hm = myr.pull 'hm'
 		ht = myr.pull 'ht'
 		myr.quit
-		return hm.uniq.map(&:abs).map(&:to_i), ht.uniq.map(&:abs).map(&:to_i)# a few SNPs may be removed but doesn't affect distribution much, AND the R code string
+		return hm.map(&:abs).map(&:to_i).uniq, ht.map(&:abs).map(&:to_i).uniq # a few SNPs may be removed but doesn't affect distribution much
 	end
 
 	# Input: FASTA file
@@ -28,7 +28,7 @@ class ModelGenome
 		x = 1
 		Bio::FastaFormat.open(fasta).each do |i|
 			fasta_array << i.seq
-			puts "f #{(x/fasta.length)*100}%"
+			# puts "f #{(x/fasta.length)*100}%"
 			x+=1
 		end
 		return fasta_array[0].split(//)
@@ -45,7 +45,6 @@ class ModelGenome
 			frag = seq[rt..(rt + frag_length)]
 			frags << frag
 			rt = rt + frag_length
-			puts "frag#{x}"
 			x+=1
 		end
 		frags = frags[0..-2]
