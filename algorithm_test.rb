@@ -44,9 +44,9 @@ else
 	## Average fitness of correctly ordered contigs ##
 	average_fitness_correct = []
 	10.times do
-		average_fitness_correct << GATOC::fitness(correct_fasta, snp_data, 'x', comparable_ratio, 'loc', 'dataset', 'run', div, genome_length)
+		average_fitness_correct << GATOC::fitness(correct_fasta, snp_data, 'x', comparable_ratio, 'loc', 'dataset', 'run', div, genome_length)[0]
 	end
-	average = average_fitness_correct.inject(:+)/10.0
+	average = (average_fitness_correct.inject(:+))/10.0
 	WriteIt::write_txt("arabidopsis_datasets/#{ARGV[0]}/average_fitness_correct", [average])
 
 	## small_dataset2 ##

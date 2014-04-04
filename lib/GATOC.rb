@@ -294,9 +294,11 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 		pop_fits, leftover, initial_pf = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 		fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, 0, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio density distribution for the best permutation in each generation
-		WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hm", hm)
-		WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_ht", ht)
-		WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hyp", hyp)
+		Dir.chdir(File.join(Dir.home, opts[:loc])) do
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hm", hm)
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_ht", ht)
+			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hyp", hyp)
+		end
 		puts "Gen0 \n Best correlation = #{pop_fits[-1][0]}\n \n"
 		gen_fits << pop_fits[-1][0]
 		save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], 0)
@@ -321,9 +323,11 @@ class GATOC # Genetic Algorithm To Order Contigs
 			end
 				
 			fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, gen, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio densitgen distribution for the best permutation in each generation
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hm", hm)
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_ht", ht)
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hyp", hyp)
+			Dir.chdir(File.join(Dir.home, opts[:loc])) do
+				WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hm", hm)
+				WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_ht", ht)
+				WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hyp", hyp)
+			end
 
 			if z >= opts[:gen_end] || gen >= opts[:gen] || pop_fits[-1][0] >= opts[:end]
 				then break
