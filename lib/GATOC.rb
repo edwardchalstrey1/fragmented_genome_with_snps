@@ -153,8 +153,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	def self.initial_population(fasta, size)
 		population = []
 		size.times do
-			chromosome = fasta.shuffle
-			population << chromosome
+			population << [fasta.shuffle, 'random']
 		end
 		return population
 	end
@@ -168,26 +167,32 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 0: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 	# Output 1: Integer of leftover permutations, to be taken from the multiplied selected population
 	# Output 2: Pre-selected version of output 0
+	# Output 3: Array of strings, each string represents the method used to create a permutation followed by fitness score, and the array is ordered the same as output 2
 	def self.select(pop, snp_data, num, ratio, div, genome_length)
 		puts "Pop is unique: #{pop.uniq.length == pop.length}"
 		fits = {}
-		pop.each do |fasta_array|
+		pop.each do |fasta_array, type|
 			fitn = fitness(fasta_array, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
-			fits[fasta_array] = fitn #maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
+			fits[fasta_array] = [fitn, type] # maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
 		if fits.size < pop.size
 			diff = pop.size - fits.size
 			x = 0
 			diff.times do
-				extra_rand = pop[0].shuffle
-				fits[extra_rand] = fitness(extra_rand, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
+				extra_rand = pop[0][0].shuffle
+				fitn = fitness(extra_rand, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
+				fits[extra_rand] = [fitn, 'extra_rand']
 				x+=1
 			end
 			puts "#{x} extra random permutations added, due to multiples of the same permutation in the population"
 		end
-		fits = fits.sort_by {|k,v| v}
+		fits = fits.sort_by {|k,v| v[0]}
+		types = []
+		fits.each {|k,v| types << v.reverse} # adding the types with fitness to a new array
+		x = 0
+		fits.each {|k,v| fits[x][1] = v[0]; x+=1} # getting rid of the types
 		pop_fits = []
-		fits.each {|i| pop_fits << i.reverse} # swapping the "key/values" around
+		fits.each {|i| pop_fits << i.reverse} # swapping the permutation/fitness score around
 		initial_pf = pop_fits
 		sliced = pop_fits.reverse.each_slice(num).to_a
 		pop_fits = sliced[0].reverse
@@ -196,7 +201,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		else 
 			leftover = 0
 		end
-		return pop_fits, leftover, initial_pf
+		return pop_fits, leftover, initial_pf, types.flatten # flatten types to get type then fitness alternate
 	end
 
 	# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
@@ -216,14 +221,14 @@ class GATOC # Genetic Algorithm To Order Contigs
 		end
 		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
 		pop = []
-		pop_save.each{|i| pop << i[1]} # adding the permutations only, not the fitness score
+		pop_save.each{|i| pop << [i[1], 'saved']} # adding the permutations only, not the fitness score
 		for i in pop_fits[(mut_num*2)+save+ran..-1]
 			x = rand(size-1)
-			pop << recombine(i[1], pop_fits[x][1])
+			pop << [recombine(i[1], pop_fits[x][1]), 'recombined']
 		end
-		mut_num.times{pop << mutate(pop_fits[rand(pop_fits.length)][1])} # mutating randomly selected permutations from pop_fits
-		mut_num.times{pop << mini_mutate(pop_fits[-1][1])} # mini_mutating the best permutations
-		ran.times{pop << pop_fits[0][1].shuffle}
+		mut_num.times{pop << [mutate(pop_fits[rand(pop_fits.length)][1]), 'mutant']} # mutating randomly selected permutations from pop_fits
+		mut_num.times{pop << [mini_mutate(pop_fits[-1][1]), 'mini_mutant']} # mini_mutating the best permutations
+		ran.times{pop << [pop_fits[0][1].shuffle, 'random']}
 		new_pop_msg = "Population size = #{pop.size}, with #{size - ((mut_num * 2) + save + ran)} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
 		return pop, new_pop_msg
 	end
@@ -292,12 +297,14 @@ class GATOC # Genetic Algorithm To Order Contigs
 		fasta = ReformRatio::fasta_array(fasta_file) #array of fasta format fragments
 		pop = initial_population(fasta, opts[:pop_size])
 
-		pop_fits, leftover, initial_pf = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
+		pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 		fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, 0, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio density distribution for the best permutation in each generation
-		Dir.chdir(File.join(Dir.home, opts[:loc])) do
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hm", hm)
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_ht", ht)
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_0_hyp", hyp)
+		Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen0_lists"))
+		Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen0_lists")) do
+			WriteIt::write_txt("gen_0_hm", hm)
+			WriteIt::write_txt("gen_0_ht", ht)
+			WriteIt::write_txt("gen_0_hyp", hyp)
+			WriteIt::write_txt("gen_0_types", types)
 		end
 		puts "Gen0 \n Best correlation = #{pop_fits[-1][0]}\n \n"
 		gen_fits << pop_fits[-1][0]
@@ -309,7 +316,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			prev_best_fit = pop_fits[-1][0]
 			pop, msg = new_population(pop_fits, opts[:pop_size], opts[:mut_num], opts[:save], opts[:ran], opts[:select_num], leftover)
 			messages << msg
-			pop_fits, leftover, initial_pf = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
+			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 			gen_fits << pop_fits[-1][0]
 			save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen)
 
@@ -323,10 +330,12 @@ class GATOC # Genetic Algorithm To Order Contigs
 			end
 				
 			fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, gen, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio densitgen distribution for the best permutation in each generation
-			Dir.chdir(File.join(Dir.home, opts[:loc])) do
-				WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hm", hm)
-				WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_ht", ht)
-				WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/gen_#{gen}_hyp", hyp)
+			Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
+			Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists")) do
+				WriteIt::write_txt("gen_#{gen}_hm", hm)
+				WriteIt::write_txt("gen_#{gen}_ht", ht)
+				WriteIt::write_txt("gen_#{gen}_hyp", hyp)
+				WriteIt::write_txt("gen_#{gen}_types", types)
 			end
 
 			if z >= opts[:gen_end] || gen >= opts[:gen] || pop_fits[-1][0] >= opts[:end]

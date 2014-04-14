@@ -53,7 +53,7 @@ class SNPdist
 			end
 			x+=1
 		end
-		return hyp
+		return hyp # These don't need to be unique or integers like the real SNPs, since they are just representing a distribution
 	end
 
 	# Input 0: A list of "hypothetical" SNP positions which represents the distribution of homozygous/heterozygous SNP density ratio

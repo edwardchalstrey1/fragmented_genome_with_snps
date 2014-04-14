@@ -18,8 +18,8 @@ else
 	div = 100.0
 	genome_length = ReformRatio::genome_length(fasta_file)
 	# genome_length = 2000.0 # 18585056.0
-	hm = WriteIt::file_to_array("#{Dir.home}/#{location}/#{ARGV[0]}/hm_snps.txt") # we can use the SNPs from the model genome to make example ratio
-	ht = WriteIt::file_to_array("#{Dir.home}/#{location}/#{ARGV[0]}/ht_snps.txt")
+	hm = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{ARGV[0]}/hm_snps.txt") # we can use the SNPs from the model genome to make example ratio
+	ht = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{ARGV[0]}/ht_snps.txt")
 	# hm, ht = ModelGenome::get_snps('hm <- rnorm(50, 1000, 100)', 'ht <- runif(50, 1, 2000)')
 	fratio_breaks = SNPdist::fratio(hm, ht, div, genome_length) # frequency ratio array # 10,000 for 10K dataset
 	comparable_ratio = SNPdist::hyp_snps(fratio_breaks, div, genome_length) # hypothetical snp positions array

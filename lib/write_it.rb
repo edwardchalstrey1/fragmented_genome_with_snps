@@ -29,6 +29,12 @@ class WriteIt
 
 	def self.file_to_array(file)
 		array = []
+		IO.foreach(file) { |line| array << line.gsub(/\n/,'') }
+		array
+	end
+
+	def self.file_to_ints_array(file)
+		array = []
 		IO.foreach(file) { |line| array << line.gsub(/\n/,'').to_i }
 		array
 	end
