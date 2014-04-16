@@ -67,6 +67,18 @@ class ReproductionMethods
 		gen_0_groups = ['rand']		
 		groups = ['recomb', 'mut', 'minmut', 'rand', 'save'] * (gen_num.to_i - 1)
 		groups = [gen_0_groups, groups].flatten
+
+		myr = RinRuby.new(echo = false)
+		myr.eval 'source("~/fragmented_genome_with_snps/score_plots/reproduction_methods.R")'
+		myr.assign 'x_gen', x_gen
+		myr.assign 'y_fits', y_fits
+		myr.assign 'se', st_errs
+		myr.assign 'groups', groups
+		myr.assign 'location', "#{location}/#{dataset}/#{run}/"
+		myr.assign 'filename', "reproduction_plot#{gen_num.to_i - 1}"
+		myr.eval 'reproduction_plot(x_gen, y_fits, se, groups, location, filename)'
+		myr.quit
+		
 		return type_n_fits, y_fits, x_gen, groups, st_errs
 	end
 end
@@ -75,11 +87,11 @@ type_n_fits, y_fits, x_gen, groups, st_errs = ReproductionMethods::get_generatio
 
 puts type_n_fits.length # should be 22
 puts
-puts y_fits.length
+puts y_fits
 puts
-puts x_gen.length
+puts x_gen
 puts
-puts groups.length
+puts groups
 puts
-puts st_errs.length
+puts st_errs
 
