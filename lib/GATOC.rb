@@ -1,9 +1,5 @@
 #encoding: utf-8
 class GATOC # Genetic Algorithm To Order Contigs
-
-	require 'rubygems'
-	require 'bio-samtools'
-	require 'bio'
 	require 'rinruby'
 	require_relative 'snp_dist'
 	require_relative 'write_it'

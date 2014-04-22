@@ -1,8 +1,5 @@
 #encoding: utf-8
 class ReformRatio
-
-	require 'rubygems'
-	require 'bio-samtools'
 	require 'bio'
 
 	# Input: Array of Bio::FastaFormat entries
