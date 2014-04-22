@@ -25,6 +25,9 @@ puts "Small genome     length: #{small_genome.length} bases"
 puts "Fragmented seq   length: #{frags.join.length} = close enough? You decide."
 puts "You have created #{frags.length} fragments of sizes #{contig_size}-#{contig_size*2}"
 
+
+
+
 # Get the positions of the SNPs on fragments
 pos_on_frags, snp_pos_all = ModelGenome::pos_each_frag(snp_pos, frags)
 
