@@ -1,8 +1,4 @@
 #encoding: utf-8
-require 'rubygems'
-require 'bio-samtools'
-require 'bio'
-require 'rinruby'
 require '~/fragmented_genome_with_snps/lib/reform_ratio'
 require 'test/unit'
 

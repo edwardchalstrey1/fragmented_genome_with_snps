@@ -1,8 +1,4 @@
 #encoding: utf-8
-# require 'rubygems'
-# require 'bio-samtools'
-# require 'bio'
-# require 'rinruby'
 require '~/fragmented_genome_with_snps/lib/reform_ratio'
 require '~/fragmented_genome_with_snps/lib/GATOC'
 require '~/fragmented_genome_with_snps/lib/snp_dist'
@@ -35,7 +31,7 @@ class TestGATOC < Test::Unit::TestCase
 
 	def test_recombination
 		parent1 = TEST_ARRAY 
-		parent2 = parent1.reverse
+		parent2 = parent1.shuffle
 		child = GATOC::recombine(parent1, parent2)
 
 		parent3 = TEST_ARRAY[0..-2] #19
@@ -110,12 +106,13 @@ class TestGATOC < Test::Unit::TestCase
 		assert_kind_of(String, new_pop[1])
 		assert_kind_of(Array, new_pop[0])
 		x = 0
-		new_pop[0].each do |permutation|
+		new_pop[0].each do |permutation, type|
 			assert_kind_of(Array, permutation, "permutation at element #{x} of population not array")
 			assert_equal(53, permutation.length, "permutation at element #{x} of population not correct number of frags")
+			assert_kind_of(String, type, 'type not a string')
 			x+=1
 		end
-		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0])
+		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0][0])
 		assert_equal(new_pop.uniq.length, new_pop.length)
 	end
 end

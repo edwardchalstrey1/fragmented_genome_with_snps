@@ -1,7 +1,7 @@
 #encoding: utf-8
 class ReformRatio
 	require 'bio'
-
+	require 'bio-samtools'
 	# Input: Array of Bio::FastaFormat entries
 	# Output 0: Array of identifiers
 	# Output 1: Array of lengths (integers)

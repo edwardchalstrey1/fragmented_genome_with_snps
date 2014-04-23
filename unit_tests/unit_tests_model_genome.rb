@@ -1,8 +1,4 @@
 #encoding: utf-8
-require 'rubygems'
-require 'rinruby'
-require 'bio-samtools'
-require 'bio'
 require '~/fragmented_genome_with_snps/lib/model_genome'
 require 'test/unit'
 
