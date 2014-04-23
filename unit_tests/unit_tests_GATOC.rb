@@ -38,7 +38,7 @@ class TestGATOC < Test::Unit::TestCase
 		parent4 = parent3.shuffle
 		child2 = GATOC::recombine(parent3, parent4)
 
-		fasta_array = ReformRatio::fasta_array('test/frags_shuffled.fasta').shuffle
+		fasta_array = ReformRatio::fasta_array('unit_tests/test/frags_shuffled.fasta').shuffle
 		p2_fasta = fasta_array.shuffle
 		child3 = GATOC::recombine(fasta_array, p2_fasta)
 		
