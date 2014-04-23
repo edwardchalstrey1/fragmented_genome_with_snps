@@ -27,13 +27,15 @@ Re-ordering the Genome
 
 I am currently attempting to use a **genetic algorithm** to rearrange the fragments, by reforming the homozygous/heterozygous SNP ratio distribution. The algorithm I am creating will eventually be capable of determining the location of the causative mutation, in a genome from the experiment detailed above. The algorithm will take a FASTA file of all the unordered genome fragments, and a VCF file containing the SNP positions for each fragment. Currently, the algorithms below can only be used for my model data, based on Arabidopsis c4 (see above).
 
-1. To run it: **ruby [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb) ARGV[0] = dataset name ARGV[1] = run **, where the dataset name is the same as the one used to create the model genome, and the run is the name of the directory to save performance figures to.
+1. To run it: **ruby [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb) ARGV[0] = dataset name ARGV[1] = run**, where the dataset name is the same as the one used to create the model genome, and the run is the name of the directory to save performance figures to.
 
 1. The [ReformRatio class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb) contains methods involved in interpreting data from FASTA and VCF files, so they can be used in the genetic algorithm.
 
 2. The [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) (Genetic Agorithm To Order Contigs) contains all the genetic algorithm methods. See below for genetic algorithm description.
 
-3. [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/comparable_ratio.R) is used within the fitness method of my genetic algorithm. It compares the homozygous/heterozygous SNP distribution of the rearranged fragments, to the same distributions used when creating the model genome, using a qq plot. The Pearson correlation coefficient (r) for the Q-Q plot is obtained, between 0 and 1. The closer the value is to 1, the more likely it is that the correct fragment arrangement has been found.
+3. The qq_cor method in [SNPdist](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/snp_dist.rb) is used within the fitness method of my genetic algorithm. It compares the homozygous/heterozygous SNP distribution of the rearranged fragments, to the same distributions used when creating the model genome, using a qq plot. The Pearson correlation coefficient (r) for the Q-Q plot is obtained, between 0 and 1. The closer the value is to 1, the more likely it is that the correct fragment arrangement has been found.
+
+4. [SNPdist](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/snp_dist.rb) also has methods for approximating the SNP ratio distribution for a given contig permutation, and methods for plotting the distribution (as does [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/comparable_ratio.R)).
 
 Genetic Algorithm
 -------
@@ -58,7 +60,7 @@ One permutation is taken as input (the permutation to be mutated). It is split i
 
 Genetic algorithms require a fitness method, in order to tell how close each solution comes to solving the given problem. With a permutation problem, the fitness method should score the permutation based on how correct the ordering of elements is. In my algorithm, I want to identify a mutation based on the ratio of homozygous to heterozygous SNP distributions in a genome. I will therefore use the ratio as a way of telling how close a given fragment permutation is to the correct order. My algorithm does this by working out where the SNP positions are in the genome, assuming the fragments are ordered in the way of a given permutation (the position of SNPs on each fragment are known). The idea here, is that the more correct the arrangement of fragments, the closer the ratio distribution will be to the expected distribution.
 
-To calculate how similar the reformed SNP ratio (from a given fragment permutation) is to the expected ratio, a Q-Q plot is used. A Q-Q plot is a graphical method for comparing two probability distributions by plotting their quantiles against each other. By plotting the reformed distribution against the expected distribution, a correleation value is obtained (see Re-ordering the genome: [comparable_ratio.R](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/comparable_ratio.R) above). This is the value returned by the fitness method.
+To calculate how similar the reformed SNP ratio (from a given fragment permutation) is to the expected ratio, a Q-Q plot is used. A Q-Q plot is a graphical method for comparing two probability distributions by plotting their quantiles against each other. By plotting the reformed distribution against the expected distribution, a correleation value is obtained. This is the value returned by the fitness method.
 
 ### Evolving the Population
 
@@ -74,7 +76,7 @@ Using the R library pracma, the findpeaks function can be used to identify the p
 Assesing the Genetic Algorithm's performance
 ---------------------------------------
 
-To determine how close each permutation outputted by the genetic algorithm is to being correct, I use a number of [distance metrics](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/Comparing%20Permutations/comparing_permutations.md). To generate figures of how the algorithm performs over generations with regard to fitness and these metrics run: **ruby [ga_performance.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/ga_performance.rb) ARGV[0] = dataset name ARGV[1] = run **, where the dataset name is the same as the one used to create the model genome, and the run is the run of the algorithm you wish to generate the figures for.
+To determine how close each permutation outputted by the genetic algorithm is to being correct, I use a number of [distance metrics](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/Comparing%20Permutations/comparing_permutations.md). To generate figures of how the algorithm performs over generations with regard to fitness and these metrics run: **ruby [ga_performance.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/normal/ga_performance.rb) ARGV[0] = dataset name ARGV[1] = run**, where the dataset name is the same as the one used to create the model genome, and the run is the run of the algorithm you wish to generate the figures for.
 
 Project Background Information
 ------------
