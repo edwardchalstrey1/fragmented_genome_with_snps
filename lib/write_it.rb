@@ -27,12 +27,16 @@ class WriteIt
 		true
 	end
 
+	# Input: file location
+	# Output: array with each line of the file as an entry
 	def self.file_to_array(file)
 		array = []
 		IO.foreach(file) { |line| array << line.gsub(/\n/,'') }
 		array
 	end
 
+	# Input: file location (file must have integers on each line)
+	# Output: array with each line of the file as an entry, converted to integer
 	def self.file_to_ints_array(file)
 		array = []
 		IO.foreach(file) { |line| array << line.gsub(/\n/,'').to_i }
