@@ -1,120 +1,9 @@
 #encoding: utf-8
 class GATOC # Genetic Algorithm To Order Contigs
-	require 'rinruby'
 	require_relative 'snp_dist'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
-
-	# Input: Array
-	# Output: A random integer that the length of the Input 0 array can be divided by to get another integer (the randomly chosen size of chunks that permutations will be split into, in the recombine/mutate methods)
-	def self.division(frags) #number of frags must be > 10
-		x = 1.5
-		until frags.length/x == (frags.length/x).to_i && x <= frags.length
-			x = (frags.length/10).to_f + rand(frags.length).to_f
-		end
-		return x
-	end
-
-	# Input 0: A parent permutation array of Bio::FastaFormat entries (or any array of unique objects)
-	# Input 1: A second parent permutation array of Bio::FastaFormat entries (or any array of the same unique objects as input 0)
-	# Output: A child permutation array of Bio::FastaFormat entries, whose order is a recombination of the parent permutations (the same unique objects ordered differently to either input)
-	def self.recombine(a_parent, b_parent)
-		kid = []
-		1.times do # so we can use redo
-			x = division(a_parent)
-			if x == a_parent.length && WriteIt::prime?(x) == false # If a dataset with a non-prime number of fragments comes up with x == fragment length, redo
-				redo
-			elsif x == a_parent.length # to compensate for datasets with a prime number of fragments:
-				ig = rand(a_parent.length)-1 # choose a random element of the fasta array to ignore # we can add the frag at this element back at its original position after recombination
-				a_parent_reduced = a_parent.dup
-				b_parent_reduced = b_parent.dup
-				a_parent_reduced.delete_at(ig)
-				b_parent_reduced.delete_at(ig)
-				x = division(a_parent_reduced)
-				a_parent_sliced = a_parent_reduced.each_slice(x).to_a
-				b_parent_sliced = b_parent_reduced.each_slice(x).to_a
-			else
-				a_parent_sliced = a_parent.each_slice(x).to_a
-				b_parent_sliced = b_parent.each_slice(x).to_a
-			end
-			chosen = rand(b_parent_sliced.length)-1 # choose one of the chunks of fragments to keep from b_parent
-			child = a_parent_sliced.flatten.dup
-			y = 0
-			pos_array = []
-			a_parent_sliced[chosen].each do |frag| # place each frag in the equivalent a_parent chunk into the position it's corresponding frag (from b_parent) occupies in a_parent
-				chunk_frag = b_parent_sliced[chosen][y] # the equivalent frag in the chosen b_parent chunk
-				pos = a_parent_sliced.flatten.index(chunk_frag) # the position of the b_parent chunk frag in a_parent
-				c_pos = a_parent_sliced.flatten.index(frag) # the position of the frag in a_parent
-				pos_array << pos
-				y+=1
-			end
-			if pos_array.include?(nil)
-				redo
-			else
-				y = 0
-				pos_array.each do |pos|
-					unless b_parent_sliced[chosen].include?(a_parent_sliced[chosen][y])
-						child[pos] = a_parent_sliced[chosen][y]
-						child[a_parent_sliced.flatten.index(a_parent_sliced[chosen][y])] = b_parent_sliced[chosen][y] # swapping the positions of the frag and chunk frag, to give their positions in child
-					end
-					y+=1
-				end
-			end
-			if ig != nil
-				if b_parent_sliced[chosen].include?(b_parent[ig]) # add the ignored fragment from b_parent if it's in the chosen chunk...
-					child.insert(ig, b_parent[ig])
-				else
-					child.insert(ig, a_parent[ig]) # ...otherwise add the ignored fragment from a_parent
-				end
-			end
-			if child != child.uniq
-				redo
-			end
-			kid << child #so we can access this outside the loop
-		end
-		return kid[0]
-	end
-
-	# Input: A permutation array of Bio::FastaFormat entries (or any array)
-	# Output: The input permutation array of Bio::FastaFormat entries, with a small change in the fragment order
-	def self.mutate(fasta)
-		mutant = []
-		1.times do
-			x = 0
-			until x > 2
-				x = division(fasta)
-			end
-			sliced = fasta.each_slice(x).to_a
-			e = rand(sliced.length-1).to_i
-			sliced[e] = sliced[e].shuffle
-			if sliced.flatten == fasta
-				redo
-			end
-			mutant << sliced.flatten
-		end
-		return mutant[0]
-	end
-
-	# Input: A permutation array of Bio::FastaFormat entries (or any array)
-	# Output: The input permutation array of Bio::FastaFormat entries, with a small change in the fragment order
-	def self.mini_mutate(fasta)
-		a = b = 0
-		until a != b
-			a = fasta[rand(fasta.length-1)]
-			b = fasta[rand(fasta.length-1)]
-		end
-		mutant = []
-		fasta.each do |i|
-			if i == a
-				mutant << b
-			elsif i == b
-				mutant << a
-			else
-				mutant << i
-			end
-		end
-		return mutant
-	end
+	require 'pmeth'
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
 	# Input 1: Array of all the outputs from get_snp_data method
@@ -202,7 +91,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 	# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 	# Input 1: Integer of the desired population size
-	# Input 2: Integer of the desired number of mutant permutations in the new population (this number of mutate and mini_mutate methods)
+	# Input 2: Integer of the desired number of mutant permutations in the new population (this number of chunk_mutate and swap_mutate methods)
 	# Input 3: Integer of the desired number of the best permutations from the previous population, to be included in the new one
 	# Input 4: Integer of the desired number of randomly shuffled permutations in a new population
 	# Input 5: Integer of the number of permutations selected by the select method
@@ -220,10 +109,10 @@ class GATOC # Genetic Algorithm To Order Contigs
 		pop_save.each{|i| pop << [i[1], 'saved']} # adding the permutations only, not the fitness score
 		for i in pop_fits[(mut_num*2)+save+ran..-1]
 			x = rand(size-1)
-			pop << [recombine(i[1], pop_fits[x][1]), 'recombined']
+			pop << [PMeth.recombine(i[1], pop_fits[x][1]), 'recombined']
 		end
-		mut_num.times{pop << [mutate(pop_fits[rand(pop_fits.length)][1]), 'mutant']} # mutating randomly selected permutations from pop_fits
-		mut_num.times{pop << [mini_mutate(pop_fits[-1][1]), 'mini_mutant']} # mini_mutating the best permutations
+		mut_num.times{pop << [PMeth.chunk_mutate(pop_fits[rand(pop_fits.length)][1]), 'mutant']} # mutating randomly selected permutations from pop_fits
+		mut_num.times{pop << [PMeth.swap_mutate(pop_fits[-1][1]), 'mini_mutant']} # mini_mutating the best permutations
 		ran.times{pop << [pop_fits[0][1].shuffle, 'random']}
 		new_pop_msg = "Population size = #{pop.size}, with #{size - ((mut_num * 2) + save + ran)} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
 		return pop, new_pop_msg
@@ -255,7 +144,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 2: parameters:
 	# 	gen: Integer of desired number of generations - the number of times a new population is created from an old one
 	# 	pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
-	# 	mut_num: Integer of the desired number of mutant permutations in each new population (this number of mutate and mini_mutate methods)
+	# 	mut_num: Integer of the desired number of mutant permutations in each new population (this number of chunk_mutate and swap_mutate methods)
 	# 	save: Integer of the desired number of the best permutations from each population, to be included in the next one
 	# 	ran: Integer of the desired number of randomly shuffled permutations in each new population
 	#   loc: Location to save output files to
@@ -286,7 +175,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:end => 0.999,
 			:gen_end => 10
 			}.merge!(parameters)
-		Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}")) # make the directory to put data files into
+		# Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}")) # make the directory to put data files into
 
 		gen_fits = [] # array of the best fitness in each generation
 		snp_data = ReformRatio::get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
