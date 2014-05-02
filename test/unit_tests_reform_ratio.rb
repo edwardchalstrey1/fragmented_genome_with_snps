@@ -51,7 +51,7 @@ class TestReform < Test::Unit::TestCase
 	end
 
 	def test_fasta_array
-		fasta_array = ReformRatio::fasta_array('unit_tests/test/dummy.fasta')
+		fasta_array = ReformRatio::fasta_array('test/test/dummy.fasta')
 		assert_equal('frag1', fasta_array[0].entry_id)
 		assert_equal('AAAAAAAA', fasta_array[1].seq)
 		assert_equal(8, fasta_array[2].length)
@@ -63,7 +63,7 @@ class TestReform < Test::Unit::TestCase
 		num_snps_frag_hash = {'frag1'=>2, 'frag2'=>1, 'frag3'=>1}
 		vcfs_info = [{'AF'=>'1.0','NS'=>'5'}, {'AF'=>'1.0'}, {'AF'=>'0.5'}, {'AF'=>'1.0'}]
 		snp_data = [vcfs_chrom, vcfs_pos, num_snps_frag_hash, vcfs_info]
-		assert_equal(snp_data, ReformRatio::get_snp_data('unit_tests/test/dummy.vcf'))
+		assert_equal(snp_data, ReformRatio::get_snp_data('test/test/dummy.vcf'))
 	end
 
 	def test_het_hom
