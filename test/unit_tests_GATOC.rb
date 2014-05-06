@@ -20,57 +20,6 @@ class TestGATOC < Test::Unit::TestCase
 	pop = GATOC::initial_population(Fasta_array, 10)
 	Selected = GATOC::select(pop, Snp_data, 5, Hyp, Div, Genome_length)
 
-	def test_division
-		a = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-		b = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
-		ax = GATOC::division(a)
-		bx = GATOC::division(a)
-		assert(ax==2||ax==1||ax==4||ax==5||ax==10||bx==20) 
-		assert(bx==9||bx=6||bx==3||bx==2||bx==1||bx==19)
-	end
-
-	def test_recombination
-		parent1 = TEST_ARRAY 
-		parent2 = parent1.shuffle
-		child = GATOC::recombine(parent1, parent2)
-
-		parent3 = TEST_ARRAY[0..-2] #19
-		parent4 = parent3.shuffle
-		child2 = GATOC::recombine(parent3, parent4)
-
-		fasta_array = ReformRatio::fasta_array('test/test/frags_shuffled.fasta').shuffle
-		p2_fasta = fasta_array.shuffle
-		child3 = GATOC::recombine(fasta_array, p2_fasta)
-		
-		assert(child.uniq == child, 'Child of p1/2 not unique')
-		assert(child != parent1, 'Child same as parent1')
-		assert(child != parent2, 'Child same as parent2')
-		assert(child.sort == parent1.sort, 'Child not a permutation')
-
-		assert(child2.uniq == child2, 'Child of p3/4 not unique')
-		assert(child2 != parent3, 'Child same as parent3')
-		assert(child2 != parent4, 'Child same as parent4')
-		assert(child2.sort == parent3.sort, 'Child not a permutation')
-
-		assert(child3.uniq == child3, 'Child of fasta not unique')
-		assert(child3 != fasta_array, 'Child same as fasta')
-		assert(child3 != p2_fasta, 'Child same as fasta2')
-	end
-
-	def test_mutate
-		mutant = GATOC::mutate(TEST_ARRAY)
-		assert(mutant.uniq == mutant)
-		assert(mutant != TEST_ARRAY, 'Mutant was the same as parent')
-		assert_kind_of(Array, mutant, 'Mutant not an array!')	
-	end
-
-	def test_mini_mutate
-		mini_mutant = GATOC::mini_mutate(TEST_ARRAY)
-		assert(mini_mutant.uniq == mini_mutant)
-		assert(mini_mutant != TEST_ARRAY, "mini_mutant same as non-mutant")
-		assert_kind_of(Array, mini_mutant)
-	end
-
 	def test_fitness
 		fit, hm, ht, hyp = GATOC::fitness(Fasta_array, Snp_data, 'gen', Hyp, 'loc', 'dat', 'run', Div, Genome_length)
 		assert_kind_of(Float, fit)
