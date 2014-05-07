@@ -3,7 +3,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'snp_dist'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
-	require 'pmeth'
+	require '~/pmeth/lib/pmeth'
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
 	# Input 1: Array of all the outputs from get_snp_data method
@@ -91,30 +91,37 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 	# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 	# Input 1: Integer of the desired population size
-	# Input 2: Integer of the desired number of mutant permutations in the new population (this number of chunk_mutate and swap_mutate methods)
-	# Input 3: Integer of the desired number of the best permutations from the previous population, to be included in the new one
-	# Input 4: Integer of the desired number of randomly shuffled permutations in a new population
-	# Input 5: Integer of the number of permutations selected by the select method
-	# Input 6: Integer of leftover permutations, to be taken from the multiplied selected population
-	# Output: New population of mutants, recombinants etc - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
-	def self.new_population(pop_fits, size, mut_num, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
+	# Input 2: Integer of the desired number of chunk mutant permutations in the new population
+	# Input 3: Integer of the desired number of swap mutant permutations in the new population
+	# Input 4: Integer of the desired number of the best permutations from the previous population, to be included in the new one
+	# Input 5: Integer of the desired number of randomly shuffled permutations in a new population
+	# Input 6: Integer of the number of permutations selected by the select method
+	# Input 7: Integer of leftover permutations, to be taken from the multiplied selected population
+	# Output: New population - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
+	def self.new_population(pop_fits, size, c_mut, s_mut, save, ran, select_num, leftover) # mut_num = no. of mutants, save = number saved; from best, ran = no. of random permutations
 		x = (size-leftover)/select_num
 		pop_fits = pop_fits * x
 		if leftover != 0
 			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) #add leftover number of frags (best)
 			puts "#{leftover} leftover frags added"
 		end
-		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
+		#pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
 		pop = []
-		pop_save.each{|i| pop << [i[1], 'saved']} # adding the permutations only, not the fitness score
-		for i in pop_fits[(mut_num*2)+save+ran..-1]
-			x = rand(size-1)
-			pop << [PMeth.recombine(i[1], pop_fits[x][1]), 'recombined']
-		end
-		mut_num.times{pop << [PMeth.chunk_mutate(pop_fits[rand(pop_fits.length)][1]), 'mutant']} # mutating randomly selected permutations from pop_fits
-		mut_num.times{pop << [PMeth.swap_mutate(pop_fits[-1][1]), 'mini_mutant']} # mini_mutating the best permutations
+		#pop_save.each{|i| pop << [i[1], 'saved']} # adding the permutations only, not the fitness score
+		c_mut.times{pop << [PMeth.chunk_mutate(pop_fits[rand(pop_fits.length)][1]), 'chunk_mutant']} # chunk_mutating randomly selected permutations from pop_fits
+		s_mut.times{pop << [PMeth.swap_mutate(pop_fits[-1][1]), 'swap_mutant']} # swap_mutating the best permutations
 		ran.times{pop << [pop_fits[0][1].shuffle, 'random']}
-		new_pop_msg = "Population size = #{pop.size}, with #{size - ((mut_num * 2) + save + ran)} recombinants, #{mut_num} mutants, #{mut_num} mini_mutants, the #{save} best from the previous generation and #{ran} random permutations."
+		new_pop_msg = "Population size = #{pop.size}, with #{c_mut} chunk mutants, #{s_mut} swap mutants, the #{save} best from the previous generation and #{ran} random permutations."
+		x = 0
+		pop.each do |perm|
+			if perm.length < pop_fits[0][1].length
+				pop.delete(perm)
+				pop << PMeth.swap_mutate(pop_fits[-1][1])
+				puts 'one less chunk mutant, one more swap'
+				x+=1
+			end
+		end
+		new_pop_msg = "Population size = #{pop.size}, with #{c_mut-x} chunk mutants, #{s_mut+x} swap mutants, the #{save} best from the previous generation and #{ran} random permutations."
 		return pop, new_pop_msg
 	end
 
@@ -144,7 +151,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 2: parameters:
 	# 	gen: Integer of desired number of generations - the number of times a new population is created from an old one
 	# 	pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
-	# 	mut_num: Integer of the desired number of mutant permutations in each new population (this number of chunk_mutate and swap_mutate methods)
+	# 	c_mut: Integer of the desired number of chunk mutant permutations in each new population
+	#   s_mut: Integer of the desired number of swap mutant permutations in each new population
 	# 	save: Integer of the desired number of the best permutations from each population, to be included in the next one
 	# 	ran: Integer of the desired number of randomly shuffled permutations in each new population
 	#   loc: Location to save output files to
@@ -163,7 +171,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:gen => 10000000000,
 			:pop_size => 100,
 			:select_num => 50,
-			:mut_num => 10,
+			:c_mut => 10,
+			:s_mut => 10,
 			:save => 5,
 			:ran => 5,
 			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets',
@@ -199,7 +208,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		opts[:gen].times do
 
 			prev_best_fit = pop_fits[-1][0]
-			pop, msg = new_population(pop_fits, opts[:pop_size], opts[:mut_num], opts[:save], opts[:ran], opts[:select_num], leftover)
+			pop, msg = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 			messages << msg
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 			gen_fits << pop_fits[-1][0]

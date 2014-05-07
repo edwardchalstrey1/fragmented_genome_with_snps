@@ -50,7 +50,7 @@ class TestGATOC < Test::Unit::TestCase
 	end
 
 	def test_new_population
-		new_pop  = GATOC::new_population(Selected[0], 10, 1, 1, 1, 5, Selected[1])
+		new_pop  = GATOC::new_population(Selected[0], 10, 4, 2, 2, 2, 5, Selected[1])
 		assert_kind_of(Array, new_pop)
 		assert_kind_of(String, new_pop[1])
 		assert_kind_of(Array, new_pop[0])
@@ -63,6 +63,7 @@ class TestGATOC < Test::Unit::TestCase
 		end
 		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0][0])
 		assert_equal(new_pop.uniq.length, new_pop.length)
+		assert_equal(Selected.length, new_pop.length)
 	end
 end
 
