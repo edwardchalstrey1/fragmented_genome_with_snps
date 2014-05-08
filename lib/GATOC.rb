@@ -60,16 +60,16 @@ class GATOC # Genetic Algorithm To Order Contigs
 			fitn = fitness(fasta_array, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
 			fits[fasta_array] = [fitn, type] # maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
-		if fits.size < pop.size # to compensate for duplicates, we add extra shuffled permutations #TODO change to swap mutants
+		if fits.size < pop.size # to compensate for duplicates, we add extra swap mutants
 			diff = pop.size - fits.size
 			x = 0
 			diff.times do
-				extra_rand = pop[0][0].shuffle
-				fitn = fitness(extra_rand, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
-				fits[extra_rand] = [fitn, 'extra_rand']
+				extra_swap = PMeth.swap_mutate(pop[rand(pop[0].length)][0].dup)
+				fitn = fitness(extra_swap, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
+				fits[extra_swap] = [fitn, 'extra_swap']
 				x+=1
 			end
-			puts "#{x} extra random permutations added, due to multiples of the same permutation in the population"
+			puts "#{x} extra swap mutants added, due to multiples of the same permutation in the population"
 		end
 		fits = fits.sort_by {|k,v| v[0]} # sorting by fitness score
 		types = []
@@ -105,7 +105,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) # add leftover number of frags (best)
 			puts "#{leftover} leftover frags added"
 		end
-		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations # TODO are types wrong?
+		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
 		pop = []
 		pop_save.each{|i| pop << [i[1], 'saved']} # adding the permutations only, not the fitness score
 		c_mut.times{pop << [PMeth.chunk_mutate(pop_fits[rand(pop_fits.length)][1].dup), 'chunk_mutant']} # chunk_mutating randomly selected permutations from pop_fits
