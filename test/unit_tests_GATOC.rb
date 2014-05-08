@@ -17,8 +17,8 @@ class TestGATOC < Test::Unit::TestCase
 	Fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/small_dataset2/frags.fasta')
 	Snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/small_dataset2/snps.vcf')
 
-	pop = GATOC::initial_population(Fasta_array, 10)
-	Selected = GATOC::select(pop, Snp_data, 5, Hyp, Div, Genome_length)
+	Pop = GATOC::initial_population(Fasta_array, 10)
+	Selected = GATOC::select(Pop, Snp_data, 5, Hyp, Div, Genome_length)
 
 	def test_fitness
 		fit, hm, ht, hyp = GATOC::fitness(Fasta_array, Snp_data, 'gen', Hyp, 'loc', 'dat', 'run', Div, Genome_length)
@@ -33,6 +33,13 @@ class TestGATOC < Test::Unit::TestCase
 	end
 
 	def test_initial_population
+		assert_equal(10, Pop.length)
+		assert_kind_of(Array, Pop[0])
+		assert_kind_of(Bio::FastaFormat, Pop[0][0][0])
+		Pop.each do |perm, type|
+			assert_equal(53, perm.length)
+		end
+		
 		array = %w(a b)
 		pop = GATOC::initial_population(array, 2)
 		assert(pop == [%w(a b), %w(a b)] || pop == [%w(b a), %w(a b)] || pop == [%w(a b), %w(b a)] || pop = [%w(b a), %w(b a)])
@@ -50,10 +57,13 @@ class TestGATOC < Test::Unit::TestCase
 	end
 
 	def test_new_population
-		new_pop  = GATOC::new_population(Selected[0], 10, 4, 2, 2, 2, 5, Selected[1])
+		new_pop = GATOC::new_population(Selected[0], 10, 4, 2, 2, 2, 5, Selected[1])
 		assert_kind_of(Array, new_pop)
 		assert_kind_of(String, new_pop[1])
 		assert_kind_of(Array, new_pop[0])
+		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0][0])
+		assert_equal(new_pop[0].uniq.length, new_pop[0].length)
+		assert_equal(10, new_pop[0].length)
 		x = 0
 		new_pop[0].each do |permutation, type|
 			assert_kind_of(Array, permutation, "permutation at element #{x} of population not array")
@@ -61,9 +71,6 @@ class TestGATOC < Test::Unit::TestCase
 			assert_kind_of(String, type, 'type not a string')
 			x+=1
 		end
-		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0][0])
-		assert_equal(new_pop.uniq.length, new_pop.length)
-		assert_equal(Selected.length, new_pop.length)
 	end
 end
 

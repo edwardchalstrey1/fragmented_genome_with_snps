@@ -60,7 +60,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			fitn = fitness(fasta_array, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
 			fits[fasta_array] = [fitn, type] # maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
-		if fits.size < pop.size
+		if fits.size < pop.size # to compensate for duplicates, we add extra shuffled permutations #TODO change to swap mutants
 			diff = pop.size - fits.size
 			x = 0
 			diff.times do
@@ -71,16 +71,16 @@ class GATOC # Genetic Algorithm To Order Contigs
 			end
 			puts "#{x} extra random permutations added, due to multiples of the same permutation in the population"
 		end
-		fits = fits.sort_by {|k,v| v[0]}
+		fits = fits.sort_by {|k,v| v[0]} # sorting by fitness score
 		types = []
 		fits.each {|k,v| types << v.reverse} # adding the types with fitness to a new array
 		x = 0
-		fits.each {|k,v| fits[x][1] = v[0]; x+=1} # getting rid of the types
+		fits.each {|k,v| fits[x][1] = v[0]; x+=1} # getting rid of the types, so v is now just fitness score
 		pop_fits = []
 		fits.each {|i| pop_fits << i.reverse} # swapping the permutation/fitness score around
-		initial_pf = pop_fits
-		sliced = pop_fits.reverse.each_slice(num).to_a
-		pop_fits = sliced[0].reverse
+		initial_pf = pop_fits # the input permutations ordered by fitness, not yet selcted
+		sliced = pop_fits.reverse.each_slice(num).to_a # sliced the population ordered by fitness into chunks of size num, choosing the chunk with the highest fitness scores (reversing and choosing chunk 0)
+		pop_fits = sliced[0].reverse # creating the selected population, and reversing them to ascending fitness order
 		if sliced[-1].length != sliced[0].length # if there is a remainder slice
 			leftover = sliced[-1].length
 		else 
@@ -102,26 +102,16 @@ class GATOC # Genetic Algorithm To Order Contigs
 		x = (size-leftover)/select_num
 		pop_fits = pop_fits * x
 		if leftover != 0
-			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) #add leftover number of frags (best)
+			pop_fits = [pop_fits, pop_fits[-leftover..-1]].flatten(1) # add leftover number of frags (best)
 			puts "#{leftover} leftover frags added"
 		end
-		#pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations
+		pop_save = pop_fits.reverse.each_slice(save).to_a[0] # saving best "save" of permutations # TODO are types wrong?
 		pop = []
-		#pop_save.each{|i| pop << [i[1], 'saved']} # adding the permutations only, not the fitness score
-		c_mut.times{pop << [PMeth.chunk_mutate(pop_fits[rand(pop_fits.length)][1]), 'chunk_mutant']} # chunk_mutating randomly selected permutations from pop_fits
-		s_mut.times{pop << [PMeth.swap_mutate(pop_fits[-1][1]), 'swap_mutant']} # swap_mutating the best permutations
+		pop_save.each{|i| pop << [i[1], 'saved']} # adding the permutations only, not the fitness score
+		c_mut.times{pop << [PMeth.chunk_mutate(pop_fits[rand(pop_fits.length)][1].dup), 'chunk_mutant']} # chunk_mutating randomly selected permutations from pop_fits
+		s_mut.times{pop << [PMeth.swap_mutate(pop_fits[-1][1].dup), 'swap_mutant']} # swap_mutating the best permutations
 		ran.times{pop << [pop_fits[0][1].shuffle, 'random']}
 		new_pop_msg = "Population size = #{pop.size}, with #{c_mut} chunk mutants, #{s_mut} swap mutants, the #{save} best from the previous generation and #{ran} random permutations."
-		x = 0
-		pop.each do |perm|
-			if perm.length < pop_fits[0][1].length
-				pop.delete(perm)
-				pop << PMeth.swap_mutate(pop_fits[-1][1])
-				puts 'one less chunk mutant, one more swap'
-				x+=1
-			end
-		end
-		new_pop_msg = "Population size = #{pop.size}, with #{c_mut-x} chunk mutants, #{s_mut+x} swap mutants, the #{save} best from the previous generation and #{ran} random permutations."
 		return pop, new_pop_msg
 	end
 
