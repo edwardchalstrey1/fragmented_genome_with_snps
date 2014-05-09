@@ -1,0 +1,20 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+	pmeth (0.0.5)
+	pdist (0.0.5)
+	bio (1.4.3.0001)
+	bio-samtools (2.0.4)
+	rinruby (2.0.3)
+    diff-lcs (1.2.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pmeth 
+  pdist
+  bio
+  bio-samtools
+  rinruby
+  diff-lcs
