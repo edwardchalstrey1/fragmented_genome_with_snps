@@ -1,8 +1,8 @@
 #encoding: utf-8
-require '~/fragmented_genome_with_snps/lib/reform_ratio'
-require '~/fragmented_genome_with_snps/lib/GATOC'
-require '~/fragmented_genome_with_snps/lib/snp_dist'
-require '~/fragmented_genome_with_snps/lib/model_genome'
+require_relative '../lib/reform_ratio'
+require_relative '../lib/GATOC'
+require_relative '../lib/snp_dist'
+require_relative '../lib/model_genome'
 require 'test/unit'
 
 class TestGATOC < Test::Unit::TestCase

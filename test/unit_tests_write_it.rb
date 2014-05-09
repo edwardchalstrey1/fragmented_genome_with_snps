@@ -1,5 +1,5 @@
 #encoding: utf-8
-require '~/fragmented_genome_with_snps/lib/write_it'
+require_relative '../lib/write_it'
 require 'test/unit'
 
 class TestWriteIt < Test::Unit::TestCase

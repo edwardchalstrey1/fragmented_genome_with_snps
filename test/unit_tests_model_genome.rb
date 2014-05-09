@@ -1,5 +1,5 @@
 #encoding: utf-8
-require '~/fragmented_genome_with_snps/lib/model_genome'
+require_relative '../lib/model_genome'
 require 'test/unit'
 
 class TestModelGenome < Test::Unit::TestCase

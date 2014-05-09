@@ -1,5 +1,5 @@
 #encoding: utf-8
-require '~/fragmented_genome_with_snps/lib/rearrangement_score'
+require_relative '../lib/rearrangement_score'
 require 'test/unit'
 
 class TestRearrangementScore < Test::Unit::TestCase

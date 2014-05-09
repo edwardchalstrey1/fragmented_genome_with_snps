@@ -1,5 +1,5 @@
 #encoding: utf-8
-require '~/fragmented_genome_with_snps/lib/reform_ratio'
+require_relative '../lib/reform_ratio'
 require 'test/unit'
 
 class FakeFasta
