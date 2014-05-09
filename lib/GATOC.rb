@@ -3,7 +3,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'snp_dist'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
-	require '~/pmeth/lib/pmeth'
+	require 'pmeth'
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
 	# Input 1: Array of all the outputs from get_snp_data method
