@@ -62,14 +62,14 @@ class SNPdist
 	# Input 3: The generation of the genetic algorithm the ratio is being plotted for
 	# Input 4: The length of the genome
 	# Output: plot of the hypothetical SNP density, representing the distribution of homozygous/heterozygous SNP density ratio across the genome
-	def self.plot_hyp(hyp, location, dataset, gen, genome_length)
+	def self.plot_hyp(hyp, location, dataset_run, gen, genome_length)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'hyp', hyp
 		myr.assign 'location', location
-		myr.assign 'dataset', dataset
+		myr.assign 'dataset_run', dataset_run
 		myr.assign 'gen', gen
 		myr.assign 'genome_length', genome_length
-		myr.eval 'png(paste("~/",location,"/", dataset,"/gen_", gen, "_best_permutation_distribution.png", sep=""))
+		myr.eval 'png(paste("~/",location,"/", dataset_run,"/gen_", gen, "_best_permutation_distribution.png", sep=""))
 		plot((1:512)*(genome_length/512), density(hyp)$y, xlab="Genome", ylab="Approximated ratio of homozygous to heterozygous SNP density")
 		dev.off()'		
 		myr.quit
