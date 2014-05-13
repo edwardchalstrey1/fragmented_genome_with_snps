@@ -5,6 +5,7 @@ class MetricPlot
 	require 'pdist'
 	require_relative '../reform_ratio'
 	require 'rinruby'
+	require 'pp'
 
 	# Inpput: Dataset
 	# Output: The correctly ordered permutation of frag ids
@@ -40,15 +41,18 @@ class MetricPlot
 	# Input 0: The generation to start with
 	# Input 1: The number of generations to increment by
 	# Input 2: String with the id of the metric to plot (see case below)
-	# Input 3: String - name of the plot
-	# Input 4: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids)
-	# Input 5: Dataset
-	# Input 6: Run
-	# Output: ggplot of the fitness over generations of the genetic algorithm, with a permutation distance metric for comparison
-	def self.gg_plots(start, inc, met, filename, all_perms, dataset, run)
+	# Input 3: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids)
+	# Input 4: Dataset
+	# Input 5: Run
+	# Output 0: Array of generation numbers for each population
+	# Output 1: Array of average metric scores for each population (>1 per population due to >1 metrics)
+	# Output 2: Array of standard errors for each metric score
+	# Output 3: Array of strings indicating what metric each score is from
+	# Output 4: Array of best scores for each population (the fitness score is taken from the permutation with the highest metric score)
+	def self.plot_info(start, inc, met, all_perms, dataset, run)
 		orig = original_order(dataset)
 		myr = RinRuby.new(echo = false)
-		myr.eval 'source("~/fragmented_genome_with_snps/score_plots/score_plots.R")'
+		myr.eval 'source("~/fragmented_genome_with_snps/lib/score_plots/score_plots.R")'
 		x, y, se, best_sc = [], [], [], []
 		n = start
 		all_perms.each do |pop|
@@ -64,7 +68,7 @@ class MetricPlot
 				when 'ham'
 					metric << PDist.hamming(orig, red_perm)
 				when 'r'
-					metric << PDist.r_dist(orig, red_perm)
+					metric << PDist.rdist(orig, red_perm)
 				when 'lcs'
 					metric << PDist.lcs(orig, red_perm)
 				when 'kt'
@@ -77,22 +81,31 @@ class MetricPlot
 				x << n
 				myr.assign 'scores', scores
 				sem = myr.pull 'st_err(scores)'
-				se << sem
+				se << sem.to_f
 			end
-			best_sc << fitness.sort[0] # The best fitness score, lowest is best
-			best_sc << metric[fitness.index(fitness.sort[0])] # The metric score of the same permutation that has best fitness
+			best_sc << fitness.sort[0].to_f # The best fitness score, lowest is best
+			best_sc << metric[fitness.index(fitness.sort[0])].to_f # The metric score of the same permutation that has best fitness
 			n+=inc
 		end
 		group = ['comp_fit', met] * all_perms.length
-		# myr.assign 'x', x
-		# myr.assign 'y', y
-		# myr.assign 'se', se
-		# myr.assign 'group', group
-		# myr.assign 'best_sc', best_sc
-		# myr.assign 'dataset_run', "#{dataset}/#{run}"
-		# myr.assign 'filename', filename
-		# myr.eval 'plot_it(x, y, se, group, best_sc, dataset_run, filename)'
-		# myr.quit
+		myr.quit
 		return x, y, se, group, best_sc
+	end
+
+	# Input: Inputs for plot_info, plus name of the file string at input 3, moving subsequent areguments one place along
+	# Output: ggplot of the fitness over generations of the genetic algorithm, with a permutation distance metric for comparison
+	def self.metric_plot(start, inc, met, filename, all_perms, dataset, run)
+		x, y, se, group, best_sc = plot_info(start, inc, met, all_perms, dataset, run)
+		myr = RinRuby.new(echo = false)
+		myr.eval 'source("~/fragmented_genome_with_snps/lib/score_plots/score_plots.R")'
+		myr.assign 'x', x
+		myr.assign 'y', y
+		myr.assign 'se', se
+		myr.assign 'group', group
+		myr.assign 'best_sc', best_sc
+		myr.assign 'dataset_run', "#{dataset}/#{run}"
+		myr.assign 'filename', filename
+		myr.eval 'plot_it(x, y, se, group, best_sc, dataset_run, filename)'
+		myr.quit
 	end
 end

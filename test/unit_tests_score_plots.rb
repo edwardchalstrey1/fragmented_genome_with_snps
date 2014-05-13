@@ -20,12 +20,14 @@ class TestMetricPlot < Test::Unit::TestCase
 		assert_kind_of(String, All_perms[0][0][0])
 	end
 
-	# def test_gg_plots
-	# 	x, y, se, group, best_sc = MetricPlot::gg_plots(0, 1, 'lcs', 'filename', All_perms, 'small_dataset2', 'run13')
-	# 	assert_equal(4, x.length)
-	# 	assert_equal(4, y.length)
-	# 	assert_equal(4, se.length)
-	# 	assert_equal(4, group.length)
-	# 	assert_equal(2, best_sc.length)
-	# end
+	def test_plot_info
+		x, y, se, group, best_sc = MetricPlot::plot_info(0, 1, 'lcs', All_perms, 'small_dataset2', 'run13')
+		[x, y, se, group, best_sc].each do |i|
+			assert_kind_of(Array, i)
+			assert_equal(4, i.length)
+		end
+		[x, y, se, best_sc].each do |i|
+			assert_in_delta(0.5, i[0], 0.5)
+		end
+	end
 end
