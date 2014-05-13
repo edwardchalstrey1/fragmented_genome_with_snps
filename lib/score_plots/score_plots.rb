@@ -5,12 +5,11 @@ class MetricPlot
 	require 'pdist'
 	require_relative '../reform_ratio'
 	require 'rinruby'
-	require 'pp'
 
 	# Inpput: Dataset
 	# Output: The correctly ordered permutation of frag ids
 	def self.original_order(dataset)
-		original_fasta = ReformRatio::fasta_array("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}/frags.fasta")
+		original_fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta")
 		return ReformRatio::fasta_id_n_lengths(original_fasta)[0]
 	end
 
@@ -25,10 +24,10 @@ class MetricPlot
 		n = start
 		gen.times do
 			pop = []
-			Dir.entries("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}/#{run}/Gen#{n}").each do |ptxt|
+			Dir.entries("arabidopsis_datasets/#{dataset}/#{run}/Gen#{n}").each do |ptxt|
 				if ptxt.include? '.txt'
 					perm = []
-					IO.foreach("#{Dir.home}/fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}/#{run}/Gen#{n}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
+					IO.foreach("arabidopsis_datasets/#{dataset}/#{run}/Gen#{n}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
 					pop << perm
 				end
 			end
@@ -52,7 +51,7 @@ class MetricPlot
 	def self.plot_info(start, inc, met, all_perms, dataset, run)
 		orig = original_order(dataset)
 		myr = RinRuby.new(echo = false)
-		myr.eval 'source("~/fragmented_genome_with_snps/lib/score_plots/score_plots.R")'
+		myr.eval 'source(paste(getwd(),"/lib/score_plots/score_plots.R",sep=""))'
 		x, y, se, best_sc = [], [], [], []
 		n = start
 		all_perms.each do |pop|
@@ -97,7 +96,7 @@ class MetricPlot
 	def self.metric_plot(start, inc, met, filename, all_perms, dataset, run)
 		x, y, se, group, best_sc = plot_info(start, inc, met, all_perms, dataset, run)
 		myr = RinRuby.new(echo = false)
-		myr.eval 'source("~/fragmented_genome_with_snps/lib/score_plots/score_plots.R")'
+		myr.eval 'source(paste(getwd(),"/lib/score_plots/score_plots.R",sep=""))'
 		myr.assign 'x', x
 		myr.assign 'y', y
 		myr.assign 'se', se
