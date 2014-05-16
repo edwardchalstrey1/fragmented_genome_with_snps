@@ -3,6 +3,8 @@ require 'rinruby'
 
 class QuitIf
 
+	# Input: Array of number values
+	# Output: The slope coefficient of the input array plotted against 1..input_length
 	def self.quit(best_permutations)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'y', best_permutations
