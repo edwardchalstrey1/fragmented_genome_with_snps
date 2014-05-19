@@ -21,7 +21,7 @@ class TestGATOC < Test::Unit::TestCase
 	Selected = GATOC::select(Pop, Snp_data, 5, Hyp, Div, Genome_length)
 
 	def test_fitness
-		fit, hm, ht, hyp = GATOC::fitness(Fasta_array, Snp_data, 'gen', Hyp, 'loc', 'dat', 'run', Div, Genome_length)
+		fit, hm, ht, hyp = GATOC::fitness(Fasta_array, Snp_data, Hyp, Div, Genome_length)
 		assert_kind_of(Float, fit)
 		assert_in_delta(0.5, fit, 0.5) # 0.5 +- 0.5
 		assert_kind_of(Array, hm)

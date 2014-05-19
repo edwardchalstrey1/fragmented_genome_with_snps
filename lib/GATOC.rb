@@ -4,21 +4,18 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 	require 'pmeth'
+	require_relative 'quit_if'
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
 	# Input 1: Array of all the outputs from get_snp_data method
-	# Input 2: Integer of the generation that the genetic algorithm is on, if gen is not an integer, no figure is plotted
-	# Input 3: Example ratio to compare against in Q-Q plot
-	# Input 4: Location to save plots e.g. "~/fragmented_genome_with_snps/arabidopsis_datasets"
-	# Input 5: Dataset algorithm running on
-	# Input 6: Name of this run of the algorithm
-	# Input 7: Length of divisions of the genome to calculate the SNP frequency of
-	# Input 8: Length of the genome
+	# Input 2: Example ratio to compare against in Q-Q plot
+	# Input 3: Length of divisions of the genome to calculate the SNP frequency of
+	# Input 4: Length of the genome
 	# Output 0: A correlation value that is the fitness of the Input 0 permutation
 	# Output 1: List of homozygous SNPs for the permutation
 	# Output 2: Heterozygous list
 	# Output 3: List aof values representing the ratio distribution
-	def self.fitness(fasta, snp_data, gen, comparable_ratio, location, dataset, run, div, genome_length)
+	def self.fitness(fasta, snp_data, comparable_ratio, div, genome_length)
 		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
 		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) #get snp positions for each frag in array of arrays
 		actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
@@ -26,9 +23,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 		fratio_breaks_perm = SNPdist::fratio(hom_snps, het_snps, div, genome_length) # frequency ratio array
 		perm_ratio = SNPdist::hyp_snps(fratio_breaks_perm, div, genome_length) # hypothetical snp positions array
 		correlation = SNPdist::qq_cor(comparable_ratio, perm_ratio)
-		if Integer === gen # create figure of the hypothetical snp distribution over the genome, for each generation
-			SNPdist::plot_hyp(perm_ratio, location, "#{dataset}/#{run}", gen, genome_length)
-		end
 		return correlation, hom_snps, het_snps, perm_ratio
 	end
 
@@ -57,7 +51,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		puts "Pop is unique: #{pop.uniq.length == pop.length}"
 		fits = {}
 		pop.each do |fasta_array, type|
-			fitn = fitness(fasta_array, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
+			fitn = fitness(fasta_array, snp_data, ratio, div, genome_length)[0]
 			fits[fasta_array] = [fitn, type] # maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
 		if fits.size < pop.size # to compensate for duplicates, we add extra swap mutants
@@ -65,7 +59,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			x = 0
 			diff.times do
 				extra_swap = PMeth.swap_mutate(pop[rand(pop[0].length)][0].dup)
-				fitn = fitness(extra_swap, snp_data, 'same', ratio, 'location not needed', 'dataset not needed', 'run not needed', div, genome_length)[0]
+				fitn = fitness(extra_swap, snp_data, ratio, div, genome_length)[0]
 				fits[extra_swap] = [fitn, 'extra_swap']
 				x+=1
 			end
@@ -182,7 +176,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		pop = initial_population(fasta, opts[:pop_size])
 
 		pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
-		fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, 0, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio density distribution for the best permutation in each generation
+		fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, opts[:comparable_ratio], opts[:div], opts[:genome_length])
 		Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen0_lists"))
 		Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen0_lists")) do
 			WriteIt::write_txt("gen_0_hm", hm)
@@ -213,7 +207,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				z = 1
 			end
 				
-			fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, gen, opts[:comparable_ratio], opts[:loc], opts[:dataset], opts[:run], opts[:div], opts[:genome_length]) # makes figure of ratio densitgen distribution for the best permutation in each generation
+			fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, opts[:comparable_ratio], opts[:div], opts[:genome_length])
 			Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
 			Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists")) do
 				WriteIt::write_txt("gen_#{gen}_hm", hm)
