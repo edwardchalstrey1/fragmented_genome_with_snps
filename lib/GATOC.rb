@@ -80,7 +80,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		else 
 			leftover = 0
 		end
-		return pop_fits, leftover, initial_pf, types.flatten # flatten types to get type then fitness alternate
+		return pop_fits, leftover, initial_pf, types
 	end
 
 	# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
@@ -105,18 +105,27 @@ class GATOC # Genetic Algorithm To Order Contigs
 		c_mut.times{pop << [PMeth.chunk_mutate(pop_fits[rand(pop_fits.length)][1].dup), 'chunk_mutant']} # chunk_mutating randomly selected permutations from pop_fits
 		s_mut.times{pop << [PMeth.swap_mutate(pop_fits[-1][1].dup), 'swap_mutant']} # swap_mutating the best permutations
 		ran.times{pop << [pop_fits[0][1].shuffle, 'random']}
-		new_pop_msg = "Population size = #{pop.size}, with #{c_mut} chunk mutants, #{s_mut} swap mutants, the #{save} best from the previous generation and #{ran} random permutations."
-		return pop, new_pop_msg
+		return pop
 	end
 
-	# Input 0: Fittest selection array: see output 0 for select method
-	# Input 1: Location to save files to e.g. "fragmented_genome_with_snps/arabidopsis_datasets"
+	# Input 0: See output 2 of select
+	# Input 1: Location to save files to
 	# Input 2: Dataset algorithm running on
 	# Input 3: Name of this run of the algorithm
 	# Input 4: Generation of the genetic algorithm
-	def self.save_perms(pop_fits, location, dataset, run, gen)
+	# Input 5: Output 3 of select
+	# Output: txt files with data interpretable by text-table gem AND txt files for each permutation
+	def self.save_perms(pop_fits, location, dataset, run, gen, types)
 		Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}/Gen#{gen}"))
 		Dir.chdir(File.join(Dir.home, "#{location}")) do
+			table_data = [['Permutation', 'Fitness Score', 'Type', 'FASTA ids']]
+			x = 1
+			pop_fits.each do |fitness, permutation|
+				table_data << ["permutation#{x}", fitness, types[x-1][0], ReformRatio::fasta_id_n_lengths(permutation)[0].join(", ")]
+				x+=1
+			end
+			WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}/table_data", table_data)
+
 			x = 1
 			pop_fits.each do |fitness, perm|
 				ids = ReformRatio::fasta_id_n_lengths(perm)[0]
@@ -168,7 +177,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:end => 0.999,
 			:gen_end => 10
 			}.merge!(parameters)
-		# Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}")) # make the directory to put data files into
 
 		gen_fits = [] # array of the best fitness in each generation
 		snp_data = ReformRatio::get_snp_data(vcf_file) #array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
@@ -182,21 +190,19 @@ class GATOC # Genetic Algorithm To Order Contigs
 			WriteIt::write_txt("gen_0_hm", hm)
 			WriteIt::write_txt("gen_0_ht", ht)
 			WriteIt::write_txt("gen_0_hyp", hyp)
-			WriteIt::write_txt("gen_0_types", types)
 		end
 		puts "Gen0 \n Best correlation = #{pop_fits[-1][0]}\n \n"
 		gen_fits << pop_fits[-1][0]
-		save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], 0)
+		save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], 0, types)
 
-		gen, z, messages = 1, 1, [] # can check messages for errors
+		gen, z = 1, 1
 		opts[:gen].times do
 
 			prev_best_fit = pop_fits[-1][0]
-			pop, msg = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
-			messages << msg
+			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 			gen_fits << pop_fits[-1][0]
-			save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen)
+			save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types)
 
 			puts "Gen#{gen}\n Best correlation = #{pop_fits[-1][0]}"
 			if pop_fits[-1][0] <= prev_best_fit
@@ -213,7 +219,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 				WriteIt::write_txt("gen_#{gen}_hm", hm)
 				WriteIt::write_txt("gen_#{gen}_ht", ht)
 				WriteIt::write_txt("gen_#{gen}_hyp", hyp)
-				WriteIt::write_txt("gen_#{gen}_types", types)
 			end
 
 			if z >= opts[:gen_end] || gen >= opts[:gen] || pop_fits[-1][0] >= opts[:end]
@@ -221,12 +226,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 			end
 			gen+=1
 			Signal.trap("PIPE", "EXIT")
-		end
-		Dir.chdir(File.join(Dir.home, opts[:loc])) do
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/reformed_ratio_frag_order", 
-				[opts, "generation #{gen}/#{opts[:gen]}: #{pop_fits[-1][0]}", pop_fits[-1][0],'###', 
-				ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]].flatten)
-			WriteIt::write_txt("#{opts[:dataset]}/#{opts[:run]}/messages", messages)
 		end
 	end
 end
