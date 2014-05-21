@@ -25,10 +25,12 @@ class MetricPlot
 		gen.times do
 			pop = []
 			Dir.entries("arabidopsis_datasets/#{dataset}/#{run}/Gen#{n}").each do |ptxt|
-				if ptxt.include? '.txt'
-					perm = []
-					IO.foreach("arabidopsis_datasets/#{dataset}/#{run}/Gen#{n}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
-					pop << perm
+				unless ptxt.include?('best') || ptxt.include?('table') # excluding table_data.txt and best_permutation.txt
+					if ptxt.include?('.txt')
+						perm = []
+						IO.foreach("arabidopsis_datasets/#{dataset}/#{run}/Gen#{n}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
+						pop << perm
+					end
 				end
 			end
 			all_perms << pop
