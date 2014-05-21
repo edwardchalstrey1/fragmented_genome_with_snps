@@ -43,5 +43,13 @@ class WriteIt
 		array
 	end
 
+	# Input: file location (file must have floats on each line)
+	# Output: array with each line of the file as an entry, converted to float
+	def self.file_to_floats_array(file)
+		array = []
+		IO.foreach(file) { |line| array << line.gsub(/\n/,'').to_f }
+		array
+	end
+
 end
 

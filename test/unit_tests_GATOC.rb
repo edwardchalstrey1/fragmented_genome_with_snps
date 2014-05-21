@@ -21,7 +21,7 @@ class TestGATOC < Test::Unit::TestCase
 	Selected = GATOC::select(Pop, Snp_data, 5, Hyp, Div, Genome_length)
 
 	def test_fitness
-		fit, hm, ht, hyp = GATOC::fitness(Fasta_array, Snp_data, 'gen', Hyp, 'loc', 'dat', 'run', Div, Genome_length)
+		fit, hm, ht, hyp = GATOC::fitness(Fasta_array, Snp_data, Hyp, Div, Genome_length)
 		assert_kind_of(Float, fit)
 		assert_in_delta(0.5, fit, 0.5) # 0.5 +- 0.5
 		assert_kind_of(Array, hm)
@@ -59,13 +59,11 @@ class TestGATOC < Test::Unit::TestCase
 	def test_new_population
 		new_pop = GATOC::new_population(Selected[0], 10, 4, 2, 2, 2, 5, Selected[1])
 		assert_kind_of(Array, new_pop)
-		assert_kind_of(String, new_pop[1])
-		assert_kind_of(Array, new_pop[0])
-		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0][0])
-		assert_equal(new_pop[0].uniq.length, new_pop[0].length)
-		assert_equal(10, new_pop[0].length)
+		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0])
+		assert_equal(new_pop.uniq.length, new_pop.length)
+		assert_equal(10, new_pop.length)
 		x = 0
-		new_pop[0].each do |permutation, type|
+		new_pop.each do |permutation, type|
 			assert_kind_of(Array, permutation, "permutation at element #{x} of population not array")
 			assert_equal(53, permutation.length, "permutation at element #{x} of population not correct number of frags")
 			assert_kind_of(String, type, 'type not a string')

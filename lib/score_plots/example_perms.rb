@@ -35,17 +35,17 @@ class ExamplePerms
 		chunk, swap, shuf = [], [], []
 		pop_size.times do
 			chunk_perm = PMeth.chunk_mutate(fasta.dup)
-			fitness = GATOC::fitness(chunk_perm, snp_data, 'same', comparable_ratio, 'location', 'dataset', 'run', div, genome_length)[0]
+			fitness = GATOC::fitness(chunk_perm, snp_data, comparable_ratio, div, genome_length)[0]
 			chunk_perm_id = [fitness, ReformRatio::fasta_id_n_lengths(chunk_perm)[0]].flatten
 			chunk << chunk_perm_id
 
 			swap_perm = PMeth.swap_mutate(fasta.dup)
-			fitness = GATOC::fitness(swap_perm, snp_data, 'same', comparable_ratio, 'location', 'dataset', 'run', div, genome_length)[0]
+			fitness = GATOC::fitness(swap_perm, snp_data, comparable_ratio, div, genome_length)[0]
 			swap_perm_id = [fitness, ReformRatio::fasta_id_n_lengths(swap_perm)[0]].flatten
 			swap << swap_perm_id
 
 			shuf_perm = fasta.shuffle
-			fitness = GATOC::fitness(shuf_perm, snp_data, 'same', comparable_ratio, 'location', 'dataset', 'run', div, genome_length)[0]
+			fitness = GATOC::fitness(shuf_perm, snp_data, comparable_ratio, div, genome_length)[0]
 			shuf_perm_id = [fitness, ReformRatio::fasta_id_n_lengths(shuf_perm)[0]].flatten
 			shuf << shuf_perm_id
 		end

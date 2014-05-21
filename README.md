@@ -48,15 +48,9 @@ A genetic algorithm is a kind of iterative improvement algorithm. These are wher
 
 Genetic algorithms are based on the principles of natural selection. A "population" of solutions is created, and those with the highest "fitness" (correctness) are selected. New "offspring" solutions can be created through recombination of the components of "parent" solutions, and "mutations" can be introduced by creating novel components or parameters. If subsequent populations are created by the recombination of selected members of the current population, and the introduction of mutant solutions, the idea is that the best solutions in each generation will be better than the best solutions in the previous generation. In this way, the perfect solution (in this case permutaion of fragments) will eventually be reached.
 
-### Recombination
-
-The recombination method of the genetic algorithm in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) works as follows:
-Two parent permutations are used as input. Each of the parents are split into chunks of size X, where X is a random whole number that the number of fragments is divisible by. One of the chunks from parent 2 is chosen at random, to be recombined with parent 1. The "child" permutation, starts out as a copy of parent 1, then the chosen chunk from parent 2 replaces the equivalent chunk from parent 1. To avoid duplicating fragments (and losing others), each fragment from the chunk being displaced by the "chosen chunk", is placed into the position it's corresponding fragment (that holds the same position in the chosen chunk) occupies in parent 1. This results in a child permutation that has some parts ordered in the same way as parent 1, a chunk that is in the same order as in parent 2, and some fragments different positions than in either parent.
-
 ### Mutation
 
-The mutation method of the genetic algorithm in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) works as follows:
-One permutation is taken as input (the permutation to be mutated). It is split into chunks of size X, where X is a random whole number that the number of fragments is divisible by (just like in the recombination method). The fragments within the chunk are then shuffled, to give the new "mutant" permutation.
+The mutation methods used are from my PMeth [ruby gem.](https://github.com/edwardchalstrey1/pmeth)
 
 ### Permutation Fitness: Q-Q plot
 
