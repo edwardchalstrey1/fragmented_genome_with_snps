@@ -7,12 +7,20 @@ class ExamplePerms
 
 	# Input 0: Array of fasta format fragments
 	# Input 1: Permutation: txt file saved with frag ids
-	# Output: Array of the fitness for the permutation with the fatsa frags re-ordered by the permutation
+	# Output: Array of the fitness for the permutation with the fasta frags re-ordered by the permutation
 	def self.fasta_p(fasta, perm)
 		perm_ids = []
 		IO.foreach(perm) { |line| perm_ids << line.gsub(/\n/,'') }
 		perm_ids = perm_ids[1..-1]
 		fitness = perm_ids[0].to_f
+		fasta_perm = fasta_p_id(fasta, perm_ids)
+		return [fitness, fasta_perm].flatten
+	end
+
+	# Input 0: Array of fasta format fragments
+	# Input 1: Permutation array of frag ids
+	# Output: Array fasta frags re-ordered by the permutation ids
+	def self.fasta_p_id(fasta, perm_ids)
 		fasta_perm = []
 		perm_ids.each do |id|
 			fasta.each do |frag|
@@ -21,7 +29,7 @@ class ExamplePerms
 				end
 			end
 		end
-		return [fitness, fasta_perm].flatten
+		return fasta_perm
 	end
 
 	# Input 0: Array of fasta format fragments
