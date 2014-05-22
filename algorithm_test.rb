@@ -6,7 +6,6 @@ require_relative 'lib/snp_dist'
 require_relative 'lib/write_it'
 require_relative 'lib/score_plots/score_plots'
 require_relative 'lib/score_plots/example_perms'
-require 'pp'
 
 dataset = ARGV[0]
 run = ARGV[1]
@@ -69,7 +68,17 @@ else ## For restarts ##
 	average = 0.999 # TODO change this and the above to new quit if
 end
 
+if dataset == 'small_dataset2'
+	slope = 7.357420685652519e-07
+elsif dataset == '10K_dataset3' && div == 1000
+	slope = 2.3764785885594687e-08
+elsif dataset == '10K_dataset3' && div == 10000
+	slope = 8.45276567554774e-12
+elsif dataset == '10K_dataset3' && div == 100000
+	slope = 2.0894037806936292e-14
+end
+
 ## Run the algorithm ##
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
  :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
- :div => div, :genome_length => genome_length, :end => average, :gen_end => 10, :start_pop => pop, :start_gen => restart)
+ :div => div, :genome_length => genome_length, :end => average, :gen_end => 10, :start_pop => pop, :start_gen => restart, :slope => slope)

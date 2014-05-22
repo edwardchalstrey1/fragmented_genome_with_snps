@@ -178,7 +178,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:end => 0.999,
 			:gen_end => 10,
 			:start_pop => nil,
-			:start_gen => 0
+			:start_gen => 0,
+			:slope => nil
 			}.merge!(parameters)
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
@@ -190,7 +191,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			pop = opts[:start_pop]
 		end
 
-		gen, z = opts[:start_gen], 1
+		gen, last_five_best = opts[:start_gen], []
 		opts[:gen].times do
 
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
@@ -202,11 +203,9 @@ class GATOC # Genetic Algorithm To Order Contigs
 			puts "Gen#{gen}\n Best correlation = #{pop_fits[-1][0]}"
 			if prev_best_fit != nil
 				if pop_fits[-1][0] <= prev_best_fit
-					puts "No fitness improvement\n \n" # If this is not called, this implies there has been some improvement
-					z+=1
+					puts "No fitness improvement\n \n"
 				else
 					puts "FITNESS IMPROVEMENT!\n \n"
-					z = 1
 				end
 			end
 				
@@ -221,14 +220,28 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 
-			if z >= opts[:gen_end] || gen >= opts[:gen] || pop_fits[-1][0] >= opts[:end]
+			last_five_best << pop_fits[-1][0]
+			slope = 0
+			if last_five_best.length == 5
+				slope = QuitIf::quit(last_five_best) # TODO break loop
+				last_five_best.delete_at(0)
+			end
+
+			if slope != 0 && opts[:slope] <= slope
+				puts 'slope break'
+			end
+
+			if slope != 0 && opts[:slope] <= slope
 				then break
 			end
-			gen+=1
-			Signal.trap("PIPE", "EXIT")
 
+			if gen >= opts[:gen]
+				then break
+			end
 			prev_best_fit = pop_fits[-1][0]
 			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
+			gen+=1
+			Signal.trap("PIPE", "EXIT")
 		end
 	end
 end
