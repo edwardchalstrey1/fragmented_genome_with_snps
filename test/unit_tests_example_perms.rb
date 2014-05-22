@@ -4,20 +4,21 @@ require_relative '../lib/model_genome'
 require_relative '../lib/snp_dist'
 require 'bio'
 require 'test/unit'
-require 'pp'
 
 class TestExample < Test::Unit::TestCase
 
-	Div = 100.0; Genome_length = 2000.0
-	hm, ht = ModelGenome::get_snps('hm <- rnorm(50, 1000, 100)', 'ht <- runif(50, 1, 2000)')
-	Fratio, Breaks = SNPdist::fratio(hm, ht, Div, Genome_length)
-	Hyp = SNPdist::hyp_snps([Fratio, Breaks], Div, Genome_length)
+	def setup
+		@div = 100.0; @genome_length = 2000.0
+		hm, ht = ModelGenome::get_snps('hm <- rnorm(50, 1000, 100)', 'ht <- runif(50, 1, 2000)')
+		fratio, breaks = SNPdist::fratio(hm, ht, @div, @genome_length)
+		@hyp = SNPdist::hyp_snps([fratio, breaks], @div, @genome_length)
 
-	Fasta = ReformRatio::fasta_array("arabidopsis_datasets/small_dataset2/frags.fasta")
-	Snp_data = ReformRatio::get_snp_data("arabidopsis_datasets/small_dataset2/snps.vcf")
+		@fasta = ReformRatio::fasta_array("arabidopsis_datasets/small_dataset2/frags.fasta")
+		@snp_data = ReformRatio::get_snp_data("arabidopsis_datasets/small_dataset2/snps.vcf")
+	end
 
 	def test_fasta_p
-		permutation = ExamplePerms::fasta_p(Fasta, "arabidopsis_datasets/small_dataset2/run13/Gen12/best_permutation.txt")
+		permutation = ExamplePerms::fasta_p(@fasta, "arabidopsis_datasets/small_dataset2/run13/Gen12/best_permutation.txt")
 		assert_kind_of(Array, permutation)
 		assert_kind_of(Float, permutation[0])
 		assert_in_delta(0.5, permutation[0], 0.5)
@@ -26,7 +27,7 @@ class TestExample < Test::Unit::TestCase
 	end
 
 	def test_get_perms
-		perms = ExamplePerms::get_perms(Fasta, 2, Snp_data, Hyp, Div, Genome_length)
+		perms = ExamplePerms::get_perms(@fasta, 2, @snp_data, @hyp, @div, @genome_length)
 		assert_equal(3, perms.length)
 		perms.each do |pop|
 			assert_kind_of(Array, pop)
