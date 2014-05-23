@@ -17,7 +17,7 @@ s_mut = ARGV[6].to_i
 save = ARGV[7].to_i
 ran = ARGV[8].to_i
 div = ARGV[9].to_f
-restart = ARGV[10].to_i # the generation to restart from
+restart = ARGV[10]
 
 ## Files ##
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
@@ -32,7 +32,8 @@ fratio_breaks = SNPdist::fratio(hm, ht, div, genome_length) # frequency ratio ar
 comparable_ratio = SNPdist::hyp_snps(fratio_breaks, div, genome_length) # hypothetical snp positions array
 
 correct_fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta")
-if ARGV[10] == nil
+pop, restart_gen = [], []
+if restart == nil
 	## Initial plots of correct ratio distribution ##
 	Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put data files into
 	SNPdist::plot_hyp(comparable_ratio, location, "#{dataset}/#{run}", 'correct', genome_length)
@@ -60,12 +61,15 @@ if ARGV[10] == nil
 	pop = nil
 
 else ## For restarts ##
-	pop = []
-	id_pop = MetricPlot::get_perms(1, restart, 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
+	Dir.chdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) do # Selecting the generation to restart from
+		dirs = Dir.glob('*').select {|f| File.directory? f}
+		restart_gen << (dirs.length/2)-1
+	end
+
+	id_pop = MetricPlot::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
 	id_pop.each do |ids|
 		pop << [ExamplePerms::fasta_p_id(correct_fasta, ids), 'type']
 	end
-	average = 0.999 # TODO change this and the above to new quit if
 end
 
 if dataset == 'small_dataset2'
@@ -78,7 +82,10 @@ elsif dataset == '10K_dataset3' && div == 100000
 	slope = 2.0894037806936292e-14
 end
 
+puts "pop length = #{pop.length}"
+puts "restart_gen = #{restart_gen[0]}"
+
 ## Run the algorithm ##
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
  :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
- :div => div, :genome_length => genome_length, :end => average, :gen_end => 10, :start_pop => pop, :start_gen => restart, :slope => slope)
+ :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0], :slope => slope)
