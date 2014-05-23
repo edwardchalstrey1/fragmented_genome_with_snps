@@ -75,6 +75,19 @@ class SNPdist
 		myr.quit
 	end
 
+	def self.plot_hyp2(hyp, location, dataset_run, gen, genome_length, name)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'hyp', hyp
+		myr.assign 'location', location
+		myr.assign 'dataset_run', dataset_run
+		myr.assign 'gen', gen
+		myr.assign 'genome_length', genome_length
+		myr.assign 'name', name
+		myr.eval 'png(paste("~/",location,"/", dataset_run,"/gen_", gen, "/", name, ".png", sep=""))
+		plot((1:512)*(genome_length/512), density(hyp)$y, xlab="Genome", ylab="Approximated ratio of homozygous to heterozygous SNP density")
+		dev.off()'		
+		myr.quit
+	end
 	# Input 0: List of homozygous SNP positions
 	# Input 1: List of heterozygous SNP positions
 	# Input 2: Location at which to save the plot
