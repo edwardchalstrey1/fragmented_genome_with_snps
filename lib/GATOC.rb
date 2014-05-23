@@ -227,11 +227,11 @@ class GATOC # Genetic Algorithm To Order Contigs
 				last_five_best.delete_at(0)
 			end
 
-			if slope != 0 && opts[:slope] <= slope
+			if slope != 0 && opts[:slope] >= slope
 				puts 'slope break'
 			end
 
-			if slope != 0 && opts[:slope] <= slope
+			if slope != 0 && opts[:slope] >= slope
 				then break
 			end
 
