@@ -1,6 +1,6 @@
 #encoding: utf-8
 class GATOC # Genetic Algorithm To Order Contigs
-	require_relative 'snp_dist'
+	require_relative 'fitness_score'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 	require 'pmeth'
@@ -14,15 +14,16 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 0: A correlation value that is the fitness of the Input 0 permutation
 	# Output 1: List of homozygous SNPs for the permutation
 	# Output 2: Heterozygous list
-	# Output 3: List aof values representing the ratio distribution
+	# Output 3: List of values representing the ratio distribution
 	def self.fitness(fasta, snp_data, comparable_ratio, div, genome_length)
-		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) #array of no. of snps per frag in same order as fasta
-		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) #get snp positions for each frag in array of arrays
+		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) # array of no. of snps per frag in same order as fasta
+		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) # get snp positions for each frag in array of arrays
 		actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
 		het_snps, hom_snps = ReformRatio::het_hom(actual_pos, pos_n_info[1])
-		fratio_breaks_perm = SNPdist::fratio(hom_snps, het_snps, div, genome_length) # frequency ratio array
-		perm_ratio = SNPdist::hyp_snps(fratio_breaks_perm, div, genome_length) # hypothetical snp positions array
-		correlation = SNPdist::qq_cor(comparable_ratio, perm_ratio)
+		hom_count = FitnessScore::count(hom_snps, div, genome_length)
+		het_count = FitnessScore::count(het_snps, div, genome_length)
+		perm_ratio = FitnessScore::ratio(hom_count, het_count)
+		correlation = FitnessScore::score(comparable_ratio, perm_ratio)
 		return correlation, hom_snps, het_snps, perm_ratio
 	end
 
@@ -214,21 +215,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 					WriteIt::write_txt("gen_#{gen}_ht", ht)
 					WriteIt::write_txt("gen_#{gen}_hyp", hyp)
 				end
-			end
-
-			last_five_best << pop_fits[-1][0]
-			slope = 0
-			if last_five_best.length == 5
-				slope = QuitIf::quit(last_five_best) # TODO break loop
-				last_five_best.delete_at(0)
-			end
-
-			if slope != 0 && opts[:slope] >= slope
-				puts 'slope break'
-			end
-
-			if slope != 0 && opts[:slope] >= slope
-				then break
 			end
 
 			if gen >= opts[:gen]
