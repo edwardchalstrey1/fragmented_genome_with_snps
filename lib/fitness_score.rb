@@ -46,6 +46,7 @@ class FitnessScore
 		myr.assign 'y', permutation
 		myr.eval 'score <- abs(cor(x,y))'
 		fitness_score = myr.pull 'score'
+		myr.quit
 		return fitness_score
 	end
 end
