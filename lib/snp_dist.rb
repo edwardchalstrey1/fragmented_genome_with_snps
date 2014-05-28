@@ -3,6 +3,8 @@
 class SNPdist
 	require 'rinruby'
 
+	### Q-Q plot fitness with hypothetical SNP positions ###
+
 	# Input 0: Array of homozygous SNP positions
 	# Input 1: Array of heterozygous SNP positions
 	# Input 2: Divides to get the frequency ratio for each break (fratio), div = no. of breaks
@@ -56,6 +58,22 @@ class SNPdist
 		return hyp # These don't need to be unique or integers like the real SNPs, since they are just representing a distribution
 	end
 
+	# Input 0: The theoretical distribution we want to test permutations against: A list of "hypothetical" SNP positions
+	# Input 1: The distribution of hypothetical SNPs derived from the permutation of contigs we want to assess the fitness of
+	# Output: Q-Q plot pearsons correlation: 0 > value <= 1 that tells you how similar the distributions of example_ratio and ratio are
+	def self.qq_cor(example_ratio, ratio)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'ex', example_ratio
+		myr.assign 'ra', ratio
+		myr.eval 'qqp <- qqplot(ex, ra, plot.it=FALSE)
+		corr <- cor(qqp$x,qqp$y)'
+		corr = myr.pull 'corr'
+		myr.quit
+		return corr
+	end
+
+	### Plotting Methods ###
+
 	# Input 0: A list of "hypothetical" SNP positions which represents the distribution of homozygous/heterozygous SNP density ratio
 	# Input 1: Location at which to save the plot
 	# Input 2: The dataset to use (and the sub-folder to save the plot in)
@@ -88,6 +106,7 @@ class SNPdist
 		dev.off()'		
 		myr.quit
 	end
+	
 	# Input 0: List of homozygous SNP positions
 	# Input 1: List of heterozygous SNP positions
 	# Input 2: Location at which to save the plot
@@ -112,17 +131,5 @@ class SNPdist
 		myr.quit
 	end
 
-	# Input 0: The theoretical distribution we want to test permutations against: A list of "hypothetical" SNP positions
-	# Input 1: The distribution of hypothetical SNPs derived from the permutation of contigs we want to assess the fitness of
-	# Output: Q-Q plot pearsons correlation: 0 > value <= 1 that tells you how similar the distributions of example_ratio and ratio are
-	def self.qq_cor(example_ratio, ratio)
-		myr = RinRuby.new(echo = false)
-		myr.assign 'ex', example_ratio
-		myr.assign 'ra', ratio
-		myr.eval 'qqp <- qqplot(ex, ra, plot.it=FALSE)
-		corr <- cor(qqp$x,qqp$y)'
-		corr = myr.pull 'corr'
-		myr.quit
-		return corr
-	end
+
 end
