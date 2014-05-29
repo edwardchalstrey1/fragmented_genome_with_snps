@@ -2,6 +2,7 @@
 require_relative 'lib/reform_ratio'
 require_relative 'lib/GATOC'
 require_relative 'lib/fitness_score'
+require_relative 'lib/snp_dist'
 require_relative 'lib/write_it'
 require_relative 'lib/score_plots/score_plots'
 require_relative 'lib/score_plots/example_perms'
@@ -26,18 +27,33 @@ location = 'fragmented_genome_with_snps/arabidopsis_datasets'
 snp_data = ReformRatio::get_snp_data(vcf_file)
 correct_fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta")
 
+### Directories ###
+
+Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into
+Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}/Gencorrect_lists")) # make the directory to put correct permutation files into
+
 ## Comparable ratio ## TODO a comparable ratio that doesn't use the known distributions
 genome_length = ReformRatio::genome_length(fasta_file)
-hom_snps = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{dataset}/hm_snps.txt") # we can use the SNPs from the model genome to make example ratio
-het_snps = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{dataset}/ht_snps.txt")
-hom_count = FitnessScore::count(hom_snps, div, genome_length)
-het_count = FitnessScore::count(het_snps, div, genome_length)
+hm = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{dataset}/hm_snps.txt") # we can use the SNPs from the model genome to make example ratio
+ht = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{dataset}/ht_snps.txt")
+hom_count = FitnessScore::count(hm, div, genome_length)
+het_count = FitnessScore::count(ht, div, genome_length)
 comparable_ratio = FitnessScore::ratio(hom_count, het_count) # TODO plot of correctly ordered contigs
+
+SNPdist.plot_ratio(comparable_ratio, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length)
+
+hyp = SNPdist.hyp_snps(comparable_ratio, genome_length)
+SNPdist.plot_snps(hyp, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "hyp_#{div/1000}Kdiv", 
+	'Approximated ratio of homozygous to heterozygous SNP density')
+
+SNPdist.plot_snps(hm, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "hm_#{div/1000}Kdiv",
+	'Homozygous SNP density')
+
+SNPdist.plot_snps(ht, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "ht_#{div/1000}Kdiv",
+	'Heterozygous SNP density')
 
 pop, restart_gen = [], []
 if restart == nil
-	Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put data files into
-
 	## Average fitness of correctly ordered contigs ##
 	average_fitness_correct = []
 	10.times do
@@ -61,7 +77,7 @@ else ## For restarts ##
 	end
 end
 
-## Run the algorithm ##
+# Run the algorithm ##
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
  :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
  :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0])

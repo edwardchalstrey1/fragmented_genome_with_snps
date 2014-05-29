@@ -38,11 +38,12 @@ class SNPdist
 		myr.assign 'dataset_run', dataset_run
 		myr.assign 'gen', gen
 		myr.assign 'genome_length', genome_length
-		myr.eval 'png(paste("~/",location,"/", dataset_run,"/Gen", gen, "_lists/best_permutation_ratios.png", sep=""))
+		myr.eval 'png(paste("~/",location,"/", dataset_run,"/Gen", gen, "_lists/best_permutation_ratios_", (length(ratios)/1000), "Kdiv.png", sep=""))
 		plot((1:length(ratios))*(genome_length/length(ratios)), ratios, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""), 
 			ylab="Ratio",
-			main=paste("Ratio of homozygous to heterozygous SNP density calculated at ", length(ratios), " divisions of the genome", sep=""))
-		dev.off()'		
+			main=paste("Ratio of homozygous to heterozygous SNP density
+			 calculated at ", length(ratios), " divisions of the genome", sep=""))
+		dev.off()'
 		myr.quit
 	end
 
