@@ -38,7 +38,7 @@ hm = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{dataset}/hm_snps.txt
 ht = WriteIt::file_to_ints_array("#{Dir.home}/#{location}/#{dataset}/ht_snps.txt")
 hom_count = FitnessScore::count(hm, div, genome_length)
 het_count = FitnessScore::count(ht, div, genome_length)
-comparable_ratio = FitnessScore::ratio(hom_count, het_count) # TODO plot of correctly ordered contigs
+comparable_ratio = FitnessScore::ratio(hom_count, het_count)
 
 SNPdist.plot_ratio(comparable_ratio, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length)
 

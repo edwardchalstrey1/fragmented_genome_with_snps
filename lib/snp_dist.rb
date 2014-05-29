@@ -47,6 +47,24 @@ class SNPdist
 		myr.quit
 	end
 
+	# Input 5: Filename
+	def self.plot_ratio2(ratios, location, dataset_run, gen, genome_length, name)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'ratios', ratios
+		myr.assign 'location', location
+		myr.assign 'dataset_run', dataset_run
+		myr.assign 'gen', gen
+		myr.assign 'genome_length', genome_length
+		myr.assign 'name', name
+		myr.eval 'png(paste("~/",location,"/", dataset_run,"/", gen, "/", name, ".png", sep=""))
+		plot((1:length(ratios))*(genome_length/length(ratios)), ratios, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""), 
+			ylab="Ratio",
+			main=paste("Ratio of homozygous to heterozygous SNP density
+			 calculated at ", length(ratios), " divisions of the genome", sep=""))
+		dev.off()'
+		myr.quit
+	end
+
 	# Input 0: A list of SNP positions 
 	# Input 1: Location at which to save the plot
 	# Input 2: The dataset to use (and the sub-folder to save the plot in)
@@ -65,6 +83,22 @@ class SNPdist
 		myr.assign 'type', type
 		myr.assign 'title', title
 		myr.eval 'png(paste("~/",location,"/", dataset_run,"/Gen", gen, "_lists/best_permutation_distribution_", type, ".png", sep=""))
+		plot((1:512)*(genome_length/512), density(snp_pos)$y, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""),
+			ylab="Density", main=title)
+		dev.off()'		
+		myr.quit
+	end
+
+	def self.plot_snps2(snp_pos, location, dataset_run, gen, genome_length, type, title)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'snp_pos', snp_pos
+		myr.assign 'location', location
+		myr.assign 'dataset_run', dataset_run
+		myr.assign 'gen', gen
+		myr.assign 'genome_length', genome_length
+		myr.assign 'type', type
+		myr.assign 'title', title
+		myr.eval 'png(paste("~/",location,"/", dataset_run,"/", gen, "/", type, ".png", sep=""))
 		plot((1:512)*(genome_length/512), density(snp_pos)$y, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""),
 			ylab="Density", main=title)
 		dev.off()'		
