@@ -68,9 +68,9 @@ if restart == nil
 else ## For restarts ##
 	Dir.chdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) do # Selecting the generation to restart from
 		dirs = Dir.glob('*').select {|f| File.directory? f}
+		dirs.delete("Gencorrect_lists")
 		restart_gen << (dirs.length/2)-1
 	end
-
 	id_pop = MetricPlot::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
 	id_pop.each do |ids|
 		pop << [ExamplePerms::fasta_p_id(correct_fasta, ids), 'type']
