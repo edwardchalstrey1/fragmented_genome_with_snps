@@ -1,8 +1,6 @@
 #encoding: utf-8
 class WriteIt
 
-	require 'text-table'
-
 	# Input 0: Filename by which to save an array to a .txt file, one value per line
 	# Input 1: Array to save
 	def self.write_txt(filename, array)
