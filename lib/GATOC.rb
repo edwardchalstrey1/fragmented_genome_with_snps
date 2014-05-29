@@ -175,8 +175,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:div => 100.0,
 			:genome_length => 2000.0,
 			:start_pop => nil,
-			:start_gen => 0,
-			:slope => nil
+			:start_gen => 0
 			}.merge!(parameters)
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
@@ -206,14 +205,14 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 				
-			fit, hm, ht, hyp = fitness(pop_fits[-1][1], snp_data, opts[:comparable_ratio], opts[:div], opts[:genome_length])
+			fit, hm, ht, ratios = fitness(pop_fits[-1][1], snp_data, opts[:comparable_ratio], opts[:div], opts[:genome_length])
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
 				Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists")) do
 					WriteIt::write_txt("gen_#{gen}_hm", hm)
 					WriteIt::write_txt("gen_#{gen}_ht", ht)
-					WriteIt::write_txt("gen_#{gen}_hyp", hyp)
+					WriteIt::write_txt("gen_#{gen}_ratios", ratios)
 				end
 			end
 

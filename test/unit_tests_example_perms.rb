@@ -9,9 +9,7 @@ class TestExample < Test::Unit::TestCase
 
 	def setup
 		@div = 100.0; @genome_length = 2000.0
-		hm, ht = ModelGenome::get_snps('hm <- rnorm(50, 1000, 100)', 'ht <- runif(50, 1, 2000)')
-		fratio, breaks = SNPdist::fratio(hm, ht, @div, @genome_length)
-		@hyp = SNPdist::hyp_snps([fratio, breaks], @div, @genome_length)
+		@ratios = WriteIt.file_to_floats_array("test/test/ratios_example.txt")
 
 		@fasta = ReformRatio::fasta_array("arabidopsis_datasets/small_dataset2/frags.fasta")
 		@snp_data = ReformRatio::get_snp_data("arabidopsis_datasets/small_dataset2/snps.vcf")
@@ -27,7 +25,7 @@ class TestExample < Test::Unit::TestCase
 	end
 
 	def test_get_perms
-		perms = ExamplePerms::get_perms(@fasta, 2, @snp_data, @hyp, @div, @genome_length)
+		perms = ExamplePerms::get_perms(@fasta, 2, @snp_data, @ratios, @div, @genome_length)
 		assert_equal(3, perms.length)
 		perms.each do |pop|
 			assert_kind_of(Array, pop)

@@ -9,27 +9,25 @@ class TestGATOC < Test::Unit::TestCase
 
 	def setup
 		@div = 100.0; @genome_length = 2000.0
-		hm, ht = ModelGenome::get_snps('hm <- rnorm(50, 1000, 100)', 'ht <- runif(50, 1, 2000)')
-		fratio, breaks = SNPdist::fratio(hm, ht, @div, @genome_length)
-		@hyp = SNPdist::hyp_snps([fratio, breaks], @div, @genome_length)
+		@ratios = WriteIt.file_to_floats_array("test/test/ratios_example.txt")
 
 		@fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/small_dataset2/frags.fasta')
 		@snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/small_dataset2/snps.vcf')
 
 		@pop = GATOC::initial_population(@fasta_array, 10)
-		@selected = GATOC::select(@pop, @snp_data, 5, @hyp, @div, @genome_length)
+		@selected = GATOC::select(@pop, @snp_data, 5, @ratios, @div, @genome_length)
 	end
 
 	def test_fitness
-		fit, hm, ht, @hyp = GATOC::fitness(@fasta_array, @snp_data, @hyp, @div, @genome_length)
+		fit, hm, ht, perm_ratio = GATOC::fitness(@fasta_array, @snp_data, @ratios, @div, @genome_length)
 		assert_kind_of(Float, fit)
 		assert_in_delta(0.5, fit, 0.5) # 0.5 +- 0.5
 		assert_kind_of(Array, hm)
 		assert_kind_of(Array, ht)
-		assert_kind_of(Array, @hyp)
+		assert_kind_of(Array, perm_ratio)
 		assert_kind_of(Integer, hm[0])
 		assert_kind_of(Integer, ht[0])
-		assert_kind_of(Float, @hyp[0])
+		assert_kind_of(Float, perm_ratio[0])
 	end
 
 	def test_initial_population
