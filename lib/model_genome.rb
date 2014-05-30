@@ -158,7 +158,7 @@ class ModelGenome
 			else
 				x = 'WRONG'
 			end
-			line = "#{chrom[u]}	#{i+1}	.	#{ref[u]}	#{alt[u]}	100	PASS	AF=#{x}" # we use i+1 to get actual positions e.g. 1 where ruby says 0
+			line = "#{chrom[u]}	#{i}	.	#{ref[u]}	#{alt[u]}	100	PASS	AF=#{x}"
 			vcf_format << line
 			u+=1
 		end
