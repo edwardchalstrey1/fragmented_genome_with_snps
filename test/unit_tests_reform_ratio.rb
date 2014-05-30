@@ -12,6 +12,19 @@ end
 
 class TestReform < Test::Unit::TestCase
 
+	def setup
+		vcf_file = "test/test/dummy.vcf"
+		fasta_file = "test/test/dummy.fasta"
+
+		snp_data = ReformRatio::get_snp_data(vcf_file)
+		fasta = ReformRatio::fasta_array(fasta_file)
+
+		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) # array of no. of snps per frag in same order as fasta
+		@pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) # get snp positions for each frag in array of arrays
+		@actual_pos = ReformRatio::total_pos(@pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
+		@het_snps, @hom_snps = ReformRatio::het_hom(@actual_pos, @pos_n_info[1])
+	end
+
 	def fasta
 		frag1, frag2, frag3 = FakeFasta.new, FakeFasta.new, FakeFasta.new
 		frag1.entry_id, frag2.entry_id, frag3.entry_id = 'frag1', 'frag2', 'frag3'
@@ -23,6 +36,8 @@ class TestReform < Test::Unit::TestCase
 		lengths = [10,10,10]
 		expected = [1,2,3,13,14,15,26,27,28]
 		assert_equal(expected, ReformRatio::total_pos(pos, lengths))
+
+		assert_equal([7,8,13,21], @actual_pos)
 	end
 
 	def test_fasta_id_n_lengths
@@ -48,6 +63,9 @@ class TestReform < Test::Unit::TestCase
 		info = pos_n_info[1]
 		assert_equal([[4,7],[5],[2,3,5]], pos)
 		assert_equal([[{'AF'=>'snp4'},{'AF'=>'snp5'}] ,[{'AF'=>'snp6'}], [{'AF'=>'snp1'},{'AF'=>'snp2'},{'AF'=>'snp3'}]], info)
+
+		assert_equal([[7,8],[2],[2]], @pos_n_info[0])
+		assert_equal([[{'AF'=>'1.0','NS'=>'5'},{'AF'=>'1.0'}], [{'AF'=>'0.5'}], [{'AF'=>'1.0'}]], @pos_n_info[1])
 	end
 
 	def test_fasta_array
@@ -72,6 +90,9 @@ class TestReform < Test::Unit::TestCase
 		hom = [2, 17, 191]
 		het = [56, 190]
 		assert_equal([het,hom], ReformRatio::het_hom(actual_pos, vcfs_info))
+
+		# assert_equal([13], @het_snps)
+		# assert_equal([7,21], @hom_snps)
 	end
 
 end

@@ -101,7 +101,7 @@ class ReformRatio
 		x = 0						   
 		pos.each do |frag|
 			if x == 0
-				totals << frag.uniq
+				totals << frag
 				x+=1
 			else
 				tot_frag, lengths = [], []
@@ -112,7 +112,7 @@ class ReformRatio
 				frag.each do |i|
 					tot_frag << so_far-1 + i
 				end
-				totals << tot_frag.uniq
+				totals << tot_frag
 				x+=1
 			end
 		end
