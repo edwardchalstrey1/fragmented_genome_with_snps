@@ -34,7 +34,7 @@ class TestReform < Test::Unit::TestCase
 	def test_total_pos
 		pos = [[1,2,3],[4,5,6],[7,8,9]]
 		lengths = [10,10,10]
-		expected = [1,2,3,13,14,15,26,27,28]
+		expected = [1,2,3,14,15,16,27,28,29]
 		assert_equal(expected, ReformRatio::total_pos(pos, lengths))
 
 		assert_equal([7,8,13,21], @actual_pos)

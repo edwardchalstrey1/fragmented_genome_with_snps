@@ -110,7 +110,7 @@ class ReformRatio
 				end
 				so_far = lengths.inject(:+) # this is the sum of the lengths for all the frags so far
 				frag.each do |i|
-					tot_frag << so_far-1 + i
+					tot_frag << so_far + i
 				end
 				totals << tot_frag
 				x+=1
