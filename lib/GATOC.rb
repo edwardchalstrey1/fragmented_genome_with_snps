@@ -187,7 +187,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			pop = opts[:start_pop]
 		end
 
-		gen, last_five_best = opts[:start_gen], []
+		gen, last_five_best, auc = opts[:start_gen], [], nil
 		opts[:gen].times do
 
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
@@ -216,12 +216,25 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 
-			if gen >= opts[:gen]
-				then break
-			end
 			prev_best_fit = pop_fits[-1][0]
 			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 			gen+=1
+
+			# quit algorithm if area under curve of fitness improvement is < 5% better for this 5 generations than previous 5
+			last_five_best << prev_best_fit
+			if last_five_best.length == 5
+				last_auc = auc
+				auc = QuitIf::quit(last_five_best)
+				if last_auc != nil && (auc - last_auc) <= (last_auc/20.0)
+					puts 'auc break'
+					gen = opts[:gen]
+				end
+				last_five_best = []
+			end
+
+			if gen >= opts[:gen]
+				then break
+			end
 			Signal.trap("PIPE", "EXIT")
 		end
 	end

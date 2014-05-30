@@ -15,7 +15,7 @@ genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{ARGV[0]}/frag
 Array(0..ARGV[2].to_i).each do |i|
 	Dir.chdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}/#{ARGV[1]}/Gen#{i}_lists")) do
 
-		ratios = WriteIt.file_to_floats_array("gen_#{i}_hyp.txt") #TODO change hyp to ratios
+		ratios = WriteIt.file_to_floats_array("gen_#{i}_ratios.txt")
 		SNPdist.plot_ratio(ratios, "fragmented_genome_with_snps/arabidopsis_datasets", "#{ARGV[0]}/#{ARGV[1]}", i, genome_length)
 
 		hyp = SNPdist.hyp_snps(ratios, genome_length)

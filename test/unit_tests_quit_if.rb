@@ -5,8 +5,8 @@ require_relative '../lib/quit_if'
 class TestQuitIf < Test::Unit::TestCase
 
 	def test_quit
-		slope = QuitIf.quit([0.9,0.9,0.92,0.95,0.955])
-		assert_kind_of(Float, slope)
-		assert_in_delta(0.5, slope, 0.5)
+		auc = QuitIf.quit([0.9,0.9,0.92,0.95,0.955])
+		assert_kind_of(Float, auc)
+		assert_equal(3.6975, ('%.4f' % auc).to_f)
 	end
 end

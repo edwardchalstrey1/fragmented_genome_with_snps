@@ -54,17 +54,10 @@ SNPdist.plot_snps(ht, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dat
 
 pop, restart_gen = [], []
 if restart == nil
-	## Average fitness of correctly ordered contigs ##
-	average_fitness_correct = []
-	10.times do
-		average_fitness_correct << GATOC::fitness(correct_fasta, snp_data, comparable_ratio, div, genome_length)[0]
-	end
-	average = (average_fitness_correct.inject(:+))/10.0
-	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/#{run}/average_fitness_correct", [average])
-
+	fitness_correct = GATOC::fitness(correct_fasta, snp_data, comparable_ratio, div, genome_length)[0]
+	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/#{run}/fitness_correct", [fitness_correct])
 	restart_gen << 0
 	pop = nil
-
 else ## For restarts ##
 	Dir.chdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) do # Selecting the generation to restart from
 		dirs = Dir.glob('*').select {|f| File.directory? f}
