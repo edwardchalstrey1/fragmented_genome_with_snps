@@ -9,15 +9,15 @@ require_relative 'lib/score_plots/example_perms'
 
 dataset = ARGV[0]
 run = ARGV[1]
-gen =  ARGV[2].to_i
-pop_size = ARGV[3].to_i
-select_num = ARGV[4].to_i
-c_mut = ARGV[5].to_i
-s_mut = ARGV[6].to_i
-save = ARGV[7].to_i
-ran = ARGV[8].to_i
-div = ARGV[9].to_f
-restart = ARGV[10]
+gen =  ARGV[2].to_i # Number of generations
+pop_size = ARGV[3].to_i # Population size
+select_num = ARGV[4].to_i # Number of permutations to select from each generation
+c_mut = ARGV[5].to_i # Number of chunk mutants (see GATOC and PMeth gem) in each new population
+s_mut = ARGV[6].to_i # Number of swap mutants (see GATOC and PMeth gem) in each new population
+save = ARGV[7].to_i # Number of permutations to save from each generation
+ran = ARGV[8].to_i # Number of random permutations in each generation
+div = ARGV[9].to_f # Number of divisions in the genome, at which to calculate the SNP frequencies
+restart = ARGV[10] # Tells the algorithm to continue from the most recent generation if it has stopped
 
 ## Files ##
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
@@ -77,4 +77,4 @@ end
 # Run the algorithm ##
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
  :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
- :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0], :auc => 2, :auc_gen => 10)
+ :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0], :auc => 1, :auc_gen => 20)
