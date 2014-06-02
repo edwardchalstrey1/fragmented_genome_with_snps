@@ -91,8 +91,8 @@ class TestReform < Test::Unit::TestCase
 		het = [56, 190]
 		assert_equal([het,hom], ReformRatio::het_hom(actual_pos, vcfs_info))
 
-		# assert_equal([13], @het_snps)
-		# assert_equal([7,21], @hom_snps)
+		assert_equal([13], @het_snps)
+		assert_equal([7,8,21], @hom_snps)
 	end
 
 end

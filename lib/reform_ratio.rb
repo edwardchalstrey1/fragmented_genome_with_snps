@@ -127,9 +127,9 @@ class ReformRatio
 		het, hom = [], []
 		x = 0
 		actual_pos.each do |snp|
-			if vcfs_info.flatten[x] == {"AF"=>"1.0"} # homozygous SNPs have AF= 1.0, we can change this to a range for real data
+			if vcfs_info.flatten[x]['AF'] == '1.0' # homozygous SNPs have AF= 1.0, we can change this to a range for real data
 				hom << snp
-			elsif vcfs_info.flatten[x] == {"AF"=>"0.5"}
+			elsif vcfs_info.flatten[x]['AF'] == '0.5'
 				het << snp
 			end
 			x+=1
