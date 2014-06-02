@@ -179,7 +179,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:start_pop => nil,
 			:start_gen => 0,
 			:auc => 5,
-			:auc_gen
+			:auc_gen => 5
 			}.merge!(parameters)
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
