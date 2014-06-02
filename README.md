@@ -66,7 +66,7 @@ One possibility: Using the R library pracma, the findpeaks function can be used 
 Running the algorithm with current project files: 02/06/14
 --------
 
-1. To run it: **ruby [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb) ARGV[0] = dataset name ARGV[1] = run**, where the dataset name is the same as the one used to create the model genome, and the run is the name of the directory to save performance figures to. **Subsequent required command line parameters are described in algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb).**
+1. To run it: **ruby [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb) ARGV[0] = dataset name ARGV[1] = run**, where the dataset name is the same as the one used to create the model genome, and the run is the name of the directory to save performance figures to. **Subsequent required command line parameters are described in [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb).**
 
 1. The [ReformRatio class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb) contains methods involved in interpreting data from FASTA and VCF files, so they can be used in the genetic algorithm.
 
