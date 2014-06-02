@@ -235,6 +235,11 @@ class GATOC # Genetic Algorithm To Order Contigs
 				last_best = []
 			end
 
+			if pop_fits[-1][0] == 1.0
+				puts 'correct permutation achieved'
+				gen = opts[:gen]
+			end
+			
 			if gen >= opts[:gen]
 				then break
 			end
