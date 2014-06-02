@@ -156,6 +156,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 	#   genome_length: Length of the genome the algorithm is being run on
 	#   start_pop: Population array of permutations (arrays of FASTA format fragments)
 	#   start_gen: Generation that the algorithm ist starting from
+	#   auc: quit algorithm if area under curve of fitness improvement is < auc% better for this auc_gen generations than previous auc_gen
+	#   auc_gen: see above
 	# Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 	# Output 2: A saved figure of the algorithm's performance
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
@@ -175,7 +177,9 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:div => 100.0,
 			:genome_length => 2000.0,
 			:start_pop => nil,
-			:start_gen => 0
+			:start_gen => 0,
+			:auc => 5,
+			:auc_gen
 			}.merge!(parameters)
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
@@ -187,7 +191,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			pop = opts[:start_pop]
 		end
 
-		gen, last_five_best, auc = opts[:start_gen], [], nil
+		gen, last_best, auc = opts[:start_gen], [], nil
 		opts[:gen].times do
 
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
@@ -220,16 +224,15 @@ class GATOC # Genetic Algorithm To Order Contigs
 			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 			gen+=1
 
-			# quit algorithm if area under curve of fitness improvement is < 5% better for this 5 generations than previous 5
-			last_five_best << prev_best_fit
-			if last_five_best.length == 5
+			last_best << prev_best_fit
+			if last_best.length == opts[:auc_gen]
 				last_auc = auc
-				auc = QuitIf::quit(last_five_best)
-				if last_auc != nil && (auc - last_auc) <= (last_auc/20.0)
+				auc = QuitIf::quit(last_best)
+				if last_auc != nil && (auc - last_auc) <= (last_auc/(100.0/opts[:auc].to_f))
 					puts 'auc break'
 					gen = opts[:gen]
 				end
-				last_five_best = []
+				last_best = []
 			end
 
 			if gen >= opts[:gen]

@@ -77,4 +77,4 @@ end
 # Run the algorithm ##
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
  :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
- :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0])
+ :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0], :auc => 2, :auc_gen => 10)
