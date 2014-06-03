@@ -27,10 +27,6 @@ location = 'fragmented_genome_with_snps/arabidopsis_datasets'
 snp_data = ReformRatio::get_snp_data(vcf_file)
 fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") # correct permutation
 
-### Directories ###
-
-Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into
-
 ## Comparable ratio ## TODO a comparable ratio that doesn't use the known distributions
 genome_length = ReformRatio::genome_length(fasta_file)
 snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) # array of no. of snps per frag in same order as fasta
@@ -38,28 +34,35 @@ pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_pe
 actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
 ht, hm = ReformRatio::het_hom(actual_pos, pos_n_info[1])
 
-WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
-WriteIt::write_txt("arabidopsis_datasets/#{dataset}/ht_snps", ht)
-
 hom_count = FitnessScore::count(hm, div, genome_length)
 het_count = FitnessScore::count(ht, div, genome_length)
 comparable_ratio = FitnessScore::ratio(hom_count, het_count)
 
 pop, restart_gen = [], []
 if restart == nil
-	fitness_correct = GATOC::fitness(fasta, snp_data, comparable_ratio, div, genome_length)[0]
-	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/#{run}/fitness_correct", [fitness_correct])
+	Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into
+	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
+	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/ht_snps", ht)
+
 	restart_gen << 0
 	pop = nil
 else ## For restarts ##
 	Dir.chdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) do # Selecting the generation to restart from
 		dirs = Dir.glob('*').select {|f| File.directory? f}
 		dirs.delete("Gencorrect_lists")
-		restart_gen << (dirs.length/2)-1
+		if dirs.length <= 2
+			restart_gen << 0
+		else
+			restart_gen << (dirs.length/2)-1
+		end
 	end
-	id_pop = MetricPlot::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
-	id_pop.each do |ids|
-		pop << [ExamplePerms::fasta_p_id(fasta, ids), 'type']
+	if restart_gen[0] != 0
+		id_pop = MetricPlot::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
+		id_pop.each do |ids|
+			pop << [ExamplePerms::fasta_p_id(fasta, ids), 'type']
+		end
+	else
+		pop = nil
 	end
 end
 
