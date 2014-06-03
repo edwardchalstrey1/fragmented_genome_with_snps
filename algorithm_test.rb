@@ -30,7 +30,6 @@ fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") 
 ### Directories ###
 
 Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into
-Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}/Gencorrect_lists")) # make the directory to put correct permutation files into
 
 ## Comparable ratio ## TODO a comparable ratio that doesn't use the known distributions
 genome_length = ReformRatio::genome_length(fasta_file)
@@ -38,23 +37,13 @@ snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) # array of 
 pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) # get snp positions for each frag in array of arrays
 actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
 ht, hm = ReformRatio::het_hom(actual_pos, pos_n_info[1])
+
 WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
 WriteIt::write_txt("arabidopsis_datasets/#{dataset}/ht_snps", ht)
+
 hom_count = FitnessScore::count(hm, div, genome_length)
 het_count = FitnessScore::count(ht, div, genome_length)
 comparable_ratio = FitnessScore::ratio(hom_count, het_count)
-
-SNPdist.plot_ratio(comparable_ratio, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length)
-
-hyp = SNPdist.hyp_snps(comparable_ratio, genome_length)
-SNPdist.plot_snps(hyp, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "hyp_#{div/1000}Kdiv", 
-	'Approximated ratio of homozygous to heterozygous SNP density')
-
-SNPdist.plot_snps(hm, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "hm_#{div/1000}Kdiv",
-	'Homozygous SNP density')
-
-SNPdist.plot_snps(ht, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "ht_#{div/1000}Kdiv",
-	'Heterozygous SNP density')
 
 pop, restart_gen = [], []
 if restart == nil
