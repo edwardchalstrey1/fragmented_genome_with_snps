@@ -8,6 +8,7 @@ class QuitIf
 		myr = RinRuby.new(echo = false)
 		myr.assign 'y', fitness_scores
 		myr.eval 'x <- 1:length(y)'
+		myr.eval 'library("pracma")'
 		myr.eval 'require(pracma)'
 		myr.eval 'auc <- trapz(x,y)'
 		auc = myr.pull 'auc'
