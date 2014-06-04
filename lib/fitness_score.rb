@@ -25,14 +25,16 @@ class FitnessScore
 
 	# Input 0: Array where each value is the no. of homozygous SNPs in a division of the genome
 	# Input 1: Array where each value is the no. of heterozygous SNPs in a division of the genome
-	# Output: Array of ratios (floats) of homozygous to heterozygous SNPs for each division/bin of the genome,
-	#         where 1 has been added to each count, to avoid ratios of infinity or zero
+	# Output: Array of ratios (floats) of homozygous to heterozygous SNPs for each division/bin of the genome
 	def self.ratio(hm_count, ht_count)
 		x = 0
 		ratios = []
 		hm_count.length.times do # the number of divisions of the genome (div)
-			count_ratio = ((hm_count[x] + 1).to_f / (ht_count[x] + 1).to_f) # a measure of ratio
-			ratios << count_ratio
+			if hm_count[x] == 0 || ht_count[x] == 0
+				ratios << 'NaN' # cannot calculate ratios
+			else
+				ratios << hm_count[x].to_f / ht_count[x].to_f
+			end
 			x+=1
 		end
 		return ratios
@@ -42,9 +44,17 @@ class FitnessScore
 	# Input 1: Array of measured ratios (floats) of homozygous to heterozygous SNPs for each division/bin of the permutation
 	# Output: Float between 0.0 and 1.0 where closely matching inputs are closer to 1.0 (pearson correlation)
 	def self.score(expected, permutation)
+		x, ex, perm = 0, expected, permutation
+		ex.each do |ratio|
+			if ex[x] == 'NaN' || perm[x] == 'NaN'
+				ex.delete_at(x); perm.delete_at(x)
+			else
+				x+=1
+			end
+		end
 		myr = RinRuby.new(echo = false)
-		myr.assign 'x', expected
-		myr.assign 'y', permutation
+		myr.assign 'x', ex
+		myr.assign 'y', perm
 		myr.eval 'score <- abs(cor(x,y))'
 		fitness_score = myr.pull 'score'
 		myr.quit

@@ -23,12 +23,16 @@ class TestFitnessScore < Test::Unit::TestCase
 	end
 
 	def test_ratio
-		assert_equal([2.0/5.0, 2.0/3.0, 0.75, 4.0/3.0, 0.5, 2.0], @count_ratios)
+		assert_equal([0.25, 0.5, 2.0/3.0, 1.5, 'NaN', 'NaN'], @count_ratios)
 	end
 
 	def test_score
 		expected = [1,2,3,4,5] # example of an expected count ratio
 		permutation = [2,1,3,4,5] # example of a count ratio from a permutation
 		assert_equal(0.9, ('%.1f' % FitnessScore.score(expected, permutation)).to_f)
+
+		ex2 = ['NaN',2,3,4,5]
+		perm2 = [2,1,4,'NaN',5] 
+		assert_equal(0.89, ('%.2f' % FitnessScore.score(ex2, perm2)).to_f)
 	end
 end
