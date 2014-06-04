@@ -1,6 +1,7 @@
 #encoding: utf-8
 
 require_relative '../lib/fitness_score'
+require_relative '../lib/write_it'
 require 'test/unit'
 
 class TestFitnessScore < Test::Unit::TestCase
@@ -15,6 +16,13 @@ class TestFitnessScore < Test::Unit::TestCase
 		@ht_count = FitnessScore.count(@ht, @div, @genome_length)
 
 		@count_ratios = FitnessScore.ratio(@hm_count, @ht_count)
+
+		@div = 100.0; @genome_length = 2000.0
+		hm = WriteIt.file_to_ints_array('test/test/hm_snps.txt')
+		ht = WriteIt.file_to_ints_array('test/test/ht_snps.txt')
+		hom_count = FitnessScore::count(hm, @div, @genome_length)
+		het_count = FitnessScore::count(ht, @div, @genome_length)
+		@ratios = FitnessScore::ratio(hom_count, het_count)
 	end
 
 	def test_count
@@ -34,5 +42,8 @@ class TestFitnessScore < Test::Unit::TestCase
 		ex2 = ['NaN',2,3,4,5]
 		perm2 = [2,1,4,'NaN',5] 
 		assert_equal(0.89, ('%.2f' % FitnessScore.score(ex2, perm2)).to_f)
+
+		assert_equal(1.0, FitnessScore.score([0.25, 0.5, 2.0/3.0, 1.5, 'NaN', 'NaN'], [0.25, 0.5, 2.0/3.0, 1.5, 'NaN', 'NaN']))
+		assert_equal(1.0, FitnessScore.score(@ratios, @ratios))
 	end
 end

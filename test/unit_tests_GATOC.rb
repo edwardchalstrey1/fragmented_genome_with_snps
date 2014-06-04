@@ -3,13 +3,18 @@ require_relative '../lib/reform_ratio'
 require_relative '../lib/GATOC'
 require_relative '../lib/snp_dist'
 require_relative '../lib/model_genome'
+require_relative '../lib/write_it'
 require 'test/unit'
 
 class TestGATOC < Test::Unit::TestCase
 
 	def setup
-		@div = 100.0; @genome_length = 2000.0
-		@ratios = WriteIt.file_to_floats_array("test/test/ratios_example.txt")
+		@div = 50.0; @genome_length = 2000.0
+		hm = WriteIt.file_to_ints_array('test/test/hm_snps.txt')
+		ht = WriteIt.file_to_ints_array('test/test/ht_snps.txt')
+		hom_count = FitnessScore::count(hm, @div, @genome_length)
+		het_count = FitnessScore::count(ht, @div, @genome_length)
+		@ratios = FitnessScore::ratio(hom_count, het_count)
 
 		@fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/small_dataset2/frags.fasta')
 		@snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/small_dataset2/snps.vcf')
@@ -27,7 +32,6 @@ class TestGATOC < Test::Unit::TestCase
 		assert_kind_of(Array, perm_ratio)
 		assert_kind_of(Integer, hm[0])
 		assert_kind_of(Integer, ht[0])
-		assert_kind_of(Float, perm_ratio[0])
 	end
 
 	def test_initial_population

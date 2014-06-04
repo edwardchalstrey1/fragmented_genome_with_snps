@@ -24,6 +24,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		het_count = FitnessScore::count(het_snps, div, genome_length)
 		perm_ratio = FitnessScore::ratio(hom_count, het_count)
 		correlation = FitnessScore::score(comparable_ratio, perm_ratio)
+		# puts "fitness: #{correlation}"
 		return correlation, hom_snps, het_snps, perm_ratio
 	end
 
@@ -52,6 +53,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		fits = {}
 		pop.each do |fasta_array, type|
 			fitn = fitness(fasta_array, snp_data, ratio, div, genome_length)[0]
+			# puts "fitness: #{fitn}"
 			fits[fasta_array] = [fitn, type] # maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
 		if fits.size < pop.size # to compensate for duplicates, we add extra swap mutants
@@ -60,11 +62,17 @@ class GATOC # Genetic Algorithm To Order Contigs
 			diff.times do
 				extra_swap = PMeth.swap_mutate(pop[rand(pop[0].length)][0].dup)
 				fitn = fitness(extra_swap, snp_data, ratio, div, genome_length)[0]
+				# puts "fitness: #{fitn}"
 				fits[extra_swap] = [fitn, 'extra_swap']
 				x+=1
 			end
 			puts "#{x} extra swap mutants added, due to multiples of the same permutation in the population"
 		end
+		# x = 0
+		# fits.each do |k,v|
+		# 	puts "fitness: #{v[0]}"
+		# 	x+=1
+		# end
 		fits = fits.sort_by {|k,v| v[0]} # sorting by fitness score
 		types = []
 		fits.each {|k,v| types << v.reverse} # adding the types with fitness to a new array

@@ -44,20 +44,25 @@ class FitnessScore
 	# Input 1: Array of measured ratios (floats) of homozygous to heterozygous SNPs for each division/bin of the permutation
 	# Output: Float between 0.0 and 1.0 where closely matching inputs are closer to 1.0 (pearson correlation)
 	def self.score(expected, permutation)
-		x, ex, perm = 0, expected, permutation
-		ex.each do |ratio|
+		puts "expected: #{expected}"
+		puts "permutation: #{expected}"
+		x, ex, perm = 0, expected.dup, permutation.dup
+		ex.length.times do
 			if ex[x] == 'NaN' || perm[x] == 'NaN'
 				ex.delete_at(x); perm.delete_at(x)
 			else
 				x+=1
 			end
 		end
+		puts "ex: #{ex}"
+		puts "perm: #{perm}"
 		myr = RinRuby.new(echo = false)
 		myr.assign 'x', ex
 		myr.assign 'y', perm
 		myr.eval 'score <- abs(cor(x,y))'
 		fitness_score = myr.pull 'score'
 		myr.quit
+		# puts "fitness: #{fitness_score}"
 		return fitness_score
 	end
 end
