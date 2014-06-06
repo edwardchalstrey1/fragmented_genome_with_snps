@@ -5,7 +5,8 @@ class UPlot
 	def self.get_dirs(dataset)
 		run_dirs = [] # these are the directories we will be taking the information from
 		Dir.chdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}")) do
-			Dir.glob('*').select {|f| File.directory? f}.each do |dir|
+			dirs = Dir.glob('*').select {|f| File.directory? f}
+			dirs.each do |dir|
 				if dir.include?('p_run')
 					run_dirs << "fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}/#{dir}"
 				end
@@ -13,6 +14,8 @@ class UPlot
 		end
 		return run_dirs
 	end
+
+	# def self.
 
 	def self.uplot(generations, metric_scores, runs)
 		myr = RinRuby.new(echo = false)
