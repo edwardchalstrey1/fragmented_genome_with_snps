@@ -18,7 +18,7 @@ class MetricPlot
 	# Input 2: The number of generations to increment by
 	# Input 3: Dataset
 	# Input 4: Run
-	# Output: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids)
+	# Output: Array of populations, each population is from the next generation and has a number of permutations (arrays of fasta frag ids), with the fitness score at element 0 of each
 	def self.get_perms(gen, start, inc, dataset, run) # number of generations to choose from
 		all_perms = []
 		n = start
