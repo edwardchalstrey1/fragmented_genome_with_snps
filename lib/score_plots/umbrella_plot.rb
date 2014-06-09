@@ -1,6 +1,7 @@
 #encoding: utf-8
 class UPlot
 	require 'rinruby'
+	require_relative 'score_plots'
 
 	# Returns array of names of runs in the dataset
 	def self.get_runs(dataset)
@@ -26,8 +27,8 @@ class UPlot
 		return gens.length
 	end
 
-	def plot_info(dataset)
-		runs = UPlot.get_dirs(dataset)
+	def self.plot_info(dataset)
+		runs = UPlot.get_runs(dataset)
 		gens, fitness, all_runs = [],[],[]
 		runs.each do |run|
 			gen_num = UPlot.get_gens(dataset, run) # get number of generations for this run
