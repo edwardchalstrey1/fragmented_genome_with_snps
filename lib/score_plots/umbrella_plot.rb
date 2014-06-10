@@ -2,6 +2,8 @@
 class UPlot
 	require 'rinruby'
 	require_relative 'score_plots'
+	require 'pdist'
+	require 'pp'
 
 	# Returns array of names of runs in the dataset
 	def self.get_runs(dataset)
@@ -27,6 +29,7 @@ class UPlot
 		return gens.length
 	end
 
+	# Returns arrays of the generations, fitness scores and runs for each permutation (index in each array is from same permutation)
 	def self.plot_info(dataset)
 		runs = UPlot.get_runs(dataset)
 		gens, fitness, all_runs = [],[],[]
@@ -46,15 +49,33 @@ class UPlot
 		return gens, fitness, all_runs
 	end
 
+	def self.get_metric
+
+	end
+
 	# Makes plot from arrays of generations (on for each data point), metric scores, and group (the run the data is from)
-	def self.uplot(generations, metric_scores, run_group)
+	def self.uplot(dataset, gens, scores, runs, filename)
 		myr = RinRuby.new(echo = false)
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
-		myr.assign 'generations', generations
-		myr.assign 'metric_scores', metric_scores
-		myr.assign 'runs', run_group
-		myr.eval 'uplot(generations, metric_scores, runs)'
-		# myr.eval 'ggsave()'
+		puts 'a'
+		arrays = ['gens', 'scores', 'runs']
+		n = 0
+		[gens, scores, runs].each do |array|
+			x = 1
+			myr.eval "#{arrays[n]} <- c()"
+			array.each do |entry|
+				myr.assign 'entry', entry
+				myr.eval "#{arrays[n]} <- c(#{arrays[n]}, entry)"
+				puts x
+				x+=1
+			end
+			n+=1
+		end
+		myr.assign 'dataset', dataset
+		myr.assign 'filename', filename
+		myr.eval "p <- uplot(gens, scores, runs)"
+		puts 'got p'
+		myr.eval "ggsave(p, file = paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset,'/', filename,'.png', sep = ''))"
 		myr.quit
 	end
 end
