@@ -5,8 +5,10 @@ uplot <- function(generations, metric_scores, runs){
 		y = metric_scores,
 		group = factor(runs)
     )
-	p <- ggplot(df, aes(colour = group, y = y, x = x))
-	p <- p + geom_point(aes(y = y))
+	p <- ggplot(df, aes(colour = group, y = y, x = x)) +
+	geom_point(aes(y = y)) +
+	scale_y_continuous(limits=c(0, 1)) +
+	scale_x_discrete(breaks = seq(0, 24, by = 5))
 	return(p)
 }
 

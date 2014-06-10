@@ -64,7 +64,11 @@ class UPlot
 			x = 1
 			myr.eval "#{arrays[n]} <- c()"
 			array.each do |entry|
-				myr.assign 'entry', entry
+				if n == 1
+					myr.assign 'entry', entry.to_f
+				else
+					myr.assign 'entry', entry
+				end
 				myr.eval "#{arrays[n]} <- c(#{arrays[n]}, entry)"
 				puts x
 				x+=1
