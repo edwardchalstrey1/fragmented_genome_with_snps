@@ -29,9 +29,10 @@ class UPlot
 	end
 
 	# Returns arrays of the generations, fitness scores and runs for each permutation (index in each array is from same permutation)
+	# Also returns arrays of all the permutations (arrays of fragment ids), and the "parameter type", which denotes the parameters used in that run
 	def self.plot_info(dataset)
 		runs = UPlot.get_runs(dataset)
-		gens, fitness, all_runs, all_perms = [],[],[],[]
+		gens, fitness, all_runs, all_perms, param_types = [],[],[],[],[]
 		runs.each do |run|
 			gen_num = UPlot.get_gens(dataset, run) # get number of generations for this run
 			pops = MetricPlot.get_perms(gen_num, 0, 1, dataset, run) # all the populations of this run
@@ -42,11 +43,28 @@ class UPlot
 					gens << gen
 					all_runs << run
 					all_perms << perm[1..-1]
+					run_num = run.dup
+					run_num.slice!('p_run')
+					# puts "#{run_num}!!!"
+					case run_num.to_i
+					when 1..10 then param_types << 'p1'
+					when 11..20 then param_types << 'p2'
+					when 21..30 then param_types << 'p3'
+					when 31..40 then param_types << 'p4'
+					when 41..50 then param_types << 'p5'
+					when 51..60 then param_types << 'p6'
+					when 61..70 then param_types << 'p7'
+					when 71..80 then param_types << 'p8'
+					when 81..90 then param_types << 'p9'
+					when 91..100 then param_types << 'p10'
+					when 100..110 then param_types << 'p11'
+					when 110..120 then param_types << 'p12'
+					end
 				end
 				gen+=1
 			end
 		end
-		return gens, fitness, all_runs, all_perms
+		return gens, fitness, all_runs, all_perms, param_types
 	end
 
 	# Makes plot from arrays of generations (on for each data point), metric scores, and group (the run the data is from)

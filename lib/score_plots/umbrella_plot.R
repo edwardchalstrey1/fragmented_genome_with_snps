@@ -10,7 +10,7 @@ uplot <- function(generations, metric_scores, runs, param_types){
 	geom_point(aes(y = metric_scores)) +
 	scale_y_continuous(limits=c(0, 1)) +
 	scale_x_discrete() +
-  facet_grid(param_types~., scales = "free_y", space = "fixed")
+	facet_grid(param_types~., scales = "free_y", space = "fixed")
 	return(p)
 }
 
