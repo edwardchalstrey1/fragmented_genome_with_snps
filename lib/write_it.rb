@@ -26,10 +26,10 @@ class WriteIt
 	# Input: file location (file must have integers on each line)
 	# Output: array with each line of the file as an entry, converted to integer
 	def self.file_to_ints_array(file)
-	  begin 
-      WriteIt.file_to_array(file).collect {|l| Integer(l) }
-    resuce ArgumentError
-      $stderr.puts "Not all lines in file can be converted to ints"
+	  begin
+      WriteIt.file_to_array(file).collect {|l| Integer(Float(l)) }
+    rescue ArgumentError => e
+      $stderr.puts "Not all lines in file can be converted to ints: #{e}"
       exit
     end
 	end
@@ -37,11 +37,11 @@ class WriteIt
 	# Input: file location (file must have floats on each line)
 	# Output: array with each line of the file as an entry, converted to float
 	def self.file_to_floats_array(file)
-    begin 
+    begin
       WriteIt.file_to_array(file).collect {|l| Float(l)}
-    rescue ArgumentError
-      $stderr.puts "Not all lines in file can be converted to ints"
+    rescue ArgumentError => e
+      $stderr.puts "Not all lines in file can be converted to floats: #{e}"
+			exit
     end
 	end
 end
-
