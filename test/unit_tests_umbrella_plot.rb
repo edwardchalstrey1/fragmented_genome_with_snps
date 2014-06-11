@@ -10,7 +10,7 @@ class TestUPlot < Test::Unit::TestCase
 	end
 	
 	def test_get_runs
-		assert_equal(2, @runs.length)
+		assert_equal(4, @runs.length)
 		assert_equal('p_run1', @runs[0])
 	end
 
@@ -20,19 +20,27 @@ class TestUPlot < Test::Unit::TestCase
 	end
 
 	def test_plot_info
-		gens, fits, runs = UPlot.plot_info(@dataset)
+		gens, fits, all_runs, perms, param_types = UPlot.plot_info(@dataset)
 
-		assert_equal(560, gens.length) # Total permutations in plot
-		assert_equal(560, fits.length)
-		assert_equal(560, runs.length)
+		assert_equal(11060, gens.length) # Total permutations in plot
+		assert_equal(11060, fits.length)
+		assert_equal(11060, all_runs.length)
+		assert_equal(11060, perms.length)
+		assert_equal(11060, param_types.length)
 
 		assert_equal(0, gens[0])
 		assert_equal(0.0479, ('%.4f' % fits[0]).to_f) # First permutation fitness
-		assert_equal('p_run1', runs[0])
+		assert_equal('p_run1', all_runs[0])
+		assert_equal(53, perms[0].length)
+		assert_equal('frag35', perms[0][0])
+		assert_equal('p1', param_types[0])
 
-		assert_equal(24, gens[-1])
-		assert_equal(0.6264, ('%.4f' % fits[-1]).to_f) # Permutation 9 fitness, permutation files ordered alphabetically (order doesn't matter)
-		assert_equal('p_run2', runs[-1])
+		assert_equal(199, gens[-1])
+		assert_equal(0.3168, ('%.4f' % fits[-1]).to_f) # Permutation 9 fitness, p_run 50: permutation files ordered alphabetically (order doesn't matter)
+		assert_equal('p_run50', all_runs[-1])
+		assert_equal(53, perms[-1].length)
+		assert_equal('frag17', perms[-1][0])
+		assert_equal('p5', param_types[-1])
 	end
 
 end
