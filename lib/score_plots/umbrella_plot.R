@@ -1,19 +1,25 @@
-uplot <- function(generations, metric_scores, runs){
+uplot <- function(generations, metric_scores, runs, param_types){
 	library(ggplot2)
 	df <- data.frame(
-		x = factor(generations),
-		y = metric_scores,
-		group = factor(runs)
+		gen = generations,
+		metric_scores = metric_scores,
+		replicates = runs,
+    param_types = param_types
     )
-	p <- ggplot(df, aes(colour = group, y = y, x = x)) +
-	geom_point(aes(y = y)) +
+	p <- ggplot(df, aes(colour = replicates, y = metric_scores, x = gen)) +
+	geom_point(aes(y = metric_scores)) +
 	scale_y_continuous(limits=c(0, 1)) +
-	scale_x_discrete(breaks = seq(0, 24, by = 5))
+	scale_x_discrete() +
+  facet_grid(param_types~., scales = "free_y", space = "fixed")
 	return(p)
 }
 
 mets <- c(0.55, 0.60, 0.70, 0.65, 0.70, 0.80, 0.30, 0.40, 0.50, 0.40, 0.50, 0.60)
+mets <- c(mets, mets)
 gens <- c(1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2)
-groups <- c("run1", "run1", "run1", "run1", "run1", "run1", "run2", "run2", "run2", "run2", "run2", "run2")
+gens <- c(gens, gens)
+runs <- c("run1", "run1", "run1", "run1", "run1", "run1", "run2", "run2", "run2", "run2", "run2", "run2")
+runs <- c(runs, runs)
+pt <- c('p1','p1','p1','p1','p1','p1','p1','p1','p1','p1','p1','p1','p2','p2','p2','p2','p2','p2','p2','p2','p2','p2','p2','p2')
 
-uplot(gens,mets,groups)
+uplot(gens,mets,runs,pt)
