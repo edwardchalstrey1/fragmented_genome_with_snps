@@ -10,11 +10,10 @@ uplot <- function(generations, metric_scores, runs, param_types, metric, title){
     xlab("Generations") +
     ylab(metric) +
     ggtitle(title) +
-    # geom_point(aes(y = metric_scores,x = factor(gen))) +
-    geom_boxplot(aes(y = metric_scores, x = factor(gen), factor(replicates))) +
-    
+	  # geom_point(aes(y = metric_scores,x = factor(gen))) +
+	  geom_boxplot(aes(y = metric_scores, x = factor(gen), factor(replicates))) +
     scale_y_continuous(limits=c(0, 1)) +
-    scale_x_discrete()
+    scale_x_discrete() +
     facet_grid(param_types~., scales = "free_y", space = "fixed")
   return(p)
 }
