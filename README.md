@@ -6,7 +6,7 @@ Detecting Causative Mutations from High-throughput Sequencing on Unordered Genom
 I am creating a model genome, based of [Arabidopsis chromosome 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/TAIR10_chr4.fasta), from an individual created by the back-crossing of a mutant with a mapping line, where the mutation is an experimentally induced, phenotype altering SNP. 
 
 I am designing an algorithm that can locate a causative SNP mutation, based on the distribution of SNPs. To emulate real data, I first split the genome into fragments, which model contigs assembled from high-throughput sequencing reads. My algorithm will need to rearrange these contigs into their proper order, then locate the causative mutation.
- 
+
 ### The Experiment Being Modelled
  
 A beneficial Arabidopsis phenotype is created by experimentally by inducing SNPs with EMS (e.g. a disease resistance mutation). The phenotype altering, reccesive homozygous SNP needs to be identified. The mutant individual is back-crossed with a mapping line. This mapping line is a cross between two Arabidopsis ecotypes (one of which the same ecotype as the mutant), and therefore has heterozygous SNPs across its genome.
@@ -87,4 +87,16 @@ Identifying causal mutants is important in understanding the mechanism by which 
 
 However, in species where a reference genome is not available, there exists a need to develop tools which can identify mutations directly from HTS datasets.
 
+Project dependencies
+------------
 
+1. Ruby >= 2.0.0
+2. Ruby gems:
+ - pmeth >= 1.0.0
+ - pdist >= 0.0.5
+ - bio >= 1.4.3.0001
+ - bio-samtools >= 2.0.5
+ - rinruby >= 2.0.3
+3. R >= 3.0.1
+4. R packages:
+ - pracma >= 1.6.4
