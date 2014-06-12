@@ -100,3 +100,4 @@ Project dependencies
 3. R >= 3.0.1
 4. R packages:
  - pracma >= 1.6.4
+ - ggplot2 >= 0.9.3.1
