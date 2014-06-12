@@ -67,7 +67,7 @@ class UPlot
 	end
 
 	# Makes plot from arrays of generations (on for each data point), metric scores, and the run/replicate the data is from. Runs from different parameter replicates are faceted
-	def self.uplot(dataset, gens, scores, runs, param_types, filename)
+	def self.uplot(dataset, gens, scores, runs, param_types, filename, metric, title)
 		myr = RinRuby.new(echo = false)
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
 
@@ -78,7 +78,7 @@ class UPlot
 			x = 400
 			myr.eval "#{arrays[n]} <- c()"
 			array.each_slice(400) do |chunk|
-				myr.assign 'chunk', chunk
+				myr.chunk = chunk
 				myr.eval "#{arrays[n]} <- c(#{arrays[n]}, chunk)"
 				puts x
 				x+=(chunk.length)
@@ -93,9 +93,11 @@ class UPlot
 		# myr.runs = runs
 		# myr.param_types = param_types
 
-		myr.assign 'dataset', dataset
-		myr.assign 'filename', filename
-		myr.eval "p <- uplot(gens, scores, runs, param_types)"
+		myr.dataset = dataset
+		myr.filename = filename
+		myr.metric = metric
+		myr.title = title
+		myr.eval "p <- uplot(gens, scores, runs, param_types, metric, title)"
 		myr.eval "ggsave(p, file = paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset,'/', filename,'.png', sep = ''))"
 		myr.quit
 	end
