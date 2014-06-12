@@ -39,7 +39,7 @@ class UPlot
 			gen = 0
 			pops.each do |pop|
 				pop.each do |perm|
-					fitness << perm[0]
+					fitness << (1 - perm[0].to_f) # compliment fitness score
 					gens << gen
 					all_runs << run
 					all_perms << perm[1..-1]
@@ -70,23 +70,29 @@ class UPlot
 	def self.uplot(dataset, gens, scores, runs, param_types, filename)
 		myr = RinRuby.new(echo = false)
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
+
 		arrays = ['gens', 'scores', 'runs', 'param_types']
 		n = 0
 		[gens, scores, runs, param_types].each do |array|
-			x = 1
+			puts 'next array'
+			x = 400
 			myr.eval "#{arrays[n]} <- c()"
-			array.each do |entry|
-				if n == 1
-					myr.assign 'entry', (1 - entry.to_f) # compliment fitness score, so 0 is perfect, 1 is bad
-				else
-					myr.assign 'entry', entry
-				end
-				myr.eval "#{arrays[n]} <- c(#{arrays[n]}, entry)"
+			array.each_slice(400) do |chunk|
+				myr.assign 'chunk', chunk
+				myr.eval "#{arrays[n]} <- c(#{arrays[n]}, chunk)"
 				puts x
-				x+=1
+				x+=(chunk.length)
 			end
+			puts x
 			n+=1
 		end
+
+		# puts 'hello'
+		# myr.gens = gens
+		# myr.scores = scores
+		# myr.runs = runs
+		# myr.param_types = param_types
+
 		myr.assign 'dataset', dataset
 		myr.assign 'filename', filename
 		myr.eval "p <- uplot(gens, scores, runs, param_types)"

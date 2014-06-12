@@ -29,14 +29,14 @@ class TestUPlot < Test::Unit::TestCase
 		assert_equal(11060, param_types.length)
 
 		assert_equal(0, gens[0])
-		assert_equal(0.0479, ('%.4f' % fits[0]).to_f) # First permutation fitness
+		assert_equal(0.9521, ('%.4f' % fits[0]).to_f) # First permutation fitness
 		assert_equal('p_run1', all_runs[0])
 		assert_equal(53, perms[0].length)
 		assert_equal('frag35', perms[0][0])
 		assert_equal('p1', param_types[0])
 
 		assert_equal(199, gens[-1])
-		assert_equal(0.3168, ('%.4f' % fits[-1]).to_f) # Permutation 9 fitness, p_run 50: permutation files ordered alphabetically (order doesn't matter)
+		assert_equal(0.6832, ('%.4f' % fits[-1]).to_f) # Permutation 9 fitness, p_run 50: permutation files ordered alphabetically (order doesn't matter)
 		assert_equal('p_run50', all_runs[-1])
 		assert_equal(53, perms[-1].length)
 		assert_equal('frag17', perms[-1][0])
