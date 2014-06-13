@@ -20,9 +20,12 @@ uplot <- function(generations, metric_scores, runs, param_types, metric, title){
     scale_y_continuous(limits=c(0, 1)) +
     # scale_x_discrete() +
 	  scale_x_continuous() +
-    geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill = replicates, alpha = 0.1)) +
+    # geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill = NA, alpha = 0.0)) +
 	  geom_line(aes(y = Average), size=1) +
-    facet_grid(param_types~., scales = "free_y", space = "fixed")
+	  geom_line(aes(y = Average-x), size=0.5, linetype="dotted") +
+	  geom_line(aes(y = Average+x), size=0.5, linetype="dotted") +
+    facet_grid(param_types~., scales = "free_y", space = "fixed") +
+    theme_bw()
   return(p)
 }
 
