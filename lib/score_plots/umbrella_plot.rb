@@ -32,7 +32,7 @@ class UPlot
 	# Also returns arrays of all the permutations (arrays of fragment ids), and the "parameter type", which denotes the parameters used in that run
 	def self.plot_info(dataset)
 		runs = UPlot.get_runs(dataset)
-		gens, fitness, all_runs, all_perms, param_types = [],[],[],[],[]
+		gens, fitness, all_runs, all_perms, param_types, x = [],[],[],[],[], 1
 		runs.each do |run|
 			gen_num = UPlot.get_gens(dataset, run) # get number of generations for this run
 			pops = MetricPlot.get_perms(gen_num, 0, 1, dataset, run) # all the populations of this run
@@ -59,6 +59,8 @@ class UPlot
 					when 100..110 then param_types << 'p11'
 					when 110..120 then param_types << 'p12'
 					end
+					puts "permutations: #{x}"
+					x+=1
 				end
 				gen+=1
 			end
@@ -87,7 +89,6 @@ class UPlot
 			n+=1
 		end
 
-		# puts 'hello'
 		# myr.gens = gens
 		# myr.scores = scores
 		# myr.runs = runs
