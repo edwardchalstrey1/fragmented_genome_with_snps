@@ -101,6 +101,7 @@ class UPlot
 		myr.eval "p <- uplot(gens, scores, runs, param_types, metric, title)"
 		myr.eval "ggsave(p, file = paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset,'/', filename,'.png', sep = ''))"
 		myr.quit
+		puts 'made a plot'
 	end
 end
 
