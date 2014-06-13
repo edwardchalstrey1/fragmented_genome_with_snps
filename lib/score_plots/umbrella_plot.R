@@ -15,7 +15,7 @@ uplot <- function(generations, metric_scores, runs, param_types, metric, title){
     xlab("Generations") +
     ylab(metric) +
     ggtitle(title) +
-	  geom_point(aes(y = metric_scores,x = gen)) +
+	  # geom_point(aes(y = metric_scores,x = gen)) +
 	  # geom_boxplot(aes(y = metric_scores, x = factor(gen), factor(replicates))) +
     scale_y_continuous(limits=c(0, 1)) +
     # scale_x_discrete() +
