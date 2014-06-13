@@ -6,6 +6,11 @@ uplot <- function(generations, metric_scores, runs, param_types, metric, title){
 		replicates = runs,
     param_types = param_types
     )
+  
+	df <- transform(df, Average = ave(metric_scores, gen, replicates, param_types))
+	sd = aggregate(df$metric_scores, by=list(gen=df$gen, replicates=df$replicates, param_types=df$param_types), sd)
+  df <- merge(df,sd)
+  
 	p <- ggplot(df, aes(colour = replicates, y = metric_scores, x = gen)) +
     xlab("Generations") +
     ylab(metric) +
@@ -15,6 +20,7 @@ uplot <- function(generations, metric_scores, runs, param_types, metric, title){
     scale_y_continuous(limits=c(0, 1)) +
     # scale_x_discrete() +
 	  scale_x_continuous() +
+    geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill = replicates, alpha = 0.2)) +
     facet_grid(param_types~., scales = "free_y", space = "fixed")
   return(p)
 }
