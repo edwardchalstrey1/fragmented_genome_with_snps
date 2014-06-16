@@ -38,7 +38,7 @@ hom_count = FitnessScore::count(hm, div, genome_length)
 het_count = FitnessScore::count(ht, div, genome_length)
 comparable_ratio = FitnessScore::ratio(hom_count, het_count)
 
-pop, restart_gen = [], []
+pop, restart_gen, restart_zero = [], [], []
 if restart == nil
 	Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into
 	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
@@ -50,7 +50,10 @@ else ## For restarts ##
 	Dir.chdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) do # Selecting the generation to restart from
 		dirs = Dir.glob('*').select {|f| File.directory? f}
 		dirs.delete("Gencorrect_lists")
-		if dirs.length <= 2
+		if dirs.length < 2
+			restart_gen << 0
+		elsif dirs.length == 2
+			restart_zero <<'restart'
 			restart_gen << 0
 		else
 			restart_gen << (dirs.length/2)-1
@@ -69,4 +72,4 @@ end
 # Run the algorithm ##
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
  :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
- :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0], :auc => 1, :auc_gen => 20)
+ :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0], :auc => 1, :auc_gen => 20, :restart_zero => restart_zero[0])

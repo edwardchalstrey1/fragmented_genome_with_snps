@@ -158,6 +158,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	#   start_gen: Generation that the algorithm ist starting from
 	#   auc: quit algorithm if area under curve of fitness improvement is < auc% better for this auc_gen generations than previous auc_gen
 	#   auc_gen: see above
+	#   restart_zero: should be set to anything other than nil, if the algorithm needs to be restarted from a generation zero population
 	# Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 	# Output 2: A saved figure of the algorithm's performance
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
@@ -179,7 +180,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:start_pop => nil,
 			:start_gen => 0,
 			:auc => 5,
-			:auc_gen => 5
+			:auc_gen => 5,
+			:restart_zero => nil
 			}.merge!(parameters)
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
@@ -193,6 +195,10 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 		gen, last_best, auc = opts[:start_gen], [], nil
 		opts[:gen].times do
+
+			if opts[:start_gen] == 0 && opts[:restart_zero] != nil && gen == 0
+				gen+=1
+			end
 
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
 
