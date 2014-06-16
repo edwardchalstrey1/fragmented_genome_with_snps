@@ -14,4 +14,11 @@ class TestSNPdist < Test::Unit::TestCase
 		assert_kind_of(Array, @hyp)
 		assert_kind_of(Float, @hyp[0])
 	end
+
+	def test_ylim
+		ylim_ratio = SNPdist.get_ylim(@hyp, 2000, 'ratio')
+		ylim_density = SNPdist.get_ylim(@hyp, 2000, 'density')
+		assert_kind_of(Float, ylim_ratio)
+		assert_kind_of(Float, ylim_density)
+	end
 end
