@@ -1,7 +1,7 @@
 Detecting Causative Mutations from High-throughput Sequencing on Unordered Genomes
 ===========================
 
-[![Build Status](https://drone.io/github.com/edwardchalstrey1/fragmented_genome_with_snps/status.png)](https://drone.io/github.com/edwardchalstrey1/fragmented_genome_with_snps/latest)
+<!-- [![Build Status](https://drone.io/github.com/edwardchalstrey1/fragmented_genome_with_snps/status.png)](https://drone.io/github.com/edwardchalstrey1/fragmented_genome_with_snps/latest) -->
 
 I am creating a model genome, based of [Arabidopsis chromosome 4](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/TAIR10_chr4.fasta), from an individual created by the back-crossing of a mutant with a mapping line, where the mutation is an experimentally induced, phenotype altering SNP. 
 

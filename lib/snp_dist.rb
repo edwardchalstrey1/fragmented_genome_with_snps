@@ -32,9 +32,9 @@ class SNPdist
 		if plot_type == 'density'
 			myr.eval 'plot((1:512)*(genome_length/512), density(array)$y)'
 		elsif plot_type == 'ratio'
-			myr.eval 'plot((1:length(array))*(genome_length/length(array)))'
+			myr.eval 'plot((1:length(array))*(genome_length/length(array)), array)'
 		end
-		ylim = myr.pull 'par("yaxp")[1]+par("yaxp")[2]'
+		ylim = myr.pull 'par("yaxp")[2]'
 		myr.quit
 		return ylim
 	end
@@ -54,7 +54,7 @@ class SNPdist
 		myr.assign 'genome_length', genome_length
 		myr.assign 'ylim', ylim
 		myr.eval 'png(paste("~/",location,"/", dataset_run,"/Gen", gen, "_lists/best_permutation_ratios_", (length(ratios)/1000), "Kdiv.png", sep=""))
-		plot((1:length(ratios))*(genome_length/length(ratios)), ratios, ylim=ylim, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""), 
+		plot((1:length(ratios))*(genome_length/length(ratios)), ratios, xlim=c(0,genome_length), ylim=c(0,ylim), xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""), 
 			ylab="Ratio",
 			main=paste("Ratio of homozygous to heterozygous SNP density
 			 calculated at ", length(ratios), " divisions of the genome", sep=""))
@@ -73,7 +73,7 @@ class SNPdist
 		myr.assign 'name', name
 		myr.assign 'ylim', ylim
 		myr.eval 'png(paste("~/",location,"/", dataset_run,"/", gen, "/", name, ".png", sep=""))
-		plot((1:length(ratios))*(genome_length/length(ratios)), ratios, ylim=ylim, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""), 
+		plot((1:length(ratios))*(genome_length/length(ratios)), ratios, xlim=c(0,genome_length), ylim=c(0,ylim), xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""), 
 			ylab="Ratio",
 			main=paste("Ratio of homozygous to heterozygous SNP density
 			 calculated at ", length(ratios), " divisions of the genome", sep=""))
@@ -100,7 +100,7 @@ class SNPdist
 		myr.assign 'title', title
 		myr.assign 'ylim', ylim
 		myr.eval 'png(paste("~/",location,"/", dataset_run,"/Gen", gen, "_lists/best_permutation_distribution_", type, ".png", sep=""))
-		plot((1:512)*(genome_length/512), density(snp_pos)$y, ylim=ylim, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""),
+		plot((1:512)*(genome_length/512), density(snp_pos)$y, xlim=c(0,genome_length), ylim=c(0,ylim), xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""),
 			ylab="Density", main=title)
 		dev.off()'		
 		myr.quit
@@ -117,7 +117,7 @@ class SNPdist
 		myr.assign 'title', title
 		myr.assign 'ylim', ylim
 		myr.eval 'png(paste("~/",location,"/", dataset_run,"/", gen, "/", type, ".png", sep=""))
-		plot((1:512)*(genome_length/512), density(snp_pos)$y, ylim=ylim, xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""),
+		plot((1:512)*(genome_length/512), density(snp_pos)$y, xlim=c(0,genome_length), ylim=c(0,ylim), xlab=paste("Genome (contigs ordered by best permutation in generation ", gen, ")", sep=""),
 			ylab="Density", main=title)
 		dev.off()'		
 		myr.quit

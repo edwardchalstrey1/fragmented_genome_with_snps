@@ -20,5 +20,10 @@ class TestSNPdist < Test::Unit::TestCase
 		ylim_density = SNPdist.get_ylim(@hyp, 2000, 'density')
 		assert_kind_of(Float, ylim_ratio)
 		assert_kind_of(Float, ylim_density)
+
+		ylim_ratio = SNPdist.get_ylim([1,2,3,4,5], 2000, 'ratio')
+		ylim_density = SNPdist.get_ylim([1,2,3,4,5], 2000, 'density')
+		assert_equal(5, ylim_ratio)
+		assert_equal(0.2, ylim_density)
 	end
 end
