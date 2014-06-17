@@ -25,6 +25,10 @@ class SNPdist
 
 	### Plotting Methods ###
 
+	# Input 0: An array that contains ratio values for homozgous to heterozygous at divisions of a genome
+	# Input 1: The length of the genome
+	# Input 2: A string of either 'density' or ratio
+	# Output: Float of the highest value on the y axis when the ratio is plotted in the two different ways shown in the method
 	def self.get_ylim(array, genome_length, plot_type)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'array', array
@@ -34,7 +38,7 @@ class SNPdist
 		elsif plot_type == 'ratio'
 			myr.eval 'plot((1:length(array))*(genome_length/length(array)), array)'
 		end
-		ylim = myr.pull 'par("yaxp")[2]'
+		ylim = myr.pull 'par("yaxp")[2] + par("yaxp")[2]/par("yaxp")[3]'
 		myr.quit
 		return ylim
 	end
@@ -44,6 +48,7 @@ class SNPdist
 	# Input 2: The dataset to use (and the sub-folder to save the plot in)
 	# Input 3: The generation of the genetic algorithm the ratio is being plotted for
 	# Input 4: The length of the genome
+	# Input 5: The highest value on the y axis for the plot
 	# Output: Plot: ratio of homozygous to heterozygous SNP density
 	def self.plot_ratio(ratios, location, dataset_run, gen, genome_length, ylim)
 		myr = RinRuby.new(echo = false)
@@ -87,7 +92,8 @@ class SNPdist
 	# Input 3: The generation of the genetic algorithm the ratio is being plotted for
 	# Input 4: The length of the genome
 	# Input 5: String indicating the type of SNPs that Input 0 are
-	# Input 6: Title of plot 
+	# Input 6: Title of plot
+	# Input 7: The highest value on the y axis for the plot
 	# Output: Plot of kernel density estimate for the SNPs over the genome
 	def self.plot_snps(snp_pos, location, dataset_run, gen, genome_length, type, title, ylim)
 		myr = RinRuby.new(echo = false)
@@ -106,6 +112,7 @@ class SNPdist
 		myr.quit
 	end
 
+	# For distributions that are not the best permutation in a generation, the type is used as the filename
 	def self.plot_snps2(snp_pos, location, dataset_run, gen, genome_length, type, title, ylim)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'snp_pos', snp_pos

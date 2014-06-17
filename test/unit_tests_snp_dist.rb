@@ -23,7 +23,7 @@ class TestSNPdist < Test::Unit::TestCase
 
 		ylim_ratio = SNPdist.get_ylim([1,2,3,4,5], 2000, 'ratio')
 		ylim_density = SNPdist.get_ylim([1,2,3,4,5], 2000, 'density')
-		assert_equal(5, ylim_ratio)
-		assert_equal(0.2, ylim_density)
+		assert_equal(6.25, ylim_ratio)
+		assert_equal(0.25, ylim_density)
 	end
 end
