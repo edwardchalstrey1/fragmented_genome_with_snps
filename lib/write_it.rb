@@ -1,6 +1,14 @@
 #encoding: utf-8
 class WriteIt
 
+	# Input 0: File to create/add a line to
+	# Input 1: Something to add to a new line of the file
+	def self.add_to(filename, line)
+		File.open(filename, 'a') do |file|
+    		file.puts line
+    	end
+    end
+
 	# Input 0: Filename by which to save an array to a .txt file, one value per line
 	# Input 1: Array to save
 	def self.write_txt(filename, array)
