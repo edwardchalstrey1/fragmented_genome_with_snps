@@ -6,8 +6,9 @@ av_sd <- function(df, metric){
   return(df)
 }
 
-
-uplot <- function(df, title){
+uplot <- function(df, title, metric){
+  df <- av_sd(df, metric)
+  print(metric)
 	library(ggplot2)
 	p <- ggplot(df, aes(colour = replicates, y = metric_scores, x = gen)) +
 	    xlab("Generations") +

@@ -34,14 +34,14 @@ class UPlot
 			if run.include?('p_run') # any other dir is not a replicate
 				Dir.entries("arabidopsis_datasets/#{dataset}/#{run}").each do |gen| 
 					if gen.include?('Gen')
-						unless gen.include?('lists') || gen.include?('K')
+						unless gen.include?('lists') || gen.include?('K') # TODO make integer gen
 							Dir.entries("arabidopsis_datasets/#{dataset}/#{run}/#{gen}").each do |ptxt|
 								unless ptxt.include?('best') || ptxt.include?('table') # excluding table_data.txt and best_permutation.txt
 									if ptxt.include?('.txt')
 										perm = []
 										IO.foreach("arabidopsis_datasets/#{dataset}/#{run}/#{gen}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
 										WriteIt.add_to("arabidopsis_datasets/#{dataset}/data.csv", 
-											"#{gen},#{run},#{param_type},#{(1.0-perm[0].to_f)},#{PDist.deviation(original_order, perm[1..-1])},#{PDist.square(original_order, perm[1..-1])},#{PDist.hamming(original_order, perm[1..-1])},#{PDist.rdist(original_order, perm[1..-1])},#{PDist.lcs(original_order, perm[1..-1])},#{PDist.kendalls_tau(original_order, perm[1..-1])}")
+											"#{gen[3..-1]},#{run},#{param_type},#{(1.0-perm[0].to_f)},#{PDist.deviation(original_order, perm[1..-1])},#{PDist.square(original_order, perm[1..-1])},#{PDist.hamming(original_order, perm[1..-1])},#{PDist.rdist(original_order, perm[1..-1])},#{PDist.lcs(original_order, perm[1..-1])},#{PDist.kendalls_tau(original_order, perm[1..-1])}")
 										puts "permutation#{x}"
 										x+=1
 									end
@@ -63,8 +63,7 @@ class UPlot
 		myr.title = title
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
 		myr.eval "df <- read.csv(file.path(paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset, sep=''), 'data.csv'))"
-		myr.eval 'df <- av_sd(df, metric)'
-		myr.eval "p <- uplot(df, title)"
+		myr.eval "p <- uplot(df, title, metric)"
 		myr.eval "ggsave(p, file = paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset,'/', filename,'.png', sep = ''))"
 		myr.quit
 		puts 'made a plot'
