@@ -13,7 +13,7 @@ class UPlot
 		fasta = ReformRatio.fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta")
 		original_order = ReformRatio.fasta_id_n_lengths(fasta)[0]
 		x = 1
-		WriteIt.add_to("arabidopsis_datasets/#{dataset}/data.csv", 'gen,replicates,param_types,fitness,dev,square,ham,r_dist,lcs,kt')
+		WriteIt.add_to("arabidopsis_datasets/#{dataset}/data.csv", 'gen,replicates,param_types,Fitness,Deviation,Square,Hamming,R,LCS,KT')
 		Dir.entries("arabidopsis_datasets/#{dataset}").each do |run| 
 			run_num = run.dup
 			run_num.slice!('p_run')
