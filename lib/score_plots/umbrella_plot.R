@@ -8,8 +8,9 @@ av_sd <- function(df, metric){
 
 uplot <- function(df, title, y_axis){
   df$param_types = factor(df$param_types, levels=c('p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12'))
+  df$replicates<- as.numeric(sub("p_run","",df[,2]))
 	library(ggplot2)
-	p <- ggplot(df, aes(colour = replicates, y = metric_scores, x = gen)) +
+	p <- ggplot(df, aes(colour = factor(replicates), y = metric_scores, x = gen)) +
 	    xlab("Generations of genetic algorithm - each generation is a new population of contig permutations") +
 	    ylab(y_axis) +
 	    ggtitle(title) +
@@ -21,6 +22,8 @@ uplot <- function(df, title, y_axis){
     	# geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill = replicates, alpha = 0.0)) +
     	facet_wrap(~param_types, ncol=3) +
 	    theme_bw() +
-	    theme(title = element_text(size = rel(0.5)))
+	    theme(title = element_text(size = rel(0.5))) +
+		guides(col = guide_legend(keywidth = 0.25, keyheight = 0.25, ncol = 2, byrow = TRUE, title.theme = element_text(size=8, angle = 0),
+                              title = "Replicates"))
 	return(p)
 }
