@@ -40,4 +40,4 @@ How does the distribution change for the main dataset (10K_dataset4) parallel ru
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/images_hyp.gif?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/Gencorrect_lists/best_permutation_distribution_hyp_1.0Kdiv.png?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/images_ratios.gif?raw=true)
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/Gencorrect_lists/best_permutation_distribution_hyp_1.0Kdiv.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/Gencorrect_lists/best_permutation_ratios_1Kdiv.png?raw=true)
