@@ -8,11 +8,20 @@ Fitness
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22fits%22%5D.png?raw=true)
 
 Each facet/panel in the plot contains a group of replicates with the same parameters:
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+
+DESCRIBE PARAMS
+
+<td>
+  <tr>
+    <td>Population size</td>
+    <td>Select number</td>
+    <td>Chunk mutants</td>
+    <td>Swap mutants</td>
+    <td>Save number</td>
+    <td>Random number</td>
+    <td>Divisions</td>
+    </tr>
+</td>
 
 Permutation distance metrics
 -----
