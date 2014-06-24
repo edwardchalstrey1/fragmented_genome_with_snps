@@ -3,7 +3,6 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<meta http-equiv="x-ua-compatible" content="IE=9" >
 
 <title>Change in homozygous to heterozygous SNP ratio over generations of genetic algorithm</title>
 
@@ -144,6 +143,20 @@ hr {
 <body>
 <h1>Change in homozygous to heterozygous SNP ratio over generations of genetic algorithm</h1>
 
+<h2>To create the gifs:</h2>
+
+<ol>
+<li><p>Create the plots with <code>ruby distribution_plots.rb</code></p>
+
+<ul>
+<li>dataset = ARGV[0]</li>
+<li>run = ARGV[1]</li>
+<li>gen = ARGV[2]</li>
+<li>div = ARGV[3] # number of divisions for the genome that SNP ratios calculated in this run</li>
+</ul></li>
+<li><p>From inside the run directory: <code>bash ../../../magick.sh</code></p></li>
+</ol>
+
 <h2>How does the distribution change for the small dataset</h2>
 
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset4/run1/images_hyp.gif?raw=true" alt="Image"/></p>
@@ -154,7 +167,7 @@ hr {
 
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset4/run1/Gencorrect_lists/best_permutation_ratios_0.1Kdiv.png?raw=true" alt="Image"/></p>
 
-<h2>How does the distribution change for the main dataset (.gifs not properly ordered!)</h2>
+<h2>How does the distribution change for the main dataset (10K_dataset4) parallel run 60</h2>
 
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run60/images_hyp.gif?raw=true" alt="Image"/></p>
 
@@ -163,6 +176,13 @@ hr {
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run60/images_ratios_10Kdiv.gif?raw=true" alt="Image"/></p>
 
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run60/Gencorrect_lists/best_permutation_ratios_10Kdiv.png?raw=true" alt="Image"/></p>
+
+<h2>How does the distribution change for the main dataset (10K_dataset4) parallel run 12</h2>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/images_hyp.gif?raw=true" alt="Image"/>
+<img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/Gencorrect_lists/best_permutation_distribution_hyp_1.0Kdiv.png?raw=true" alt="Image"/>
+<img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/images_ratios.gif?raw=true" alt="Image"/>
+<img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/p_run12/Gencorrect_lists/best_permutation_ratios_1Kdiv.png?raw=true" alt="Image"/></p>
 
 </body>
 

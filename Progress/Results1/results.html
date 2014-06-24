@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Results 23rd June 2014</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>Results 23rd June 2014</h1>
+
+<p>The figures below represent only 41 of 120 replicates of my genetic algorithm, and some of the replicates are not yet finished.</p>
+
+<p>Each facet/panel in the plots below contain a group of replicates with the same parameters:</p>
+
+<ul>
+<li>Population size: number of permutations in each population (a new population for every generation)</li>
+<li>Select number: number of permutations from each population to create a new population from</li>
+<li>Chunk mutants: number of chunk mutants (<a href="https://github.com/edwardchalstrey1/pmeth">PMeth gem</a>) created from randomly chosen permutations, from the fittest selection of the previous generation</li>
+<li>Swap mutants: number of swap mutants (<a href="https://github.com/edwardchalstrey1/pmeth">PMeth gem</a>) created from the best permutation from the fittest selection of the previous generation</li>
+<li>Save: number of the fittest permutations to carry over from each generation to the next unaltered</li>
+<li>Random: number randomly ordered permutations in each generation</li>
+<li>Divisions: number of divisions in the genome for which the ratio of homozygous/heterozygous SNPs is calculated</li>
+</ul>
+
+<style>
+table,th,td
+{
+border:1px solid black;
+}
+</style>
+
+<table>
+
+  <tr><th>Param</th><th>Population size</th><th>Select number</th><th>Chunk mutants</th><th>Swap mutants</th><th>Save</th><th>Random</th><th>Divisions (1000s)</th></tr>
+  
+  <tr> <td>p1</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>1</td> </tr>
+  <tr> <td>p2</td> <td>20</td> <td>10</td> <td>7</td> <td>7</td> <td>5</td> <td>1</td> <td>1</td> </tr>
+  <tr> <td>p3</td> <td>50</td> <td>25</td> <td>20</td> <td>20</td> <td>6</td> <td>4</td> <td>1</td> </tr>
+  <tr> <td>p4</td> <td>20</td> <td>4</td> <td>9</td> <td>9</td> <td>1</td> <td>1</td> <td>1</td> </tr>
+  
+  <tr> <td>p5</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>10</td> </tr>
+  <tr> <td>p6</td> <td>20</td> <td>10</td> <td>7</td> <td>7</td> <td>5</td> <td>1</td> <td>10</td> </tr>
+  <tr> <td>p7</td> <td>50</td> <td>25</td> <td>20</td> <td>20</td> <td>6</td> <td>4</td> <td>10</td> </tr>
+  <tr> <td>p8</td> <td>20</td> <td>4</td> <td>9</td> <td>9</td> <td>1</td> <td>1</td> <td>10</td> </tr>
+  
+  <tr> <td>p9</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>100</td> </tr>
+  <tr> <td>p10</td> <td>20</td> <td>10</td> <td>7</td> <td>7</td> <td>5</td> <td>1</td> <td>100</td> </tr>
+  <tr> <td>p11</td> <td>50</td> <td>25</td> <td>20</td> <td>20</td> <td>6</td> <td>4</td> <td>100</td> </tr>
+  <tr> <td>p12</td> <td>20</td> <td>4</td> <td>9</td> <td>9</td> <td>1</td> <td>1</td> <td>100</td> </tr>
+</table>
+
+<h2>Fitness</h2>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22fits%22%5D.png?raw=true" alt="Image"/></p>
+
+<h2>Permutation distance metrics</h2>
+
+<h3>Similarity: Deviation distance compliment</h3>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22dev%22%5D.png?raw=true" alt="Image"/></p>
+
+<h3>Square similarity: Square deviation distance comlpliment</h3>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22square%22%5D.png?raw=true" alt="Image"/></p>
+
+<h3>Hamming similarity: Hamming distance compliment</h3>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22ham%22%5D.png?raw=true" alt="Image"/></p>
+
+<h3>R distance</h3>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22r_dist%22%5D.png?raw=true" alt="Image"/></p>
+
+<h3>Longest common subsequence</h3>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22lcs%22%5D.png?raw=true" alt="Image"/></p>
+
+<h3>Kendall&#39;s tau (compliment)</h3>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22kt%22%5D.png?raw=true" alt="Image"/></p>
+
+</body>
+
+</html>
+
