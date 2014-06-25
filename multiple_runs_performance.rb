@@ -26,7 +26,7 @@ unless method == nil
 			'Compliment of Kendall\'s tau distance between permutations and the correct contig arrangement, normalized between 0 and 1']
 		['Fitness','Deviation','Square','Hamming','R','LCS','KT'].each do |metric|
 			filename = "umbrella_plot_#{[shorts[x]]}"
-			UPlot.uplot(dataset, filename, metric, y_axis[x], title)
+			UPlot.uplot(dataset, filename, metric, y_axis[x], title, 'data.csv')
 			x+=1
 		end
 	end
