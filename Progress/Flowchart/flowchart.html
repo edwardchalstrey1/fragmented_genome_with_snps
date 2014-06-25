@@ -143,9 +143,28 @@ hr {
 <body>
 <h1>Genetic algorithm flowchart</h1>
 
-<script src="http://www.gliffy.com/diagramEmbed.js" type="text/javascript"> </script><script type="text/javascript"> gliffy_did = "5899757"; embedGliffy(); </script>
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/evolve.png?raw=true" alt="Image"/></p>
 
-<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/genetic_algorithm.png?raw=true" alt="Image"/></p>
+<h3>FASTA file to population</h3>
+
+<p><strong>(1-2)</strong> <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb">ReformRatio::fasta_array</a> obtains A FASTA object for each contig, and adds them to an array. <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb">GATOC::initial_population</a> randomly orders the FASTA object array, and adds it to a super-array (the population). This is repeated to get the population of the desired size.</p>
+
+<h3>VCF file to SNP positions on each contig</h3>
+
+<p><strong>(3-4)</strong> <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb">ReformRatio::get_snps</a> creates arrays of the SNP positions on each fragment, and outputs arrays and hashes of the other information in the VCF. <em>All this information is stored in memory.</em></p>
+
+<h3>SNP positions for a contig permutation</h3>
+
+<p><strong>(5-6)</strong> <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb">ReformRatio</a> contains other methods that obtain arrays of the homozygous and heterozygous SNPs across the entire genome, for each contig permutation. <em>Perhaps these methods can be grouped into one method, to avoid large arrays of the data being stored in memory</em></p>
+
+<h3>Calculating the ratio of homozygous to heterozygous SNPs, for each permutation</h3>
+
+<p><strong>(7-8)</strong> <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb">FitnessScore::count</a> is used to get the number of SNPs at a set number of divisions across the genome. This is done for homozygous and heterozygous SNPs. Then <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb">FitnessScore::ratio</a> creates an array of the ratio of homozygous to heterozygous SNPs for each of the genome divisions.</p>
+
+<h3>Permutation fitness</h3>
+
+<p><strong>(9-10)</strong> <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb">FitnessScore::score</a> calculates the &ldquo;fitness&rdquo; of a permutation, based on the comparison of it&#39;s distribution of homozygous to heterozygous SNP ratio, with an expected distribution. Currently (June 25th) I am using the distribution from correctly ordered contigs as the expected distribution, since I am still testing whether the genetic algorithm aproach will work.
+THEN SAY HOW METHOD WORKS</p>
 
 </body>
 
