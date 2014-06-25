@@ -23,3 +23,5 @@ Genetic algorithm flowchart
 
 ### Permutation fitness
 
+**(9-10)** [FitnessScore::score](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb) calculates the "fitness" of a permutation, based on the comparison of it's distribution of homozygous to heterozygous SNP ratio, with an expected distribution. Currently (June 25th) I am using the distribution from correctly ordered contigs as the expected distribution, since I am still testing whether the genetic algorithm aproach will work.
+THEN SAY HOW METHOD WORKS
