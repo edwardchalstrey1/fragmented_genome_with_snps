@@ -15,4 +15,11 @@ Genetic algorithm flowchart
 
 ### SNP positions for a contig permutation
 
-**(5-6)** The [ReformRatio](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb) class contains other methods that obtain arrays of the homozygous and heterozygous SNPs across the entire genome, for each contig permutation. *Perhaps these methods can be grouped into one method, to avoid large arrays of the data being stored in memory*
+**(5-6)** [ReformRatio](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/reform_ratio.rb) contains other methods that obtain arrays of the homozygous and heterozygous SNPs across the entire genome, for each contig permutation. *Perhaps these methods can be grouped into one method, to avoid large arrays of the data being stored in memory*
+
+### Calculating the ratio of homozygous to heterozygous SNPs, for each permutation
+
+**(7-8)** [FitnessScore::count](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb) is used to get the number of SNPs at a set number of divisions across the genome. This is done for homozygous and heterozygous SNPs. Then [FitnessScore::ratio](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb) creates an array of the ratio of homozygous to heterozygous SNPs for each of the genome divisions.
+
+### Permutation fitness
+
