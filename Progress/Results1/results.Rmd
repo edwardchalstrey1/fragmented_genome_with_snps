@@ -42,7 +42,7 @@ border:1px solid black;
 
 Fitness
 ----
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_%5B%22fits%22%5D.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4/umbrella_plot_fits_total.png?raw=true)
 
 Permutation distance metrics
 -----
