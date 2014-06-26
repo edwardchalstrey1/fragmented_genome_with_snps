@@ -23,7 +23,7 @@ uplot <- function(df, title, y_axis){
     	facet_wrap(~param_types, ncol=3) +
 	    theme_bw() +
 	    theme(title = element_text(size = rel(0.5))) +
-		guides(col = guide_legend(keywidth = 0.25, keyheight = 0.25, ncol = 2, byrow = TRUE, title.theme = element_text(size=8, angle = 0),
+		guides(col = guide_legend(keywidth = 0.25, keyheight = 0.25, ncol = 4, byrow = TRUE, title.theme = element_text(size=8, angle = 0),
                               title = "Replicates"))
 	return(p)
 }
