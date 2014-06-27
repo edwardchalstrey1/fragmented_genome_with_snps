@@ -16,13 +16,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 2: Heterozygous list
 	# Output 3: List of values representing the ratio distribution
 	def self.fitness(fasta, snp_data, comparable_ratio, div, genome_length)
-		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) # array of no. of snps per frag in same order as fasta
-		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) # get snp positions for each frag in array of arrays
-		actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
-		het_snps, hom_snps = ReformRatio::het_hom(actual_pos, pos_n_info[1])
-		hom_count = FitnessScore::count(hom_snps, div, genome_length)
-		het_count = FitnessScore::count(het_snps, div, genome_length)
-		perm_ratio = FitnessScore::ratio(hom_count, het_count)
+		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
+		perm_ratio = FitnessScore::ratio(hom_snps, het_snps, div, genome_length)
 		correlation = FitnessScore::score(comparable_ratio, perm_ratio)
 		return correlation, hom_snps, het_snps, perm_ratio
 	end
