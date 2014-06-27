@@ -29,14 +29,8 @@ fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") 
 
 ## Comparable ratio ## TODO a comparable ratio that doesn't use the known distributions
 genome_length = ReformRatio::genome_length(fasta_file)
-snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) # array of no. of snps per frag in same order as fasta
-pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) # get snp positions for each frag in array of arrays
-actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
-ht, hm = ReformRatio::het_hom(actual_pos, pos_n_info[1])
-
-hom_count = FitnessScore::count(hm, div, genome_length)
-het_count = FitnessScore::count(ht, div, genome_length)
-comparable_ratio = FitnessScore::ratio(hom_count, het_count)
+ht, hm = ReformRatio.perm_pos(fasta, snp_data)
+comparable_ratio = FitnessScore::ratio(hm, ht, div, genome_length)
 
 pop, restart_gen, restart_zero = [], [], []
 if restart == nil
