@@ -14,7 +14,7 @@ class TestFitnessScore < Test::Unit::TestCase
 		@hm_count = FitnessScore.count(@hm, @div, @genome_length)
 		@ht_count = FitnessScore.count(@ht, @div, @genome_length)
 
-		@count_ratios = FitnessScore.ratio(@hm_count, @ht_count)
+		@count_ratios = FitnessScore.ratio(@hm, @ht, @div, @genome_length)
 	end
 
 	def test_count
