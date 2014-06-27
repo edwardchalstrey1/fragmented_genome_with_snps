@@ -23,6 +23,8 @@ class TestReform < Test::Unit::TestCase
 		@pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) # get snp positions for each frag in array of arrays
 		@actual_pos = ReformRatio::total_pos(@pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
 		@het_snps, @hom_snps = ReformRatio::het_hom(@actual_pos, @pos_n_info[1])
+
+		@perm_pos = ReformRatio::perm_pos(fasta, snp_data)
 	end
 
 	def fasta
@@ -95,5 +97,10 @@ class TestReform < Test::Unit::TestCase
 		assert_equal([7,8,21], @hom_snps)
 	end
 
+	def test_perm_pos
+		ht, hm = @perm_pos
+		assert_equal([13], ht)
+		assert_equal([7,8,21], hm)
+	end
 end
 

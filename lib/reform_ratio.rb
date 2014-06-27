@@ -21,7 +21,7 @@ class ReformRatio
 	# Output 3: Array of VCF info field (hashes of the info values e.g. key: AF, value: allele frequency)
 	def self.get_snp_data(vcf_file)
 		vcfs_chrom, vcfs_pos, vcfs_info = [], [], []
-		File.open(vcf_file, "r").each do |line| #get array of vcf lines, you can call a method on one line
+		File.open(vcf_file, "r").each do |line| # get array of vcf lines, you can call a method on one line
 			next if line =~ /^#/
 			v = Bio::DB::Vcf.new(line)
 			vcfs_chrom << v.chrom
@@ -29,16 +29,16 @@ class ReformRatio
 			vcfs_info << v.info # so this will be an array of hashes of strings
 		end
 		num_snps_frag_hash = Hash.new(0)
-		vcfs_chrom.each {|v| num_snps_frag_hash[v] +=1 } #we have the number of snps on each frag, by counting the repeats of each frag in the vcf
-		#the frag_id(.chrom) is the key, the number of snps for that frag is the value. putting the number of snps for each frag into hash
+		vcfs_chrom.each {|v| num_snps_frag_hash[v] +=1 } # we have the number of snps on each frag, by counting the repeats of each frag in the vcf
+		# the frag_id(.chrom) is the key, the number of snps for that frag is the value. putting the number of snps for each frag into hash
 		return vcfs_chrom, vcfs_pos, num_snps_frag_hash, vcfs_info
 	end
 
 	# Input: FASTA file
 	# Output: Array of Bio::FastaFormat entries
 	def self.fasta_array(fasta_file)
-		fasta = [] #we have the lengths of each fasta, but the frags are different to those of the vcf/hash(this only has the frags w snps)
-		Bio::FastaFormat.open(fasta_file).each do |i| #get array of fasta format frags, ##  WE NEED TO REORDER THE FASTA FRAGS HERE, TO TEST DIFFERENT ARRANGEMENTS
+		fasta = [] # we have the lengths of each fasta, but the frags are different to those of the vcf/hash(this only has the frags w snps)
+		Bio::FastaFormat.open(fasta_file).each do |i| # get array of fasta format frags, ##  WE NEED TO REORDER THE FASTA FRAGS HERE, TO TEST DIFFERENT ARRANGEMENTS
 			fasta << i
 		end
 		return fasta
@@ -135,5 +135,17 @@ class ReformRatio
 			x+=1
 		end
 		return het, hom
+	end
+
+	# Input 0: Array of FASTA format objects (contig permutation)
+	# Input 1: SNP data output from get_snps method
+	# Output 0: Array of the heterozyogus SNP positions for the genome according to the Input 0 permutation
+	# Output 1: Array of the homozygous SNP positions for the genome according to the Input 0 permutation
+	def self.perm_pos(fasta, snp_data)
+		snps_per_frag = ReformRatio::snps_per_fasta_frag(snp_data[2], fasta) # array of no. of snps per frag in same order as fasta
+		pos_n_info = ReformRatio::get_positions(fasta, snp_data[0], snp_data[1], snps_per_frag, snp_data[3]) # get snp positions for each frag in array of arrays
+		actual_pos = ReformRatio::total_pos(pos_n_info[0], ReformRatio::fasta_id_n_lengths(fasta)[1])
+		het_snps, hom_snps = ReformRatio::het_hom(actual_pos, pos_n_info[1])
+		return het_snps, hom_snps
 	end
 end
