@@ -73,7 +73,7 @@ class MetricWork
 		myr.filename = filename
 		myr.metric = metric
 		myr.title = title
-		myr.x_axis
+		myr.x_axis = x_axis
 		myr.y_axis = y_axis
 		myr.input_file = input_file
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
