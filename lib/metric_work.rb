@@ -64,7 +64,7 @@ class MetricWork
 		myr.title = title
 		myr.y_axis = y_axis
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
-		myr.eval "df <- read.csv(file.path(paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset, sep=''), adjacent_swaps.csv))"
+		myr.eval "df <- read.csv(paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset, '/adjacent_swaps.csv', sep=''))"
 		myr.eval "p <- metric_test_plot(df, title, y_axis, metric)"
 		myr.eval "ggsave(p, file = paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset,'/', filename,'.png', sep = ''))"
 		myr.quit
