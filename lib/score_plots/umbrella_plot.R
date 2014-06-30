@@ -49,6 +49,6 @@ metric_test_plot <- function(df, title, x_axis, y_axis, metric){
 	  geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill="red"), alpha=0.5) +
 	    theme_bw() +
     guides(fill=FALSE) +
-	  theme(title = element_text(size = rel(0.5)))
+	  theme(title = element_text(size = rel(1.0)))
   return(p)
 }
