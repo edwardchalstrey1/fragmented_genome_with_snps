@@ -42,19 +42,6 @@ class MetricWork
 			start_pop.each do |perm|
 				new_perm = PMeth.adjacent_swap(perm)
 				adj_pop << new_perm # need this population to be the next starting population
-				new_perm.each do |x|
-					if x != nil
-						# puts x.entry_id
-					else
-						puts "Length of perm with nil: #{new_perm.length}"
-						new_perm.compact!
-						if new_perm.length == 53
-							puts 'YES'
-						else
-							puts 'NO'
-						end
-					end
-				end
 				if metric == 'Fitness'
 					score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
 				end
