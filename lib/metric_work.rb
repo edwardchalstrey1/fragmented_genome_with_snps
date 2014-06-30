@@ -42,8 +42,9 @@ class MetricWork
 			start_pop.each do |perm|
 				new_perm = PMeth.adjacent_swap(perm)
 				adj_pop << new_perm # need this population to be the next starting population
+				new_perm.each{|x| puts x.entry_id}
 				if metric == 'fitness'
-					score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)
+					score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
 				end
 				WriteIt.add_to("arabidopsis_datasets/#{dataset}/adjacent_swaps.csv", "#{x},#{score}")
 				# TODO add distance metrics
