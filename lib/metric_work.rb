@@ -17,7 +17,7 @@ class MetricWork
 		5. Create a plot to represent this
 =end
 
-	def self.adjacent_swaps_csv(dataset, size, pop_num, div, metric)
+	def self.adjacent_swaps_csv(dataset, size, pop_num, div, metric, filename)
 		# 1
 		fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") # correct permutation
 		###
@@ -42,11 +42,23 @@ class MetricWork
 			start_pop.each do |perm|
 				new_perm = PMeth.adjacent_swap(perm)
 				adj_pop << new_perm # need this population to be the next starting population
-				new_perm.each{|x| puts x.entry_id}
+				new_perm.each do |x|
+					if x != nil
+						# puts x.entry_id
+					else
+						puts "Length of perm with nil: #{new_perm.length}"
+						new_perm.compact!
+						if new_perm.length == 53
+							puts 'YES'
+						else
+							puts 'NO'
+						end
+					end
+				end
 				if metric == 'fitness'
 					score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
 				end
-				WriteIt.add_to("arabidopsis_datasets/#{dataset}/adjacent_swaps.csv", "#{x},#{score}")
+				WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x},#{score}")
 				# TODO add distance metrics
 			end
 			start_pop = adj_pop
