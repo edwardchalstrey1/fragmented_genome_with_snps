@@ -46,7 +46,7 @@ metric_test_plot <- function(df, title, x_axis, y_axis, metric){
 	    scale_y_continuous(limits=c(0, 1.2)) +
 		scale_x_continuous() +
 	  geom_line(aes(y = Average), size=0.5) +
-	  geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill="red", alpha=0.1)) +
+	  geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill="red"), alpha=0.5) +
 	    theme_bw() +
     guides(fill=FALSE) +
 	  theme(title = element_text(size = rel(0.5)))
