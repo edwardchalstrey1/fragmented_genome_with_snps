@@ -35,7 +35,7 @@ class MetricWork
 		start_pop << fasta
 		end
 
-		WriteIt.add_to("arabidopsis_datasets/#{dataset}/adjacent_swaps.csv", "population,#{metric}")
+		WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "population,#{metric}")
 		x = 1
 		pop_num.times do
 			adj_pop = []
@@ -55,7 +55,7 @@ class MetricWork
 						end
 					end
 				end
-				if metric == 'fitness'
+				if metric == 'Fitness'
 					score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
 				end
 				WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x},#{score}")
@@ -68,15 +68,16 @@ class MetricWork
 
 	# 5:
 
-	def self.metric_test_plot(dataset, filename, metric, y_axis, title)
+	def self.metric_test_plot(dataset, filename, metric, y_axis, title, input_file)
 		myr = RinRuby.new(echo = false)
 		myr.dataset = dataset
 		myr.filename = filename
 		myr.metric = metric
 		myr.title = title
 		myr.y_axis = y_axis
+		myr.input_file = input_file
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
-		myr.eval "df <- read.csv(paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset, '/adjacent_swaps.csv', sep=''))"
+		myr.eval "df <- read.csv(paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset, '/', input_file, '.csv', sep=''))"
 		myr.eval "p <- metric_test_plot(df, title, y_axis, metric)"
 		myr.eval "ggsave(p, file = paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset,'/', filename,'.png', sep = ''))"
 		myr.quit
