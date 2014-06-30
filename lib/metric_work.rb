@@ -67,18 +67,18 @@ class MetricWork
 	end
 
 	# 5:
-
-	def self.metric_test_plot(dataset, filename, metric, y_axis, title, input_file)
+	def self.metric_test_plot(dataset, filename, metric, x_axis, y_axis, title, input_file)
 		myr = RinRuby.new(echo = false)
 		myr.dataset = dataset
 		myr.filename = filename
 		myr.metric = metric
 		myr.title = title
+		myr.x_axis
 		myr.y_axis = y_axis
 		myr.input_file = input_file
 		myr.eval "source('~/fragmented_genome_with_snps/lib/score_plots/umbrella_plot.R')"
 		myr.eval "df <- read.csv(paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset, '/', input_file, '.csv', sep=''))"
-		myr.eval "p <- metric_test_plot(df, title, y_axis, metric)"
+		myr.eval "p <- metric_test_plot(df, title, x_axis, y_axis, metric)"
 		myr.eval "ggsave(p, file = paste('~/fragmented_genome_with_snps/arabidopsis_datasets/', dataset,'/', filename,'.png', sep = ''))"
 		myr.quit
 		puts 'made a plot'

@@ -36,17 +36,19 @@ av_sd2 <- function(df, metric){
   return(df)
 }
 
-metric_test_plot <- function(df, title, y_axis, metric){
+metric_test_plot <- function(df, title, x_axis, y_axis, metric){
 	df <- av_sd2(df, metric)
 	library(ggplot2)
 	p <- ggplot(df, aes(y = metric_scores, x = population)) +
-	    xlab('Number of adjacent swaps') + # TODO improve axis names and title
+	    xlab(x_axis) +
 	    ylab(y_axis) +
 	    ggtitle(title) +
 	    scale_y_continuous(limits=c(0, 1.2)) +
 		scale_x_continuous() +
 	  geom_line(aes(y = Average), size=0.5) +
 	  geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill="red", alpha=0.1)) +
-	    theme_bw()
+	    theme_bw() +
+    guides(fill=FALSE) +
+	  theme(title = element_text(size = rel(0.5)))
   return(p)
 }
