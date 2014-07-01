@@ -8,7 +8,7 @@ pop_num = ARGV[3].to_i # number of populations
 data_plot = ARGV[4]
 
 metric = 'Fitness'
-filename = "adjacent_swaps_#{metric}_#{pop_num}"
+filename = "adjacent_swaps_#{metric}_#{pop_num}pop_#{size}size_#{div/1000.0}Kdiv"
 title = "The change in #{metric} of permuations, increasingly distant
 		in the search space from the optimal arrangement.
 		Permutations are of genomic contig order. Averages are taken

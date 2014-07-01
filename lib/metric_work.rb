@@ -6,6 +6,7 @@ class MetricWork
 	require_relative 'fitness_score'
 	require_relative 'GATOC'
 	require 'pmeth'
+	require 'pdist'
 
 =begin Testing how well the fitness method of the genetic algorithm,
 		identifies permuations that are approaching the correct order.
@@ -16,6 +17,14 @@ class MetricWork
 		4. Save the permutation fitness scores directly into a csv, to make a ggplot (but can also save permutation txt files - possibly not neccesary)
 		5. Create a plot to represent this
 =end
+
+	def self.score(perm, snp_data, comparable_ratio, div, genome_length, metric)
+		case metric
+		when 'Fitness'
+			score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
+		end
+		return score
+	end
 
 	def self.adjacent_swaps_csv(dataset, size, pop_num, div, metric, filename)
 		# 1
@@ -42,11 +51,8 @@ class MetricWork
 			start_pop.each do |perm|
 				new_perm = PMeth.adjacent_swap(perm)
 				adj_pop << new_perm # need this population to be the next starting population
-				if metric == 'Fitness'
-					score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
-				end
+				score = MetricWork.score(perm, snp_data, comparable_ratio, div, genome_length, metric)
 				WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x},#{score}")
-				# TODO add distance metrics
 			end
 			start_pop = adj_pop
 			x+=1
