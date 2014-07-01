@@ -38,7 +38,7 @@ class MetricWork
 		return score
 	end
 
-	def self.adjacent_swaps_csv(dataset, size, pop_num, div, metric, filename)
+	def self.adjacent_swaps_csv(dataset, size, pop_num, div, metric, filename, swap_num)
 		# 1
 		fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") # correct permutation
 		###
@@ -53,7 +53,7 @@ class MetricWork
 		# 3/4: Population of adjacent_swap mutants (of the correct contig order)
 		start_pop = []
 		size.times do
-		start_pop << fasta
+			start_pop << fasta
 		end
 
 		WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "population,#{metric}")
@@ -61,10 +61,14 @@ class MetricWork
 		pop_num.times do
 			adj_pop = []
 			start_pop.each do |perm|
-				new_perm = PMeth.adjacent_swap(perm)
+				new_perm = perm
+				swap_num.times do
+					new_perm = PMeth.adjacent_swap(new_perm) 
+				end
+				puts "adjacent_swaps: another #{swap_num} for pop: #{x}"
 				adj_pop << new_perm # need this population to be the next starting population
 				score = MetricWork.score(fasta, perm, snp_data, comparable_ratio, div, genome_length, metric)
-				WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x},#{score}")
+				WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x*swap_num},#{score}")
 			end
 			start_pop = adj_pop
 			x+=1

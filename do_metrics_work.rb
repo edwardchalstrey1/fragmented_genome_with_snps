@@ -7,10 +7,11 @@ size = ARGV[2].to_i # size of each population of permuations that are progressiv
 pop_num = ARGV[3].to_i # number of populations
 data_plot = ARGV[4]
 metric = ARGV[5]
+swap_num = ARGV[6].to_i
 
 x_axis = "Number of adjacent swaps carried out on each permutation"
 y_axis = metric.gsub(/(?<=[A-Za-z])(?=[A-Z])/, ' ')
-filename = "adjacent_swaps_#{metric}_#{pop_num}pop_#{size}size_#{div/1000.0}Kdiv"
+filename = "adjacent_swaps_#{metric}_#{pop_num}pop_#{size}size_#{div/1000.0}Kdiv_swap#{swap_num}"
 title = "The change in #{y_axis} of permuations, increasingly distant
 		in the search space from the optimal arrangement.
 		Permutations are of genomic contig order. Averages are taken
@@ -18,7 +19,7 @@ title = "The change in #{y_axis} of permuations, increasingly distant
 		swap mutations"
 
 if data_plot == 'csv' || data_plot == 'both'
-	MetricWork.adjacent_swaps_csv(dataset, size, pop_num, div, metric, filename)
+	MetricWork.adjacent_swaps_csv(dataset, size, pop_num, div, metric, filename, swap_num)
 end
 if data_plot == 'plot' || data_plot == 'both'
 	MetricWork.metric_test_plot(dataset, filename, metric, x_axis, y_axis, title, filename)
