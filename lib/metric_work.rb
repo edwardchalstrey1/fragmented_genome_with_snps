@@ -18,10 +18,22 @@ class MetricWork
 		5. Create a plot to represent this
 =end
 
-	def self.score(perm, snp_data, comparable_ratio, div, genome_length, metric)
+	def self.score(fasta, perm, snp_data, comparable_ratio, div, genome_length, metric)
 		case metric
 		when 'Fitness'
 			score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
+		when 'DeviationDistance'
+			score = PDist.deviation(fasta, perm)
+		when 'SquareDeviationDistance'
+			score = PDist.square(fasta, perm)
+		when 'HammingDistance'
+			score = PDist.hamming(fasta, perm)
+		when 'RDistance'
+			score = PDist.rdist(fasta, perm)
+		when 'LongestCommonSubsequence'
+			score = PDist.lcs(fasta, perm)
+		when 'KendallsTau'
+			score = PDist.kendalls_tau(fasta, perm)
 		end
 		return score
 	end
@@ -51,7 +63,7 @@ class MetricWork
 			start_pop.each do |perm|
 				new_perm = PMeth.adjacent_swap(perm)
 				adj_pop << new_perm # need this population to be the next starting population
-				score = MetricWork.score(perm, snp_data, comparable_ratio, div, genome_length, metric)
+				score = MetricWork.score(fasta, perm, snp_data, comparable_ratio, div, genome_length, metric)
 				WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x},#{score}")
 			end
 			start_pop = adj_pop
