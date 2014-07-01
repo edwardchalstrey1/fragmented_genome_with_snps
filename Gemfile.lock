@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
 	pmeth (1.1.0)
-	pdist (0.0.5)
+	pdist (1.0.0)
 	bio (1.4.3.0001)
 	bio-samtools (2.0.4)
 	rinruby (2.0.3)
