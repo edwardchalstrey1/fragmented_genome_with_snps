@@ -45,8 +45,12 @@ metric_test_plot <- function(df, title, x_axis, y_axis, metric){
 	    ggtitle(title) +
 	    scale_y_continuous(limits=c(0, 1.2)) +
 		scale_x_continuous() +
-	  geom_line(aes(y = Average), size=0.5) +
-	  geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill="red"), alpha=0.5) +
+		geom_line(aes(y = Average), size=0.5) + # Average of data
+    	geom_line(aes(y = mean(df$shuffled[!is.na(df$shuffled)])), size=0.5) + # Average of random permutations
+		geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill="green"), alpha=0.5) + # SD of data
+		geom_ribbon(aes(y = mean(df$shuffled[!is.na(df$shuffled)]), ymin = (mean(df$shuffled[!is.na(df$shuffled)]) - sd(df$shuffled[!is.na(df$shuffled)])),
+                    ymax = (mean(df$shuffled[!is.na(df$shuffled)]) + sd(df$shuffled[!is.na(df$shuffled)])),
+                    fill="red"), alpha=0.5) + # SD of random permutations
 	    theme_bw() +
     guides(fill=FALSE) +
 	  theme(title = element_text(size = rel(1.0)))

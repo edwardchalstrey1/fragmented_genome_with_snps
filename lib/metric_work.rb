@@ -56,8 +56,13 @@ class MetricWork
 			start_pop << fasta
 		end
 
-		WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "population,#{metric}")
-		x = 1
+		shuf_scores = []
+		size.times do
+			shuf_scores << MetricWork.score(fasta, fasta.shuffle, snp_data, comparable_ratio, div, genome_length, metric)
+		end
+
+		WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "population,#{metric},shuffled")
+		x = y = 1
 		pop_num.times do
 			adj_pop = []
 			start_pop.each do |perm|
@@ -68,7 +73,12 @@ class MetricWork
 				puts "adjacent_swaps: another #{swap_num} for pop: #{x}"
 				adj_pop << new_perm # need this population to be the next starting population
 				score = MetricWork.score(fasta, perm, snp_data, comparable_ratio, div, genome_length, metric)
-				WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x*swap_num},#{score}")
+				if y <= size
+					WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x*swap_num},#{score},#{shuf_scores[y-1]}")
+				else
+					WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x*swap_num},#{score}")
+				end
+				y+=1
 			end
 			start_pop = adj_pop
 			x+=1
