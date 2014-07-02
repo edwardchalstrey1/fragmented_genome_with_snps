@@ -1,7 +1,7 @@
-Results 23rd June 2014
+Results 2nd July 2014
 ========================================================
 
-The figures below represent only 41 of 120 replicates of my genetic algorithm, and some of the replicates are not yet finished.
+The figures below represent all 120 replicates of my genetic algorithm, although some of the replicates are not yet finished.
 
 Each facet/panel in the plots below contain a group of replicates with the same parameters:
 
