@@ -26,12 +26,15 @@ The plot below shows how the fitness score I use in my genetic algorithm, change
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_Fitness_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
 
-What the plot above shows, is that my fitness method does consistently attribute lower scores, to permutations that are a greater number of adjacent swaps away from the correctly ordered permutation. Therefore, in my genetic algorithm, permutations being attributed with high fitness scores should be approaching the correct order.
+What the plot above shows, is that my fitness method does consistently attribute lower scores, to permutations that are a greater number of adjacent swaps away from the correctly ordered permutation. Therefore, in my genetic algorithm, permutations being attributed with high fitness scores should be approaching the correct order. The plot shows that at 2000 adjacent swaps from the correct order, the permutations are approaching fitness scores close to that of randomly ordered permutations, but are not there yet, and the rate of decrease appears to be slowing. 
 
 How useful are distance metrics
 --------
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_DeviationDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
+
+
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_SquareDeviationDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_HammingDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_RDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
