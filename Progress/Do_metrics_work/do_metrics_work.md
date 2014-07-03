@@ -13,6 +13,7 @@ How useful is the fitness method
 The plot below shows how the fitness score I use in my genetic algorithm, changes as the number of adjacent swaps from being correct a permutation is. The genome being used to generate all the plots in this document is from [small_dataset2a](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/arabidopsis_datasets/small_dataset2a), a model genome with the following parameters:
 
 
+
 ```r
 # Genome length = 2Kb
 # Contig lengths = 25 to 50b
