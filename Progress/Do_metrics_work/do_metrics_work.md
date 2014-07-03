@@ -1,7 +1,16 @@
-How useful is the fitness method for finding permutations close to the correct order
-========================================================
+How useful are the fitness method I am using in my genetic algorithm, and the distance metrics I am using to evaluate it's performance
+--------
 
-The plot below shows how the fitness score I use in my genetic algorithm, changes as we move away from the optimum contig order in the search space. The genome being used to generate all the plots in this document is from [small_dataset2a](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/arabidopsis_datasets/small_dataset2a), a model genome with the following parameters:
+Below are the results of the following experiment: I am plotting how my fitness score, and each distance metric, changes as we move away from the optimum contig order in the search space. I am taking neighbours in the search space as permutations one adjacent swap away from eachother.
+
+To create the permutations in each population, I take the previous population, and mutate each permutation with [PMeth.adjacent_swap](https://github.com/edwardchalstrey1/pmeth). All the permutations in the starting population are identical: the optimal permutation, correctly ordered. **The size of the population I use is 10.**
+
+In each plot, the red shaded area shows the standard deviation around the mean for each population, and the green shaded area shows the standard deviation around the mean of a population of randomly ordered permutations.
+
+How useful is the fitness method
+--------
+
+The plot below shows how the fitness score I use in my genetic algorithm, changes as the number of adjacent swaps from being correct a permutation is. The genome being used to generate all the plots in this document is from [small_dataset2a](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/arabidopsis_datasets/small_dataset2a), a model genome with the following parameters:
 
 
 ```r
@@ -12,11 +21,14 @@ The plot below shows how the fitness score I use in my genetic algorithm, change
 # Heterozygous SNP distribution = runif(50, 1, 2000) 
 ```
 
+**The number of divisions of the genome at which I calculate the ratio of homozgous to heterozygous SNPs, for the fitness score, is 100.**
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_Fitness_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
 
+What the plot above shows, is that my fitness method does consistently attribute lower scores, to permutations that are a greater number of adjacent swaps away from the correctly ordered permutation. Therefore, in my genetic algorithm, permutations being attributed with high fitness scores should be approaching the correct order.
 
 How useful are distance metrics
-======
+--------
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_DeviationDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_SquareDeviationDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
