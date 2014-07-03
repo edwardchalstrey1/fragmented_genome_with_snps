@@ -55,7 +55,9 @@ class FitnessScore
 	end
 
 	def self.distance_score(hm)
-		a = hm.each_cons(2).map { |a,b| b-a }
-		return a.inject(:+) # TODO one line this?
+		score = 0
+		hm.each_cons(2).map { |a,b| score+=(b-a) }
+		score
 	end
+
 end

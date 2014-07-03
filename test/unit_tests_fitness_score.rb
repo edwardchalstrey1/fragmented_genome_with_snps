@@ -36,6 +36,4 @@ class TestFitnessScore < Test::Unit::TestCase
 		expected = 5+3+1+4+1+1+6
 		assert_equal(expected, FitnessScore.distance_score(@hm))
 	end
-
-
 end
