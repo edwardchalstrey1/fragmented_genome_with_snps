@@ -31,4 +31,11 @@ class TestFitnessScore < Test::Unit::TestCase
 		permutation = [2,1,3,4,5] # example of a count ratio from a permutation
 		assert_equal(0.9, ('%.1f' % FitnessScore.score(expected, permutation)).to_f)
 	end
+
+	def test_distance_score
+		expected = 5+3+1+4+1+1+6
+		assert_equal(expected, FitnessScore.distance_score(@hm))
+	end
+
+
 end

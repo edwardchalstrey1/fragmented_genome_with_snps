@@ -43,7 +43,8 @@ metric_test_plot <- function(df, title, x_axis, y_axis, metric){
 	    xlab(x_axis) +
 	    ylab(y_axis) +
 	    ggtitle(title) +
-	    scale_y_continuous(limits=c(0, 1.2)) +
+	    # scale_y_continuous(limits=c(0, 1.2)) +
+	    scale_y_continuous() +
 		scale_x_continuous() +
 		geom_line(aes(y = Average), size=0.5) + # Average of data
     	geom_line(aes(y = mean(df$shuffled[!is.na(df$shuffled)])), size=0.5) + # Average of random permutations

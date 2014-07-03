@@ -22,6 +22,9 @@ class MetricWork
 		case metric
 		when 'Fitness'
 			score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
+		when 'FitnessSNPDistances'
+			het_snps, hom_snps = ReformRatio.perm_pos(perm, snp_data)
+			score = FitnessScore.distance_score(hom_snps)
 		when 'DeviationDistance'
 			score = PDist.deviation(fasta, perm)
 		when 'SquareDeviationDistance'

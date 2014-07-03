@@ -6,8 +6,7 @@ class FitnessScore
 	# Input 0: Array of SNP positions
 	# Input 1: Number of breaks (divisions) in the genome to count the number of SNPs in
 	# Input 2: The length of the genome
-	# Output 0: Array of number of SNPs in each bin
-	# Output 1: Array of the breaks in the genome (the intervals created by div)
+	# Output: Array of number of SNPs in each genome division
 	def self.count(snp_pos, div, genome_length)
 		myr = RinRuby.new(echo = false)
 		myr.assign 'snp_pos', snp_pos
@@ -53,5 +52,10 @@ class FitnessScore
 		fitness_score = myr.pull 'score'
 		myr.quit
 		return fitness_score
+	end
+
+	def self.distance_score(hm)
+		a = hm.each_cons(2).map { |a,b| b-a }
+		return a.inject(:+) # TODO one line this?
 	end
 end
