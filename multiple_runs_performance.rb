@@ -17,13 +17,13 @@ unless method == nil
 
 	if method == 'plot' || method == 'both'
 		shorts, x = ['fits','dev','square','ham','r_dist','lcs','kt'], 0
-		y_axis = ['Permutation fitness score (similarity of SNP ratio across the permutation, to that of correctly ordered contigs)',
-			'Similarity score (compliment proportion of deviation distance between permutations and the correct contig arrangement), normalized between 0 and 1',
-			'Squared similarity score (compliment proportion of squared deviation distance between permutations and the correct contig arrangement), normalized between 0 and 1',
-			'Hamming similarity (compliment proportion of hamming distance between permutations and the correct contig arrangement), normalized between 0 and 1',
-			'R distance between permutations and the correct contig arrangement, normalized between 0 and 1',
-			'Longest common subsequence between permutations and the correct contig arrangement, normalized between 0 and 1',
-			'Compliment of Kendall\'s tau distance between permutations and the correct contig arrangement, normalized between 0 and 1']
+		y_axis = ['Permutation fitness score: sum of distances between consecutive homozygous SNP positions',
+			'Deviation distance between permutations and the correct contig arrangement, normalized between 0 and 1',
+			'Squared deviation distance between permutations and the correct contig arrangement, normalized between 0 and 1',
+			'Hamming distance between permutations and the correct contig arrangement, normalized between 0 and 1',
+			'Compliment of R distance between permutations and the correct contig arrangement, normalized between 0 and 1',
+			'Compliment of the longest common subsequence between permutations and the correct contig arrangement, normalized between 0 and 1',
+			'Kendall\'s tau distance between permutations and the correct contig arrangement, normalized between 0 and 1']
 		['Fitness','Deviation','Square','Hamming','R','LCS','KT'].each do |metric|
 			filename = "umbrella_plot_#{[shorts[x]]}"
 			UPlot.uplot(dataset, filename, metric, y_axis[x], title, 'data.csv')
