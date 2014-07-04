@@ -226,16 +226,16 @@ class GATOC # Genetic Algorithm To Order Contigs
 			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 			gen+=1
 
-			# last_best << prev_best_fit
-			# if last_best.length == opts[:auc_gen]
-			# 	last_auc = auc
-			# 	auc = QuitIf::quit(last_best)
-			# 	if last_auc != nil && (last_auc - auc) <= (last_auc/(100.0/opts[:auc].to_f))
-			# 		puts 'auc break'
-			# 		gen = opts[:gen]
-			# 	end
-			# 	last_best = []x
-			# end
+			last_best << prev_best_fit
+			if last_best.length == opts[:auc_gen]
+				last_auc = auc
+				auc = QuitIf::quit(last_best)
+				if last_auc != nil && (last_auc - auc) <= (last_auc/(100.0/opts[:auc].to_f))
+					puts 'auc break'
+					gen = opts[:gen]
+				end
+				last_best = []
+			end
 
 			# if pop_fits[-1][0] == 1.0
 			# 	puts 'correct permutation achieved'
