@@ -14,6 +14,7 @@ The plot below shows how the fitness score I use in my genetic algorithm, change
 
 
 
+
 ```r
 # Genome length = 2Kb
 # Contig lengths = 25 to 50b
