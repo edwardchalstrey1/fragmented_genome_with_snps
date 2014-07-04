@@ -1,0 +1,84 @@
+Permutation
+Fitness Score
+Type
+FASTA ids
+permutation1
+1871
+saved
+frag24, frag47, frag14, frag6, frag41, frag8, frag52, frag12, frag38, frag17, frag7, frag48, frag9, frag53, frag10, frag28, frag31, frag25, frag51, frag21, frag11, frag29, frag15, frag46, frag35, frag40, frag2, frag42, frag1, frag49, frag19, frag18, frag45, frag20, frag3, frag16, frag22, frag32, frag27, frag36, frag26, frag37, frag33, frag34, frag50, frag23, frag4, frag44, frag5, frag13, frag30, frag43, frag39
+permutation2
+1549
+saved
+frag47, frag4, frag51, frag48, frag38, frag32, frag26, frag52, frag21, frag24, frag43, frag34, frag31, frag36, frag37, frag20, frag13, frag40, frag14, frag41, frag16, frag28, frag7, frag25, frag15, frag19, frag30, frag29, frag45, frag53, frag33, frag18, frag3, frag1, frag8, frag12, frag23, frag42, frag10, frag2, frag44, frag11, frag6, frag46, frag39, frag5, frag27, frag50, frag35, frag22, frag49, frag17, frag9
+permutation3
+1285
+saved
+frag42, frag5, frag6, frag20, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag23, frag11, frag52, frag22, frag43, frag18, frag30, frag39, frag8, frag37, frag51, frag14, frag16, frag12, frag21, frag36, frag31, frag53, frag9, frag49, frag7, frag17, frag50, frag35, frag38, frag29, frag44
+permutation4
+1200
+chunk_mutant
+frag42, frag5, frag6, frag20, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag35, frag7, frag11, frag30, frag8, frag14, frag39, frag37, frag44, frag23, frag21, frag50, frag22, frag52, frag49, frag53, frag18, frag36, frag51, frag17, frag16, frag31, frag9, frag43, frag38, frag12
+permutation5
+1107
+chunk_mutant
+frag42, frag24, frag20, frag27, frag2, frag33, frag25, frag3, frag47, frag46, frag10, frag28, frag15, frag26, frag40, frag5, frag41, frag19, frag6, frag1, frag45, frag4, frag32, frag48, frag34, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag51, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag14, frag35, frag52, frag7
+permutation6
+924
+chunk_mutant
+frag1, frag42, frag40, frag2, frag4, frag45, frag15, frag28, frag47, frag20, frag10, frag33, frag3, frag6, frag41, frag26, frag13, frag34, frag19, frag32, frag48, frag5, frag27, frag46, frag24, frag25, frag29, frag23, frag21, frag31, frag30, frag11, frag37, frag53, frag14, frag18, frag51, frag9, frag12, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag50, frag35, frag52, frag7
+permutation7
+597
+chunk_mutant
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag26, frag45, frag1, frag33, frag24, frag40, frag10, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag51, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag14, frag35, frag52, frag7
+permutation8
+496
+swap_mutant
+frag5, frag19, frag47, frag46, frag41, frag20, frag42, frag2, frag48, frag15, frag6, frag4, frag3, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag28, frag25, frag26, frag27, frag32, frag13, frag29, frag23, frag21, frag31, frag30, frag11, frag37, frag53, frag14, frag18, frag51, frag9, frag12, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag35, frag50, frag52, frag7
+permutation9
+496
+swap_mutant
+frag5, frag20, frag6, frag42, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag50, frag53, frag18, frag43, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag51, frag14, frag35, frag52, frag7
+permutation10
+496
+swap_mutant
+frag42, frag5, frag20, frag6, frag2, frag35, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag51, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag14, frag48, frag52, frag7
+permutation11
+496
+swap_mutant
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag51, frag12, frag49, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag9, frag16, frag43, frag14, frag35, frag52, frag7
+permutation12
+496
+chunk_mutant
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag51, frag12, frag9, frag17, frag14, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag38, frag35, frag52, frag7
+permutation13
+496
+chunk_mutant
+frag42, frag5, frag20, frag6, frag22, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag51, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag2, frag49, frag16, frag43, frag14, frag35, frag52, frag7
+permutation14
+496
+swap_mutant
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag18, frag50, frag53, frag43, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag51, frag14, frag35, frag52, frag7
+permutation15
+496
+chunk_mutant
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag43, frag12, frag9, frag38, frag17, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag51, frag14, frag35, frag52, frag7
+permutation16
+496
+chunk_mutant
+frag42, frag5, frag6, frag20, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag23, frag29, frag21, frag31, frag30, frag11, frag37, frag53, frag14, frag18, frag51, frag9, frag12, frag17, frag36, frag22, frag39, frag50, frag8, frag43, frag7, frag44, frag52, frag35, frag38, frag49, frag16
+permutation17
+496
+chunk_mutant
+frag5, frag20, frag6, frag42, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag43, frag12, frag9, frag17, frag38, frag39, frag8, frag36, frag44, frag22, frag49, frag16, frag51, frag14, frag35, frag52, frag7
+permutation18
+496
+chunk_mutant
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag14, frag18, frag51, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag50, frag35, frag52, frag7
+permutation19
+496
+random
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag43, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag51, frag14, frag35, frag52, frag7
+permutation20
+496
+random
+frag42, frag5, frag20, frag6, frag2, frag48, frag19, frag3, frag4, frag41, frag15, frag46, frag47, frag34, frag10, frag45, frag1, frag33, frag24, frag40, frag26, frag25, frag27, frag28, frag32, frag13, frag29, frag21, frag23, frag31, frag30, frag11, frag37, frag53, frag50, frag18, frag51, frag12, frag9, frag17, frag38, frag39, frag8, frag44, frag36, frag22, frag49, frag16, frag43, frag14, frag35, frag52, frag7
