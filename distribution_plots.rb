@@ -30,10 +30,7 @@ Dir.chdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/
 	ht = WriteIt.file_to_ints_array("ht_snps.txt")
 	ylim_ht << SNPdist.get_ylim(ht, genome_length, 'density')
 
-	hom_count = FitnessScore::count(hm, div, genome_length)
-	het_count = FitnessScore::count(ht, div, genome_length)
-
-	comparable_ratio = FitnessScore::ratio(hom_count, het_count)
+	comparable_ratio = FitnessScore::ratio(hm, ht, div, genome_length)
 	ylim_ratio << SNPdist.get_ylim(comparable_ratio, genome_length, 'ratio')
 
 	SNPdist.plot_ratio(comparable_ratio, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, ylim_ratio[0])
