@@ -57,7 +57,7 @@ class FitnessScore
 	def self.distance_score(hm)
 		score = 0
 		hm.each_cons(2).map { |a,b| score+=(b-a) }
-		score
+		score.to_f
 	end
 
 end

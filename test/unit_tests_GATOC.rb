@@ -21,7 +21,6 @@ class TestGATOC < Test::Unit::TestCase
 	def test_fitness
 		fit, hm, ht, perm_ratio = GATOC::fitness(@fasta_array, @snp_data, @ratios, @div, @genome_length)
 		assert_kind_of(Float, fit)
-		assert_in_delta(0.5, fit, 0.5) # 0.5 +- 0.5
 		assert_kind_of(Array, hm)
 		assert_kind_of(Array, ht)
 		assert_kind_of(Array, perm_ratio)
@@ -48,7 +47,6 @@ class TestGATOC < Test::Unit::TestCase
 		assert_kind_of(Array, @selected[0], 'permutation and correlation not array') # permutation and correlation
 		assert_equal(5, @selected[0].length) # no. of permutations selcted
 		assert_kind_of(Float, @selected[0][0][0], 'correlation not float') # correlation value
-		assert_in_delta(0.5, @selected[0][0][0], 0.5) # correlation value
 		assert_kind_of(Array, @selected[0][0][1], 'permutation not array') # permutation
 		assert_kind_of(Bio::FastaFormat, @selected[0][0][1][0], 'Not a Bio::FastaFormat')
 		assert_equal(10, @selected[2].length)
