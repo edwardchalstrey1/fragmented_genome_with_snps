@@ -39,11 +39,19 @@ How useful are distance metrics
 --------
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_DeviationDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
-
-
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_DeviationDistance_10000pop_10size_0.1Kdiv_swap1.png?raw=true)
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_SquareDeviationDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_SquareDeviationDistance_10000pop_10size_0.1Kdiv_swap1.png?raw=true)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_HammingDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
+![Image](?raw=true)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_RDistance_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_HammingDistance_10000pop_10size_0.1Kdiv_swap1.png?raw=true)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_LongestCommonSubsequence_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_LongestCommonSubsequence_10000pop_10size_0.1Kdiv_swap1.png?raw=true)
+
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_KendallsTau_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_KendallsTau_10000pop_10size_0.1Kdiv_swap1.png?raw=true)
