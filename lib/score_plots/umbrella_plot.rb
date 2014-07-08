@@ -1,14 +1,12 @@
 #encoding: utf-8
 class UPlot
 	require 'rinruby'
-	require_relative 'score_plots'
-	require 'pp'
 	require_relative '../write_it'
 	require 'pdist'
 	require_relative '../reform_ratio'
 
 	# Input: The dataset to plot
-	# Output: .csv file that can be loaded into R as a data frame
+	# Output: .csv file that can be loaded into R as a data frame, with the fitness scores and metric scores for each permutation
 	def self.data_save(dataset)
 		fasta = ReformRatio.fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta")
 		original_order = ReformRatio.fasta_id_n_lengths(fasta)[0]
@@ -18,7 +16,7 @@ class UPlot
 			run_num = run.dup
 			run_num.slice!('p_run')
 			case run_num.to_i
-				when 1..10 then param_type = 'p1' # TODO change this for new experiment
+				when 1..10 then param_type = 'p1' # Can be left the same for old and new experiment (old and new fitness methods)
 				when 11..20 then param_type = 'p2'
 				when 21..30 then param_type = 'p3'
 				when 31..40 then param_type = 'p4'
@@ -72,6 +70,8 @@ class UPlot
 		puts 'made a plot'
 	end
 
+	# Input: The dataset to plot
+	# Output: .csv file that can be loaded into R as a data frame, with the fitness scores for each permutation
 	def self.fits_save(dataset)
 		fasta = ReformRatio.fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta")
 		original_order = ReformRatio.fasta_id_n_lengths(fasta)[0]
@@ -81,7 +81,7 @@ class UPlot
 			run_num = run.dup
 			run_num.slice!('p_run')
 			case run_num.to_i
-				when 1..10 then param_type = 'p1' # TODO change this for new experiment
+				when 1..10 then param_type = 'p1' # Can be left the same for old and new experiment (old and new fitness methods)
 				when 11..20 then param_type = 'p2'
 				when 21..30 then param_type = 'p3'
 				when 31..40 then param_type = 'p4'
