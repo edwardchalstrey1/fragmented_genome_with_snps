@@ -138,11 +138,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# 	save: Integer of the desired number of the best permutations from each population, to be included in the next one
 	# 	ran: Integer of the desired number of randomly shuffled permutations in each new population
 	#   loc: Location to save output files to
-	#   comparable_ratio: An example distribution to compare the ratio of homozygous/heterozygous SNP density to
 	#   dataset: The sub folder containing fasta and vcf files
 	#   run: The name you'd like to assign this run of the algorithm
-	#   div: Length of divisions of the genome to calculate the SNP frequency of, in fitness method
-	#   genome_length: Length of the genome the algorithm is being run on
 	#   start_pop: Population array of permutations (arrays of FASTA format fragments)
 	#   start_gen: Generation that the algorithm ist starting from
 	#   auc: quit algorithm if area under curve of fitness improvement is < auc% better for this auc_gen generations than previous auc_gen
@@ -163,7 +160,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets',
 			:dataset => ARGV[0],
 			:run => ARGV[1],
-			:genome_length => 2000.0,
 			:start_pop => nil,
 			:start_gen => 0,
 			:auc => 5,
@@ -173,6 +169,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 		fasta = ReformRatio::fasta_array(fasta_file) # array of fasta format fragments
+		genome_length = ReformRatio::genome_length(fasta_file)
+
 		prev_best_fit = nil
 		if opts[:start_pop] == nil
 			pop = initial_population(fasta, opts[:pop_size])
@@ -187,7 +185,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				gen+=1
 			end
 
-			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:genome_length])
+			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length)
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types)
@@ -202,7 +200,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 				
-			fit, hm, ht = fitness(pop_fits[-1][1], snp_data, opts[:genome_length])
+			fit, hm, ht = fitness(pop_fits[-1][1], snp_data, genome_length)
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
