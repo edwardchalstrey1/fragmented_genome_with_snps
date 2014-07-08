@@ -9,8 +9,6 @@ COMMENT
 source R-3.1.0
 source ruby-2.0.0
 
-Main 120
-
 for i in {1..10}
 do
 	bsub -q TSL-Test128 -We 10000 "ruby algorithm_test.rb 10K_dataset4a p_run$i 10000000000 100 50 35 35 25 5"
