@@ -54,10 +54,12 @@ class FitnessScore
 		return fitness_score
 	end
 
+	# Input: Array of homozygous SNP positions
+	# Output: Float of the total distance between adjacent homozygous SNP positions
 	def self.distance_score(hm)
 		score = 0
 		hm.each_cons(2).map { |a,b| score+=(b-a) }
-		score.to_f
+		return score.to_f
 	end
 
 end
