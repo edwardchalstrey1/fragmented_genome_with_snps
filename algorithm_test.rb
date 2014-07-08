@@ -1,7 +1,7 @@
 #encoding: utf-8
 require_relative 'lib/reform_ratio'
 require_relative 'lib/GATOC'
-# require_relative 'lib/write_it'
+require_relative 'lib/write_it'
 require_relative 'lib/score_plots/score_plots'
 require_relative 'lib/score_plots/example_perms'
 
@@ -18,7 +18,7 @@ restart = ARGV[9] # Tells the algorithm to continue from the most recent generat
 
 ## Files ##
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
-fasta_file = "arabidopsis_datasets/#{dataset}/frags_shuffled.fasta"
+fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
 location = 'fragmented_genome_with_snps/arabidopsis_datasets'
 genome_length = ReformRatio.genome_length(fasta_file)
 
@@ -27,8 +27,10 @@ genome_length = ReformRatio.genome_length(fasta_file)
 	pop, restart_gen, restart_zero = [], [], []
 	if restart == nil
 		Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into WARNING: this NEEDS to be in the algorithm run script
-		# WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
-		# WriteIt::write_txt("arabidopsis_datasets/#{dataset}/ht_snps", ht)
+		### Whilst testing the algorithm with my model genome, we need to know the correct permutation's SNP distributions
+			WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
+			WriteIt::write_txt("arabidopsis_datasets/#{dataset}/ht_snps", ht)
+		###
 		restart_gen << 0
 		pop = nil
 	else ## For restarts ##

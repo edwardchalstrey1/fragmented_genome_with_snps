@@ -51,13 +51,6 @@ end
 Array(0..gen.to_i).each do |i|
 	Dir.chdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}/#{run}/Gen#{i}_lists")) do
 
-		ratios = WriteIt.file_to_floats_array("gen_#{i}_ratios.txt")
-		SNPdist.plot_ratio(ratios, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, ylim_ratio[0])
-
-		hyp = SNPdist.hyp_snps(ratios, genome_length)
-		SNPdist.plot_snps(hyp, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'hyp', 
-			'Approximated ratio of homozygous to heterozygous SNP density', ylim_hyp[0])
-
 		hm = WriteIt.file_to_ints_array("gen_#{i}_hm.txt")
 		SNPdist.plot_snps(hm, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'hm',
 			'Homozygous SNP density', ylim_hm[0])
@@ -65,6 +58,13 @@ Array(0..gen.to_i).each do |i|
 		ht = WriteIt.file_to_ints_array("gen_#{i}_ht.txt")
 		SNPdist.plot_snps(ht, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'ht',
 			'Heterozygous SNP density', ylim_ht[0])
+
+		ratios = FitnessScore::ratio(hm, ht, div, genome_length)
+		SNPdist.plot_ratio(ratios, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, ylim_ratio[0])
+
+		hyp = SNPdist.hyp_snps(ratios, genome_length)
+		SNPdist.plot_snps(hyp, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'hyp', 
+			'Approximated ratio of homozygous to heterozygous SNP density', ylim_hyp[0])
 	end
 end
 
