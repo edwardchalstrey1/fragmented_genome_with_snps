@@ -18,7 +18,7 @@ class UPlot
 			run_num = run.dup
 			run_num.slice!('p_run')
 			case run_num.to_i
-				when 1..10 then param_type = 'p1'
+				when 1..10 then param_type = 'p1' # TODO change this for new experiment
 				when 11..20 then param_type = 'p2'
 				when 21..30 then param_type = 'p3'
 				when 31..40 then param_type = 'p4'
@@ -81,7 +81,7 @@ class UPlot
 			run_num = run.dup
 			run_num.slice!('p_run')
 			case run_num.to_i
-				when 1..10 then param_type = 'p1'
+				when 1..10 then param_type = 'p1' # TODO change this for new experiment
 				when 11..20 then param_type = 'p2'
 				when 21..30 then param_type = 'p3'
 				when 31..40 then param_type = 'p4'

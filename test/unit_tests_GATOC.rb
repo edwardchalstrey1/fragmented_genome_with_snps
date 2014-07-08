@@ -57,5 +57,11 @@ class TestGATOC < Test::Unit::TestCase
 			x+=1
 		end
 	end
+
+	def test_quit
+		auc = GATOC.quit([0.9,0.9,0.92,0.95,0.955])
+		assert_kind_of(Float, auc)
+		assert_equal(3.6975, ('%.4f' % auc).to_f)
+	end
 end
 

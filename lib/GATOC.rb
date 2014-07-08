@@ -4,7 +4,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 	require 'pmeth'
-	require_relative 'quit_if'
+	require 'rinruby'
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (contig arrangement)
 	# Input 1: Array of all the outputs from ReformRatio.get_snp_data method
@@ -14,8 +14,9 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 2: Heterozygous list
 	def self.fitness(fasta, snp_data, genome_length)
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
-		score = FitnessScore.distance_score(hom_snps)
-		return score, hom_snps, het_snps
+		score = 0
+		hom_snps.each_cons(2).map { |a,b| score+=(b-a) }
+		return score.to_f, hom_snps, het_snps
 	end
 
 	# Input 0: Array of Bio::FastaFormat entries
@@ -128,6 +129,20 @@ class GATOC # Genetic Algorithm To Order Contigs
 		end
 	end
 
+	# Input: Array of number values
+	# Output: The area under the curve for the input array plotted against 1..input_length
+	def self.quit(fitness_scores)
+		myr = RinRuby.new(echo = false)
+		myr.assign 'y', fitness_scores
+		myr.eval 'x <- 1:length(y)'
+		myr.eval 'library("pracma")'
+		myr.eval 'require(pracma)'
+		myr.eval 'auc <- trapz(x,y)'
+		auc = myr.pull 'auc'
+		myr.quit
+		return auc
+	end
+
 	# Input 0: FASTA file
 	# Input 1: VCF file
 	# Input 2: parameters:
@@ -217,7 +232,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			last_best << prev_best_fit
 			if last_best.length == opts[:auc_gen]
 				last_auc = auc
-				auc = QuitIf::quit(last_best)
+				auc = quit(last_best)
 				if last_auc != nil && (last_auc - auc) <= (last_auc/(100.0/opts[:auc].to_f))
 					puts 'auc break'
 					gen = opts[:gen]
