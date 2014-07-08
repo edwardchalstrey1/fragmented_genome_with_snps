@@ -2,8 +2,7 @@
 require_relative 'lib/reform_ratio'
 require_relative 'lib/GATOC'
 require_relative 'lib/write_it'
-require_relative 'lib/score_plots/score_plots'
-require_relative 'lib/score_plots/example_perms'
+require_relative 'lib/example_perms'
 
 dataset = ARGV[0]
 run = ARGV[1]
@@ -49,7 +48,7 @@ location = 'fragmented_genome_with_snps/arabidopsis_datasets'
 			end
 		end
 		if restart_gen[0] != 0
-			id_pop = MetricPlot::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
+			id_pop = ExamplePerms::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
 			id_pop.each do |ids|
 				pop << [ExamplePerms::fasta_p_id(fasta, ids), 'type'] # move the 2 methods used here to a class that is not otherwise redundant
 			end

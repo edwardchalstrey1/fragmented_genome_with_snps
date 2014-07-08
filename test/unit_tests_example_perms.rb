@@ -1,39 +1,37 @@
 #encoding: utf-8
-require_relative '../lib/score_plots/example_perms'
-require_relative '../lib/model_genome'
-require_relative '../lib/snp_dist'
-require 'bio'
+require_relative '../lib/example_perms'
+require_relative '../lib/reform_ratio'
 require 'test/unit'
+
+class FakeFasta
+	attr_accessor :entry_id, :length
+	def initialize
+		@entry_id = 'FragX'
+		@length = 10
+	end
+end
 
 class TestExample < Test::Unit::TestCase
 
-	def setup
-		@div = 100.0; @genome_length = 2000.0
-		@ratios = WriteIt.file_to_floats_array("test/test/ratios_example.txt")
-
-		@fasta = ReformRatio::fasta_array("arabidopsis_datasets/small_dataset2/frags.fasta")
-		@snp_data = ReformRatio::get_snp_data("arabidopsis_datasets/small_dataset2/snps.vcf")
+	def fasta
+		frag1, frag2, frag3, frag4 = FakeFasta.new, FakeFasta.new, FakeFasta.new, FakeFasta.new
+		frag1.entry_id, frag2.entry_id, frag3.entry_id, frag4.entry_id = 'frag1', 'frag2', 'frag3', 'frag4'
+		return [frag1, frag2, frag3, frag4], [frag4, frag3, frag2, frag1]
 	end
 
-	def test_fasta_p
-		permutation = ExamplePerms::fasta_p(@fasta, "arabidopsis_datasets/small_dataset2/run13/Gen12/best_permutation.txt")
-		assert_kind_of(Array, permutation)
-		assert_kind_of(Float, permutation[0])
-		assert_in_delta(0.5, permutation[0], 0.5)
-		assert_equal(53, permutation[1..-1].length)
-		assert_kind_of(Bio::FastaFormat, permutation[1])
+	def test_fasta_p_id
+		fasta1, fasta2 = fasta
+		fasta2_ids = ReformRatio.fasta_id_n_lengths(fasta2)[0]
+		fasta1_reordered = ExamplePerms.fasta_p_id(fasta1, fasta2_ids)
+		assert_equal(fasta2, fasta1_reordered)
 	end
 
 	def test_get_perms
-		perms = ExamplePerms::get_perms(@fasta, 2, @snp_data, @ratios, @div, @genome_length)
-		assert_equal(3, perms.length)
-		perms.each do |pop|
-			assert_kind_of(Array, pop)
-			assert_kind_of(Array, pop[0])
-			assert_kind_of(Float, pop[0][0])
-			assert_kind_of(String, pop[0][1], 'should be a frag_id string')
-			assert_kind_of(String, pop[0][-1], 'should be frag_id')
-			assert_equal(54, pop[0].length)
-		end
+		all_perms = ExamplePerms.get_perms(2, 0, 1, 'small_dataset2', 'table_test')
+		assert_equal(2, all_perms.length)
+		assert_kind_of(Array, all_perms[0], 'population not array')
+		assert_equal(10, all_perms[0].length, 'wrong number of permutations')
+		assert_equal(54, all_perms[0][0].length, 'permutation wrong length') # frags plus fitness
+		assert_kind_of(String, all_perms[0][0][0])
 	end
 end
