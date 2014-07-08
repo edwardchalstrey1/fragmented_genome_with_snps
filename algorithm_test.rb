@@ -1,9 +1,7 @@
 #encoding: utf-8
 require_relative 'lib/reform_ratio'
 require_relative 'lib/GATOC'
-require_relative 'lib/fitness_score'
-require_relative 'lib/snp_dist'
-require_relative 'lib/write_it'
+# require_relative 'lib/write_it'
 require_relative 'lib/score_plots/score_plots'
 require_relative 'lib/score_plots/example_perms'
 
@@ -16,54 +14,50 @@ c_mut = ARGV[5].to_i # Number of chunk mutants (see GATOC and PMeth gem) in each
 s_mut = ARGV[6].to_i # Number of swap mutants (see GATOC and PMeth gem) in each new population
 save = ARGV[7].to_i # Number of permutations to save from each generation
 ran = ARGV[8].to_i # Number of random permutations in each generation
-div = ARGV[9].to_f # Number of divisions in the genome, at which to calculate the SNP frequencies
-restart = ARGV[10] # Tells the algorithm to continue from the most recent generation if it has stopped
+restart = ARGV[9] # Tells the algorithm to continue from the most recent generation if it has stopped
 
 ## Files ##
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
 fasta_file = "arabidopsis_datasets/#{dataset}/frags_shuffled.fasta"
 location = 'fragmented_genome_with_snps/arabidopsis_datasets'
+genome_length = ReformRatio.genome_length(fasta_file)
 
-snp_data = ReformRatio::get_snp_data(vcf_file)
-fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") # correct permutation
-
-## Comparable ratio ## TODO a comparable ratio that doesn't use the known distributions
-genome_length = ReformRatio::genome_length(fasta_file)
-ht, hm = ReformRatio.perm_pos(fasta, snp_data)
-comparable_ratio = FitnessScore::ratio(hm, ht, div, genome_length)
-
-pop, restart_gen, restart_zero = [], [], []
-if restart == nil
-	Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into
-	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
-	WriteIt::write_txt("arabidopsis_datasets/#{dataset}/ht_snps", ht)
-
-	restart_gen << 0
-	pop = nil
-else ## For restarts ##
-	Dir.chdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) do # Selecting the generation to restart from
-		dirs = Dir.glob('*').select {|f| File.directory? f}
-		dirs.delete("Gencorrect_lists")
-		if dirs.length < 2
-			restart_gen << 0
-		elsif dirs.length == 2
-			restart_zero <<'restart'
-			restart_gen << 0
-		else
-			restart_gen << (dirs.length/2)-1
-		end
-	end
-	if restart_gen[0] != 0
-		id_pop = MetricPlot::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
-		id_pop.each do |ids|
-			pop << [ExamplePerms::fasta_p_id(fasta, ids), 'type']
-		end
-	else
+### RESTART ###
+### Whilst testing the algorithm with my model genome, the code below works out what generation to restart from, if the algorithm stops unexpectedly
+	pop, restart_gen, restart_zero = [], [], []
+	if restart == nil
+		Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) # make the directory to put permutation files into WARNING: this NEEDS to be in the algorithm run script
+		# WriteIt::write_txt("arabidopsis_datasets/#{dataset}/hm_snps", hm)
+		# WriteIt::write_txt("arabidopsis_datasets/#{dataset}/ht_snps", ht)
+		restart_gen << 0
 		pop = nil
+	else ## For restarts ##
+		Dir.chdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}")) do # Selecting the generation to restart from
+			dirs = Dir.glob('*').select {|f| File.directory? f}
+			dirs.delete("Gencorrect_lists")
+			if dirs.length < 2
+				restart_gen << 0
+			elsif dirs.length == 2
+				restart_zero <<'restart'
+				restart_gen << 0
+			else
+				restart_gen << (dirs.length/2)-1
+			end
+		end
+		if restart_gen[0] != 0
+			fasta = ReformRatio::fasta_array(fasta_file)
+			id_pop = MetricPlot::get_perms(1, restart_gen[0], 0, dataset, run).flatten(1) # should be population array of permutations (arrays of ids)
+			id_pop.each do |ids|
+				pop << [ExamplePerms::fasta_p_id(fasta, ids), 'type'] # move the 2 methods used here to a class that is not otherwise redundant
+			end
+		else
+			pop = nil
+		end
 	end
-end
+###
 
-# Run the algorithm ##
+
+### Run the algorithm ### (:start_pop should be set to nil, unless the algorithm needs to restart)
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
- :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :comparable_ratio => comparable_ratio, 
- :div => div, :genome_length => genome_length, :start_pop => pop, :start_gen => restart_gen[0], :auc => 1, :auc_gen => 20, :restart_zero => restart_zero[0])
+ :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets', :genome_length => genome_length,
+ :start_pop => pop, :start_gen => restart_gen[0], :auc => 1, :auc_gen => 20, :restart_zero => restart_zero[0])

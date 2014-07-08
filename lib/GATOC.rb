@@ -6,26 +6,21 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require 'pmeth'
 	require_relative 'quit_if'
 
-	# Input 0: A permutation array of Bio::FastaFormat entries (fragment arrangement)
-	# Input 1: Array of all the outputs from get_snp_data method
-	# Input 2: Example ratio to compare against in Q-Q plot
-	# Input 3: Length of divisions of the genome to calculate the SNP frequency of
-	# Input 4: Length of the genome
-	# Output 0: A correlation value that is the fitness of the Input 0 permutation
+	# Input 0: A permutation array of Bio::FastaFormat entries (contig arrangement)
+	# Input 1: Array of all the outputs from ReformRatio.get_snp_data method
+	# Input 2: Length of the genome
+	# Output 0: Fitness score for the permutation
 	# Output 1: List of homozygous SNPs for the permutation
 	# Output 2: Heterozygous list
-	# Output 3: List of values representing the ratio distribution
-	def self.fitness(fasta, snp_data, comparable_ratio, div, genome_length)
+	def self.fitness(fasta, snp_data, genome_length)
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
-		perm_ratio = FitnessScore.ratio(hom_snps, het_snps, div, genome_length)
-		# correlation = FitnessScore::score(comparable_ratio, perm_ratio)
-		correlation = FitnessScore.distance_score(hom_snps)
-		return correlation, hom_snps, het_snps, perm_ratio
+		score = FitnessScore.distance_score(hom_snps)
+		return score, hom_snps, het_snps
 	end
 
-	# Input 0: Array of Bio::FastaFormat entries (or any array)
+	# Input 0: Array of Bio::FastaFormat entries
 	# Input 1: Integer of the desired population size
-	# Output: Population - Array of size "size", where each element is a shuffled permutation of the input 0 array of Bio::FastaFormat entries (random permutations)
+	# Output: Population - Array of size "size", where each element is an array of a shuffled permutation of the input 0 array and the string 'random', in an array.
 	def self.initial_population(fasta, size)
 		population = []
 		size.times do
@@ -37,17 +32,15 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 0: Population - array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries)
 	# Input 1: Array of all the outputs from get_snp_data method
 	# Input 2: Integer of the desired number of permutations to be selected for the next generation
-	# Input 3: The example homozygous/heterozygous SNP ratio to compare against in fitness
-	# Input 4: Length of divisions of the genome to calculate the SNP frequency of
-	# Input 5: Length of the genome
+	# Input 3: Length of the genome
 	# Output 0: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 	# Output 1: Integer of leftover permutations, to be taken from the multiplied selected population
 	# Output 2: Pre-selected version of output 0
 	# Output 3: Array of strings, each string represents the method used to create a permutation followed by fitness score, and the array is ordered the same as output 2
-	def self.select(pop, snp_data, num, ratio, div, genome_length)
+	def self.select(pop, snp_data, num, genome_length)
 		fits = {}
 		pop.each do |fasta_array, type|
-			fitn = fitness(fasta_array, snp_data, ratio, div, genome_length)[0]
+			fitn = fitness(fasta_array, snp_data, genome_length)[0]
 			fits[fasta_array] = [fitn, type] # maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
 		if fits.size < pop.size # to compensate for duplicates, we add extra swap mutants
@@ -55,7 +48,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			x = 0
 			diff.times do
 				extra_swap = PMeth.swap_mutate(pop[rand(pop[0].length)][0].dup)
-				fitn = fitness(extra_swap, snp_data, ratio, div, genome_length)[0]
+				fitn = fitness(extra_swap, snp_data, genome_length)[0]
 				fits[extra_swap] = [fitn, 'extra_swap']
 				x+=1
 			end
@@ -163,15 +156,13 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:gen => 10000000000,
 			:pop_size => 100,
 			:select_num => 50,
-			:c_mut => 10,
-			:s_mut => 10,
-			:save => 5,
-			:ran => 5,
+			:c_mut => 50,
+			:s_mut => 40,
+			:save => 8,
+			:ran => 2,
 			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets',
-			:comparable_ratio => nil,
 			:dataset => ARGV[0],
 			:run => ARGV[1],
-			:div => 100.0,
 			:genome_length => 2000.0,
 			:start_pop => nil,
 			:start_gen => 0,
@@ -196,7 +187,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				gen+=1
 			end
 
-			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:comparable_ratio], opts[:div], opts[:genome_length])
+			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], opts[:genome_length])
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types)
@@ -211,14 +202,13 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 				
-			fit, hm, ht, ratios = fitness(pop_fits[-1][1], snp_data, opts[:comparable_ratio], opts[:div], opts[:genome_length])
+			fit, hm, ht = fitness(pop_fits[-1][1], snp_data, opts[:genome_length])
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
 				Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists")) do
 					WriteIt::write_txt("gen_#{gen}_hm", hm)
 					WriteIt::write_txt("gen_#{gen}_ht", ht)
-					WriteIt::write_txt("gen_#{gen}_ratios", ratios)
 				end
 			end
 
@@ -236,11 +226,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 				last_best = []
 			end
-
-			# if pop_fits[-1][0] == 1.0
-			# 	puts 'correct permutation achieved'
-			# 	gen = opts[:gen]
-			# end
 			
 			if gen >= opts[:gen]
 				then break

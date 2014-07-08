@@ -8,25 +8,20 @@ require 'test/unit'
 class TestGATOC < Test::Unit::TestCase
 
 	def setup
-		@div = 100.0; @genome_length = 2000.0
-		@ratios = WriteIt.file_to_floats_array("test/test/ratios_example.txt")
-
 		@fasta_array = ReformRatio::fasta_array('arabidopsis_datasets/small_dataset2/frags.fasta')
 		@snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/small_dataset2/snps.vcf')
-
+		@genome_length = ReformRatio::genome_length('arabidopsis_datasets/small_dataset2/frags.fasta')
 		@pop = GATOC::initial_population(@fasta_array, 10)
-		@selected = GATOC::select(@pop, @snp_data, 5, @ratios, @div, @genome_length)
+		@selected = GATOC::select(@pop, @snp_data, 5, @genome_length)
 	end
 
 	def test_fitness
-		fit, hm, ht, perm_ratio = GATOC::fitness(@fasta_array, @snp_data, @ratios, @div, @genome_length)
+		fit, hm, ht = GATOC::fitness(@fasta_array, @snp_data, @genome_length)
 		assert_kind_of(Float, fit)
 		assert_kind_of(Array, hm)
 		assert_kind_of(Array, ht)
-		assert_kind_of(Array, perm_ratio)
 		assert_kind_of(Integer, hm[0])
 		assert_kind_of(Integer, ht[0])
-		assert_kind_of(Float, perm_ratio[0])
 	end
 
 	def test_initial_population
@@ -36,10 +31,6 @@ class TestGATOC < Test::Unit::TestCase
 		@pop.each do |perm, type|
 			assert_equal(53, perm.length)
 		end
-		
-		array = %w(a b)
-		@pop = GATOC::initial_population(array, 2)
-		assert(@pop == [%w(a b), %w(a b)] || @pop == [%w(b a), %w(a b)] || @pop == [%w(a b), %w(b a)] || @pop = [%w(b a), %w(b a)])
 	end
 
 	def test_select
