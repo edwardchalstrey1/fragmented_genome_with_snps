@@ -6,6 +6,21 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require 'pmeth'
 	require 'rinruby'
 
+	def self.snp_distance(snps)
+		score = 0
+		snps.each_cons(2).map { |a,b| score+=(b-a) }
+		return score
+	end
+
+	def self.max_density(snps)
+		myr = RinRuby.new(echo=false)
+		myr.snps = snps
+		myr.eval 'score <- max(density(snps)$y)'
+		score = myr.pull 'score'
+		myr.quit
+		return score
+	end
+
 	# Input 0: A permutation array of Bio::FastaFormat entries (contig arrangement)
 	# Input 1: Array of all the outputs from ReformRatio.get_snp_data method
 	# Input 2: Length of the genome
@@ -14,8 +29,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 2: Heterozygous list
 	def self.fitness(fasta, snp_data, genome_length)
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
-		score = 0
-		hom_snps.each_cons(2).map { |a,b| score+=(b-a) }
+		score = snp_distance(hom_snps)
+		# score = max_density(hom_snps)
 		return score.to_f, hom_snps, het_snps
 	end
 

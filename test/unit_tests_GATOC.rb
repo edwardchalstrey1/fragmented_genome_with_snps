@@ -15,8 +15,20 @@ class TestGATOC < Test::Unit::TestCase
 		@selected = GATOC::select(@pop, @snp_data, 5, @genome_length)
 	end
 
+	def test_snp_distance
+		snps = [1,5,6,8,12]
+		score = GATOC.snp_distance(snps)
+		assert_equal(11, score)
+	end
+
+	def test_max_density
+		snps = [1,11,21,31,41,51]
+		score = GATOC.max_density(snps)
+		assert_equal(0.01654088, ('%.8f' % score).to_f)
+	end
+
 	def test_fitness
-		fit, hm, ht = GATOC::fitness(@fasta_array, @snp_data, @genome_length)
+		fit, hm, ht = GATOC::fitness(@fasta_array, @snp_data, @genome_length) # TODO test with a known fitness score?
 		assert_kind_of(Float, fit)
 		assert_kind_of(Array, hm)
 		assert_kind_of(Array, ht)
