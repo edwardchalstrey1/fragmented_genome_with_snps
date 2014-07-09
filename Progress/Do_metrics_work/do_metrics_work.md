@@ -29,12 +29,22 @@ The plot below shows how the fitness score I use in my genetic algorithm, change
 
 What the plot above shows, is that my fitness method does consistently attribute lower scores, to permutations that are a greater number of adjacent swaps away from the correctly ordered permutation. Therefore, in my genetic algorithm, permutations being attributed with high fitness scores should be approaching the correct order. The plot shows that at 2000 adjacent swaps from the correct order, the permutations are approaching fitness scores close to that of randomly ordered permutations, but are not there yet, and the rate of decrease appears to be slowing.
 
-An alternate fitness method idea
+Alternate fitness method ideas
 ----------------
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_FitnessSNPDistances_2000pop_10size_0.1Kdiv_swap1.png?raw=true)
+### SNP distance
 
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_FitnessSNPDistances_10000pop_10size_0.1Kdiv_swap1.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/thirdfitness/arabidopsis_datasets/small_dataset2b/adjacent_swaps_Fitness_2000pop_10size_swap1_snp_distance.png?raw=true)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/thirdfitness/arabidopsis_datasets/small_dataset2b/adjacent_swaps_Fitness_10000pop_10size_swap1_snp_distance.png?raw=true)
+
+### Max density (homozygous SNPs)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/thirdfitness/arabidopsis_datasets/small_dataset2b/adjacent_swaps_Fitness_2000pop_10size_swap1_max_density.png?raw=true)
+
+### Max ratio (homozygous/heterozygous SNPs)
+
+![Image](?raw=true)
 
 How useful are distance metrics
 --------
