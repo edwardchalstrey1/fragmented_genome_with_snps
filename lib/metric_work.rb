@@ -3,7 +3,6 @@
 class MetricWork
 
 	require_relative 'reform_ratio'
-	require_relative 'fitness_score'
 	require_relative 'GATOC'
 	require 'pmeth'
 	require 'pdist'
@@ -12,19 +11,15 @@ class MetricWork
 		identifies permuations that are approaching the correct order.
 
 		1. Get an array of correctly ordered FASTA contigs
-		2. Get the ratio of the correctly ordered contigs, so we can workin out fitness of permutation
-		3. Create permutations that are progressively further from the correct
-		4. Save the permutation fitness scores directly into a csv, to make a ggplot (but can also save permutation txt files - possibly not neccesary)
-		5. Create a plot to represent this
+		2. Create permutations that are progressively further from the correct
+		3. Save the permutation fitness scores directly into a csv, to make a ggplot (but can also save permutation txt files - possibly not neccesary)
+		4. Create a plot to represent this
 =end
 
-	def self.score(fasta, perm, snp_data, comparable_ratio, div, genome_length, metric)
+	def self.score(fasta, perm, snp_data, genome_length, metric)
 		case metric
 		when 'Fitness'
-			score = GATOC.fitness(perm, snp_data, comparable_ratio, div, genome_length)[0]
-		when 'FitnessSNPDistances'
-			het_snps, hom_snps = ReformRatio.perm_pos(perm, snp_data)
-			score = FitnessScore.distance_score(hom_snps)
+			score = GATOC.fitness(perm, snp_data, genome_length)[0]
 		when 'DeviationDistance'
 			score = PDist.deviation(fasta, perm)
 		when 'SquareDeviationDistance'
@@ -41,7 +36,7 @@ class MetricWork
 		return score
 	end
 
-	def self.adjacent_swaps_csv(dataset, size, pop_num, div, metric, filename, swap_num)
+	def self.adjacent_swaps_csv(dataset, size, pop_num, metric, filename, swap_num)
 		# 1
 		fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") # correct permutation
 		###
@@ -49,8 +44,6 @@ class MetricWork
 		# 2
 		snp_data = ReformRatio::get_snp_data("arabidopsis_datasets/#{dataset}/snps.vcf")
 		genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{dataset}/frags.fasta")
-		ht, hm = ReformRatio.perm_pos(fasta, snp_data)
-		comparable_ratio = FitnessScore::ratio(hm, ht, div, genome_length)
 		###
 
 		# 3/4: Population of adjacent_swap mutants (of the correct contig order)
@@ -61,7 +54,7 @@ class MetricWork
 
 		shuf_scores = []
 		size.times do
-			shuf_scores << MetricWork.score(fasta, fasta.shuffle, snp_data, comparable_ratio, div, genome_length, metric)
+			shuf_scores << MetricWork.score(fasta, fasta.shuffle, snp_data, genome_length, metric)
 		end
 
 		WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "population,#{metric},shuffled")
@@ -75,7 +68,7 @@ class MetricWork
 				end
 				puts "adjacent_swaps: another #{swap_num} for pop: #{x}"
 				adj_pop << new_perm # need this population to be the next starting population
-				score = MetricWork.score(fasta, perm, snp_data, comparable_ratio, div, genome_length, metric)
+				score = MetricWork.score(fasta, perm, snp_data, genome_length, metric)
 				if y <= size
 					WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x*swap_num},#{score},#{shuf_scores[y-1]}")
 				else
