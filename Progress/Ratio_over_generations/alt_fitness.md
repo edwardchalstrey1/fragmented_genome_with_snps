@@ -18,3 +18,12 @@ Max density
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/small_dataset2b/testmaxd2/images_hyp.gif?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/small_dataset2b/testmaxd2/Gencorrect_lists/best_permutation_distribution_hyp_0.1Kdiv.png?raw=true)
+
+Max Ratio
+------
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/small_dataset2b/testmaxr/images_hm.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/small_dataset2b/testmaxr/Gencorrect_lists/best_permutation_distribution_hm_0.1Kdiv.png?raw=true)
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/small_dataset2b/testmaxr/images_hyp.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/small_dataset2b/testmaxr/Gencorrect_lists/best_permutation_distribution_hyp_0.1Kdiv.png?raw=true)
