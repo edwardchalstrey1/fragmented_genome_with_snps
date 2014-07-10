@@ -11,8 +11,8 @@ source ruby-2.0.0
 
 for i in {1..10}
 do
-	bsub -q TSL-Test128 -We 10000 "ruby algorithm_test.rb 10K_dataset4a p_run$i 10000000000 100 50 35 35 25 5"
-	bsub -q TSL-Prod128 -We 10000 "ruby algorithm_test.rb 10K_dataset4a p_run$(($i+10)) 10000000000 20 10 7 7 5 1"
-	bsub -q TSL-Test256 -We 10000 "ruby algorithm_test.rb 10K_dataset4a p_run$(($i+20)) 10000000000 50 25 20 20 6 4"
-	bsub -q TSL-Prod256 -We 10000 "ruby algorithm_test.rb 10K_dataset4a p_run$(($i+30)) 10000000000 20 4 9 9 1 1"
+	bsub -q TSL-Test128 -We 10000 "ruby algorithm_test.rb 10K_dataset4b p_run$i 10000000000 100 50 35 35 25 5"
+	bsub -q TSL-Prod128 -We 10000 "ruby algorithm_test.rb 10K_dataset4b p_run$(($i+10)) 10000000000 20 10 7 7 5 1"
+	bsub -q TSL-Test256 -We 10000 "ruby algorithm_test.rb 10K_dataset4b p_run$(($i+20)) 10000000000 50 25 20 20 6 4"
+	bsub -q TSL-Prod256 -We 10000 "ruby algorithm_test.rb 10K_dataset4b p_run$(($i+30)) 10000000000 20 4 9 9 1 1"
 done
