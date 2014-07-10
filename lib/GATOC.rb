@@ -40,6 +40,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
 		# score = snp_distance(hom_snps)
 		score = max_density(hom_snps)
+		# score = max_ratio(hom_snps, het_snps)
 		return score.to_f, hom_snps, het_snps
 	end
 
