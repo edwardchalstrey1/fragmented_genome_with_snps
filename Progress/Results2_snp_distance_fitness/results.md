@@ -25,16 +25,7 @@ border:1px solid black;
   <tr> <td>p2</td> <td>20</td> <td>10</td> <td>7</td> <td>7</td> <td>5</td> <td>1</td> </tr>
   <tr> <td>p3</td> <td>50</td> <td>25</td> <td>20</td> <td>20</td> <td>6</td> <td>4</td> </tr>
   <tr> <td>p4</td> <td>20</td> <td>4</td> <td>9</td> <td>9</td> <td>1</td> <td>1</td> </tr>
-  
-  <tr> <td>p5</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> </tr>
-  <tr> <td>p6</td> <td>20</td> <td>10</td> <td>7</td> <td>7</td> <td>5</td> <td>1</td> </tr>
-  <tr> <td>p7</td> <td>50</td> <td>25</td> <td>20</td> <td>20</td> <td>6</td> <td>4</td> </tr>
-  <tr> <td>p8</td> <td>20</td> <td>4</td> <td>9</td> <td>9</td> <td>1</td> <td>1</td> </tr>
-  
-  <tr> <td>p9</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> </tr>
-  <tr> <td>p10</td> <td>20</td> <td>10</td> <td>7</td> <td>7</td> <td>5</td> <td>1</td> </tr>
-  <tr> <td>p11</td> <td>50</td> <td>25</td> <td>20</td> <td>20</td> <td>6</td> <td>4</td> </tr>
-  <tr> <td>p12</td> <td>20</td> <td>4</td> <td>9</td> <td>9</td> <td>1</td> <td>1</td> </tr>
+
 </table>
 
 The figure below shows the results of 40 replicates of the genetic algorithm with the parameter groupings in the table above. Although there appears to be some initial improvement in terms of fitness score, all the replicates level out within 60 generations.
