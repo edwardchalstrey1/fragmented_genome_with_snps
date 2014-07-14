@@ -1,8 +1,7 @@
-Results 2nd July 2014
+Results 23rd June 2014
 ========================================================
 
-The figures below represent all 120 replicates of my genetic algorithm, although some of the replicates are not yet finished.
-
+The figures below represent 120 replicates of my genetic algorithm.
 Each facet/panel in the plots below contain a group of replicates with the same parameters:
 
 - Population size: number of permutations in each population (a new population for every generation)
