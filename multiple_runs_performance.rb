@@ -6,8 +6,7 @@ method = ARGV[1]
 
 title = 'Replicate runs of a genetic algorithm, that rearranges unordered contigs from a model of a
 backcrossed EMS mutagenized Arabidopsis chromosome (4). A fitness score is attributed to each permutation
-of the contig order, based on similarity of the homozygous to heterozygous SNP ratio with an expected distribution.
-Each facet contains replicates that have been run with the same parameters.'
+of the contig order.'
 
 unless method == nil
 
@@ -17,7 +16,7 @@ unless method == nil
 
 	if method == 'plot' || method == 'both'
 		shorts, x = ['fits','dev','square','ham','r_dist','lcs','kt'], 0
-		y_axis = ['Permutation fitness score: sum of distances between consecutive homozygous SNP positions',
+		y_axis = ['Permutation fitness score',
 			'Deviation distance between permutations and the correct contig arrangement, normalized between 0 and 1',
 			'Squared deviation distance between permutations and the correct contig arrangement, normalized between 0 and 1',
 			'Hamming distance between permutations and the correct contig arrangement, normalized between 0 and 1',
