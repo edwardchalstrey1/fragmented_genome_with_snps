@@ -60,5 +60,5 @@ location = 'fragmented_genome_with_snps/arabidopsis_datasets'
 
 ### Run the algorithm ### (:start_pop should be set to nil, unless the algorithm needs to restart)
 GATOC::evolve(fasta_file, vcf_file, :gen => gen, :pop_size => pop_size, :select_num => select_num, :c_mut => c_mut, :s_mut => s_mut,
- :save => save, :ran => ran, :loc => 'fragmented_genome_with_snps/arabidopsis_datasets',
+ :save => save, :ran => ran, :loc => location,
  :start_pop => pop, :start_gen => restart_gen[0], :auc => 1, :auc_gen => 20, :restart_zero => restart_zero[0])
