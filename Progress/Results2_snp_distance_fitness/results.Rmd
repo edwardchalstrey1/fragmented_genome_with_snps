@@ -35,3 +35,15 @@ The figure below shows the results of 40 replicates of the genetic algorithm wit
 The figure below shows the same results as the one above, but with the addition of the correct permutation's fitness. This is shown on the line created from "replicate C". Clearly none of the replicates have produced permutations with fitness scores close to that of the correctly ordered genome.
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/umbrella_plot_fits_total_snp_distance_with_correct.png?raw=true)
+
+Looking closer at the changes in SNP distribution for p_run39 replicate
+------
+
+The homozygous SNP distribution for fittest permutations in each generation:
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/images_hm.gif?raw=true)
+The correct homozygous SNP distribution:
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/Gencorrect_lists/best_permutation_distribution_hm_1.0Kdiv.png?raw=true)
+The ratio of homozygous to heterozygous SNPs for fittest permutations in each generation:
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/images_hyp.gif?raw=true)
+The ratio of homozygous to heterozygous SNPs for the correct contig permutation:
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/Gencorrect_lists/best_permutation_distribution_hyp_1.0Kdiv.png?raw=true)
