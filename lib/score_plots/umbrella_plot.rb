@@ -39,7 +39,7 @@ class UPlot
 										perm = []
 										IO.foreach("arabidopsis_datasets/#{dataset}/#{run}/#{gen}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
 										WriteIt.add_to("arabidopsis_datasets/#{dataset}/data.csv", 
-											"#{gen[3..-1]},#{run},#{param_type},#{(perm[0].to_f)},#{PDist.deviation(original_order, perm[1..-1])},#{PDist.square(original_order, perm[1..-1])},#{PDist.hamming(original_order, perm[1..-1])},#{PDist.rdist(original_order, perm[1..-1])},#{PDist.lcs(original_order, perm[1..-1])},#{PDist.kendalls_tau(original_order, perm[1..-1])}")
+											"#{gen[3..-1]},#{run},#{param_type},#{perm[0].to_f},#{PDist.deviation(original_order, perm[1..-1])},#{PDist.square(original_order, perm[1..-1])},#{PDist.hamming(original_order, perm[1..-1])},#{PDist.rdist(original_order, perm[1..-1])},#{PDist.lcs(original_order, perm[1..-1])},#{PDist.kendalls_tau(original_order, perm[1..-1])}")
 										puts "permutation#{x}"
 										x+=1
 									end
@@ -104,7 +104,7 @@ class UPlot
 										perm = []
 										IO.foreach("arabidopsis_datasets/#{dataset}/#{run}/#{gen}/#{ptxt}") { |line| perm << line.gsub(/\n/,'') }
 										WriteIt.add_to("arabidopsis_datasets/#{dataset}/data_fits.csv", 
-											"#{gen[3..-1]},#{run},#{param_type},#{(1.0-perm[0].to_f)}")
+											"#{gen[3..-1]},#{run},#{param_type},#{perm[0].to_f}")
 										puts "permutation#{x}"
 										x+=1
 									end
