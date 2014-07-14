@@ -41,9 +41,12 @@ Looking closer at the changes in SNP distribution for p_run39 replicate
 
 The homozygous SNP distribution for fittest permutations in each generation:
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/images_hm.gif?raw=true)
+
 The correct homozygous SNP distribution:
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/Gencorrect_lists/best_permutation_distribution_hm_1.0Kdiv.png?raw=true)
+
 The ratio of homozygous to heterozygous SNPs for fittest permutations in each generation:
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/images_hyp.gif?raw=true)
+
 The ratio of homozygous to heterozygous SNPs for the correct contig permutation:
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/Gencorrect_lists/best_permutation_distribution_hyp_1.0Kdiv.png?raw=true)
