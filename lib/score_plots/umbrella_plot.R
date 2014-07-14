@@ -18,8 +18,9 @@ uplot <- function(df, title, y_axis, metric){
 		geom_line(aes(y = Average), size=0.5) +
 		geom_line(aes(y = Average-x), size=0.1, linetype="solid") +
 		geom_line(aes(y = Average+x), size=0.1, linetype="solid") +
+		# geom_line(aes(y = 7116055, colour='C'), size=1.0, linetype="solid") + # for snp_distance fitness method only
     	# geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill = replicates, alpha = 0.0)) +
-    	facet_wrap(~param_types, ncol=3) +
+    	facet_wrap(~param_types, ncol=2) +
 	    theme_bw() +
 	    theme(title = element_text(size = rel(0.5))) +
 		guides(col = guide_legend(keywidth = 0.25, keyheight = 0.25, ncol = 4, byrow = TRUE, title.theme = element_text(size=8, angle = 0),
