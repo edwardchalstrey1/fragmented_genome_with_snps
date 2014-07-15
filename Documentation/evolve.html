@@ -143,6 +143,18 @@ hr {
 <body>
 <h1>GATOC.evolve</h1>
 
+<p>Put simply, my genetic algorithm works as follows:</p>
+
+<ol>
+<li><p>An initial population of permutations is generated, by shuffling the contig order in each. The population is an array of permutations, where each permutation is itself an array of Bio::FastaFormat objects (contigs). </p></li>
+<li><p>A fittest selection of the population is taken to be mutated (see Mutation above). A new population is created from the mutant permutations, saved fittest permutations from the previous population, and random permutations.</p></li>
+<li><p>The new population undergoes selection, and another population is made. This process loops for a given number of generations, or until a quit condition is satisfied</p></li>
+</ol>
+
+<p>It is used like this: <code>GATOC.evolve(fasta_file, vcf_file, parameters)</code>. <code>parameters</code> is a hash of symbol keys that point to values used in the sub-methods of GATOC. Each parameter has a default value, shown in the <code>opts</code> hash. The parameters are described in the annotation of <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb">GATOC.evolve</a>.</p>
+
+<p>The flow chart below shows the key inputs and outputs for GATOC.evolve. For more detail on some of the sub methods see <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/new_population.md">new_population</a> and <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/select.md">select</a>.</p>
+
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_flowcharts/evolve.png?raw=true" alt="Image"/></p>
 
 </body>
