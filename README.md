@@ -70,13 +70,7 @@ To run [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome
 
 When running the algorithm with real data, a new ruby script will be needed to call ``GATOC.evolve``
 
-TODO link to documentation
-
-1. An initial population of permutations is generated, by shuffling the contig order in each. The population is an array of permutations, where each permutation is itself an array of Bio::FastaFormat objects (contigs). 
-
-2. A fittest selection of the population is taken to be mutated (see Mutation above). A new population is created from the mutant permutations, saved fittest permutations from the previous population, and random permutations.
-
-3. The new population undergoes selection, and another population is made. This process loops for a given number of generations, or until a quit condition is satisfied
+For a detailed look at how the algorithm works see [Documentation/evolve](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/evolve.md)
 
 Assesing the Genetic Algorithm's performance
 ---------------------------------------
@@ -85,6 +79,8 @@ My experiment relies on the premise that the fitness of a permutation, as I have
 
 Results
 -----
+
+To use the old fitness method https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/0a1ec286382c96732cab4ede75d3275592886f40
 
 
 
