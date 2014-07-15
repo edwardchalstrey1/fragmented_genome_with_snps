@@ -8,7 +8,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 ### Methods for calculating fitness score of permutations
 
-	# Input 0: Array of homozygous snp positions
+	# Input: Array of homozygous snp positions
 	# Output: Integer of the total distance in bases, between adjacent SNPs
 	def self.snp_distance(hm)
 		score = 0
@@ -16,8 +16,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 		return score
 	end
 
-	# Input 0: Array of homozygous snp positions
-	# Output: 
+	# Input: Array of homozygous snp positions
+	# Output: Float of the maximum kernel density value of the homozygous SNP distribution
 	def self.max_density(hm)
 		myr = RinRuby.new(echo=false)
 		myr.hm = hm
@@ -27,6 +27,9 @@ class GATOC # Genetic Algorithm To Order Contigs
 		return score
 	end
 
+	# Input 0: Array of homozygous snp positions
+	# Input 1: Array of heterozygous snp positions
+	# Output: Float of the maximum ratio of homozygous to heterozygous kernel density
 	def self.max_ratio(hm, ht)
 		myr = RinRuby.new(echo=false)
 		myr.hm, myr.ht = hm, ht
