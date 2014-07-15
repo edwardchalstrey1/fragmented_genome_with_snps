@@ -59,7 +59,11 @@ In each generation of my genetic algorithm, I create mutants of permutations fro
 
 Genetic algorithms require a fitness method, in order to tell how close each solution comes to solving the given problem. With a permutation problem, the fitness method should score the permutation based on how correct the ordering of elements is. I have tested several different fitness methods. Each of these makes a slightly different assumption about the SNP distributions of the genome.
 
-TODO: links to fitness method summaries
+I have tested different fitness methods. The first I call the count/ratio method after the methods it uses in the separate (from GATOC) [FitnessScore](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb) class.
+
+Older version of project: https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/0a1ec286382c96732cab4ede75d3275592886f40
+
+TODO: finish fitness method summaries
 
 How my genetic algorithm works
 ----------
@@ -80,9 +84,7 @@ My experiment relies on the premise that the fitness of a permutation, as I have
 Results
 -----
 
-To use the old fitness method https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/0a1ec286382c96732cab4ede75d3275592886f40
-
-
+[Results for count/ratio fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results1/results.md)
 
 Project dependencies
 ------------
