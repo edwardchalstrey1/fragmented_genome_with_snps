@@ -6,16 +6,22 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require 'pmeth'
 	require 'rinruby'
 
-	def self.snp_distance(snps)
+### Methods for calculating fitness score of permutations
+
+	# Input 0: Array of homozygous snp positions
+	# Output: Integer of the total distance in bases, between adjacent SNPs
+	def self.snp_distance(hm)
 		score = 0
-		snps.each_cons(2).map { |a,b| score+=(b-a) }
+		hm.each_cons(2).map { |a,b| score+=(b-a) }
 		return score
 	end
 
-	def self.max_density(snps)
+	# Input 0: Array of homozygous snp positions
+	# Output: 
+	def self.max_density(hm)
 		myr = RinRuby.new(echo=false)
-		myr.snps = snps
-		myr.eval 'score <- max(density(snps)$y)'
+		myr.hm = hm
+		myr.eval 'score <- max(density(hm)$y)'
 		score = myr.pull 'score'
 		myr.quit
 		return score
@@ -29,6 +35,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		myr.quit
 		return score
 	end
+###
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (contig arrangement)
 	# Input 1: Array of all the outputs from ReformRatio.get_snp_data method
@@ -254,6 +261,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 			gen+=1
 
+			# Decide whether algorithm improvement is negligible enough to quit 
 			last_best << prev_best_fit
 			if last_best.length == opts[:auc_gen]
 				last_auc = auc

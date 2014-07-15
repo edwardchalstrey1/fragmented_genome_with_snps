@@ -65,7 +65,6 @@ class TestGATOC < Test::Unit::TestCase
 		new_pop = GATOC::new_population(@selected[0], 10, 4, 2, 2, 2, 5, @selected[1])
 		assert_kind_of(Array, new_pop)
 		assert_kind_of(Bio::FastaFormat, new_pop[0][0][0])
-		assert_equal(new_pop.uniq.length, new_pop.length)
 		assert_equal(10, new_pop.length)
 		x = 0
 		new_pop.each do |permutation, type|
