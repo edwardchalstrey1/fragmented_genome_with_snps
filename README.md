@@ -84,7 +84,13 @@ My experiment relies on the premise that the fitness of a permutation, as I have
 Results
 -----
 
+Below are the results of running many replicates of my algorithm with different fitness methods.
+
 [Results for count/ratio fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results1/results.md)
+
+[Results for snp_distance fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results2_snp_distance_fitness/results.md)
+
+[Results for max_density fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results3_max_density_fitness/results.md)
 
 Project dependencies
 ------------
