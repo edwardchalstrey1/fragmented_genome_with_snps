@@ -65,6 +65,10 @@ Older version of project: https://github.com/edwardchalstrey1/fragmented_genome_
 
 TODO: finish fitness method summaries
 
+### Quit condition
+
+A genetic algorithm needs a way of knowing when to stop. Ideally, you want it to continue until a correct solution has been reached, but in reality this may be impossible. I have implemented a [quit condition](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Quit_condition/quit_condition.md) that terminates my genetic algorithm, when improvement (in fitness) is judged to be negligible.
+
 How my genetic algorithm works
 ----------
 
