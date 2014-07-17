@@ -15,6 +15,6 @@ class LocateMutation
 		myr.eval 'peak <- kernel_density$x[index]'
 		peak = myr.pull 'peak'
 		myr.quit
-		return peak
+		return peak.round # round to closest base position
 	end
 end
