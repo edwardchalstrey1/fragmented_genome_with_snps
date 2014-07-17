@@ -33,6 +33,11 @@ class TestGATOC < Test::Unit::TestCase
 		assert_equal(15.37267, ('%.5f' % score).to_f)
 	end
 
+	def test_max_hyp
+		score = GATOC.max_hyp(@snps1, @snps2, 6, 51)
+		assert_kind_of(Float, score)
+	end
+
 	def test_fitness
 		fit, hm, ht = GATOC::fitness(@fasta_array, @snp_data, @genome_length) # TODO test with a known fitness score?
 		assert_kind_of(Float, fit)

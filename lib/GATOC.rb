@@ -1,6 +1,7 @@
 #encoding: utf-8
 class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'fitness_score'
+	require_relative 'snp_dist'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 	require 'pmeth'
@@ -37,6 +38,17 @@ class GATOC # Genetic Algorithm To Order Contigs
 		score = myr.pull 'score'
 		myr.quit
 		return score
+	end
+
+	# Input 0: Array of homozygous snp positions
+	# Input 1: Array of heterozygous snp positions
+	# Input 2: Number of divisions of genome at which to calculate ratios
+	# Input 3: Length of genome
+	# Output: Float of the maximum kernel density value of the 'hypothetical snps' ratio vector
+	def self.max_hyp(hm, ht, div, genome_length)
+		ratios = FitnessScore.ratio(hm, ht, div, genome_length)
+		hyp = SNPdist.hyp_snps(ratios, genome_length)
+		return max_density(hyp)
 	end
 ###
 
