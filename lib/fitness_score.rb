@@ -48,10 +48,10 @@ class FitnessScore
 		# Input 3: The length of the genome
 		# Input 4: Array of expected ratios (floats) of homozygous to heterozygous SNPs for each division of the genome
 		# Output: Float between 0.0 and 1.0 where closely matching inputs are closer to 1.0 (pearson correlation)
-		def self.count_ratio(hm, ht, div, genome_length, expected_distribution)
+		def self.count_ratio(hm, ht, div, genome_length, expected_ratios)
 			ratios = ratio(hm, ht, div, genome_length)
 			myr = RinRuby.new(echo = false)
-			myr.assign 'x', expected_distribution
+			myr.assign 'x', expected_ratios
 			myr.assign 'y', ratios
 			myr.eval 'score <- abs(cor(x,y))'
 			fitness_score = myr.pull 'score'

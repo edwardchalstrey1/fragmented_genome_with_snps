@@ -13,13 +13,14 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 0: Fitness score for the permutation
 	# Output 1: List of homozygous SNPs for the permutation
 	# Output 2: Heterozygous list
-	def self.fitness(fasta, snp_data, genome_length, method) # TODO add count_ratio
+	def self.fitness(fasta, snp_data, genome_length, method) # TODO sort out snp_distance (reversed fitness order), and count_ratio not working
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
 		case method
+		when 'count_ratio' then score = FitnessScore.count_ratio(hom_snps, het_snps, @div, genome_length, @expected_ratios)
 		when 'snp_distance' then score = FitnessScore.snp_distance(hom_snps)
 		when 'max_density' then score = FitnessScore.max_density(hom_snps)
 		when 'max_ratio' then score = FitnessScore.max_ratio(hom_snps, het_snps)
-		when 'max_hyp' then score = FitnessScore.max_hyp(hom_snps, het_snps, 100, genome_length)
+		when 'max_hyp' then score = FitnessScore.max_hyp(hom_snps, het_snps, @div, genome_length)
 		end
 		return score.to_f, hom_snps, het_snps
 	end
@@ -151,7 +152,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 	# Input 0: FASTA file
 	# Input 1: VCF file
-	# Input 2: parameters:
+	# Input 2: parameters: TODO move to below
 	# 	gen: Integer of desired number of generations - the number of times a new population is created from an old one
 	# 	pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
 	# 	c_mut: Integer of the desired number of chunk mutant permutations in each new population
@@ -172,6 +173,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 	def self.evolve(fasta_file, vcf_file, parameters)
 		opts = {
 			:fitness_method => 'max_density',
+			:expected_ratios => nil,
+			:div => nil,
 			:gen => 10000000000,
 			:pop_size => 100,
 			:select_num => 50,
@@ -188,6 +191,9 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:auc_gen => 5,
 			:restart_zero => nil
 			}.merge!(parameters)
+
+		@expected_ratios = opts[:expected_ratios]
+		@div = opts[:div].to_i
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 		fasta = ReformRatio::fasta_array(fasta_file) # array of fasta format fragments
@@ -207,13 +213,13 @@ class GATOC # Genetic Algorithm To Order Contigs
 				gen+=1
 			end
 
-			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length, fitness_method)
+			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length, opts[:fitness_method])
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types)
 			end
 
-			puts "Gen#{gen}\n Best correlation = #{pop_fits[-1][0]}"
+			puts "Gen#{gen}\n Fitness Score = #{pop_fits[-1][0]}"
 			if prev_best_fit != nil
 				if pop_fits[-1][0] <= prev_best_fit
 					puts "No fitness improvement\n \n"
@@ -222,7 +228,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 				
-			# fit, hm, ht = fitness(pop_fits[-1][1], snp_data, genome_length, fitness_method)
+			# fit, hm, ht = fitness(pop_fits[-1][1], snp_data, genome_length, fitness_method) TODO delete
 			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data)
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
