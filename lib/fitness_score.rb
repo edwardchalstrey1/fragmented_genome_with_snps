@@ -10,6 +10,9 @@ class FitnessScore
 		# Input 2: The length of the genome
 		# Output: Array of number of SNPs in each genome division
 		def self.count(snp_pos, div, genome_length)
+			puts "#{snp_pos.length}!!"
+			puts "#{div}!!!"
+			puts "#{genome_length}!!!!"
 			myr = RinRuby.new(echo = false)
 			myr.assign 'snp_pos', snp_pos
 			myr.assign 'div', div

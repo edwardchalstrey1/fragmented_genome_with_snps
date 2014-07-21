@@ -152,44 +152,30 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 	# Input 0: FASTA file
 	# Input 1: VCF file
-	# Input 2: parameters: TODO move to below
-	# 	gen: Integer of desired number of generations - the number of times a new population is created from an old one
-	# 	pop_size: Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
-	# 	c_mut: Integer of the desired number of chunk mutant permutations in each new population
-	#   s_mut: Integer of the desired number of swap mutant permutations in each new population
-	# 	save: Integer of the desired number of the best permutations from each population, to be included in the next one
-	# 	ran: Integer of the desired number of randomly shuffled permutations in each new population
-	#   loc: Location to save output files to
-	#   dataset: The sub folder containing fasta and vcf files
-	#   run: The name you'd like to assign this run of the algorithm
-	#   start_pop: Population array of permutations (arrays of FASTA format fragments)
-	#   start_gen: Generation that the algorithm ist starting from
-	#   auc: quit algorithm if area under curve of fitness improvement is < auc% better for this auc_gen generations than previous auc_gen
-	#   auc_gen: see above
-	#   restart_zero: should be set to anything other than nil, if the algorithm needs to be restarted from a generation zero population
+	# Input 2: Hash of parameters for running the algorithm. See opts hash below for defaults.
 	# Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 	# Output 2: A saved figure of the algorithm's performance
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
 	def self.evolve(fasta_file, vcf_file, parameters)
 		opts = {
-			:fitness_method => 'max_density',
-			:expected_ratios => nil,
-			:div => nil,
-			:gen => 10000000000,
-			:pop_size => 100,
-			:select_num => 50,
-			:c_mut => 50,
-			:s_mut => 40,
-			:save => 8,
-			:ran => 2,
-			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets',
-			:dataset => ARGV[0],
-			:run => ARGV[1],
-			:start_pop => nil,
-			:start_gen => 0,
-			:auc => 5,
-			:auc_gen => 5,
-			:restart_zero => nil
+			:fitness_method => 'max_density', # String of the fitness method to use from FitnessScore class
+			:expected_ratios => nil, # Array of expected ratios (floats) of homozygous to heterozygous SNPs for each division of the genome
+			:div => nil, # Number of breaks (divisions) in the genome to count the number of SNPs in. (max_hyp and count_ratio fitness methods require this).
+			:gen => 10000000000, # Integer of desired number of generations - the number of times a new population is created from an old one
+			:pop_size => 100, # Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
+			:select_num => 50, # Number of permutations to select from each generation
+			:c_mut => 50, # Integer of the desired number of chunk mutant permutations in each new population
+			:s_mut => 40, # Integer of the desired number of swap mutant permutations in each new population
+			:save => 8, # Integer of the desired number of the best permutations from each population, to be included in the next one
+			:ran => 2, # Integer of the desired number of randomly shuffled permutations in each new population
+			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets', # Location to save output files to
+			:dataset => ARGV[0], # The sub folder containing fasta and vcf files
+			:run => ARGV[1], # The name you'd like to assign this run of the algorithm
+			:start_pop => nil, # Population array of permutations (arrays of FASTA format fragments)
+			:start_gen => 0, # Generation that the algorithm ist starting from
+			:auc => 5, # Quit algorithm if area under curve of fitness improvement is < auc% better for this auc_gen generations than previous auc_gen
+			:auc_gen => 5, # See above
+			:restart_zero => nil # Should be set to anything other than nil, if the algorithm needs to be restarted from a generation zero population
 			}.merge!(parameters)
 
 		@expected_ratios = opts[:expected_ratios]

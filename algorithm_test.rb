@@ -77,7 +77,7 @@ restart = ARGV[11] # Tells the algorithm to continue from the most recent genera
 ### I use the ratios calculated from the known correct permuation of contigs (the ordered model genome)
 if fitness_method == 'count_ratio'
 	genome_length = ReformRatio::genome_length(fasta_file)
-	expected_ratios = FitnessScore.ratio(hm, ht, div, genome_length)
+	expected_ratios = FitnessScore.ratio(hm, ht, div, genome_length) # Array of expected ratios (floats) of homozygous to heterozygous SNPs for each division of the genome
 else
 	expected_ratios = nil
 end
