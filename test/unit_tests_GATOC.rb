@@ -12,11 +12,11 @@ class TestGATOC < Test::Unit::TestCase
 		@snp_data = ReformRatio::get_snp_data('arabidopsis_datasets/small_dataset2/snps.vcf')
 		@genome_length = ReformRatio::genome_length('arabidopsis_datasets/small_dataset2/frags.fasta')
 		@pop = GATOC::initial_population(@fasta_array, 10)
-		@selected = GATOC::select(@pop, @snp_data, 5, @genome_length)
+		@selected = GATOC::select(@pop, @snp_data, 5, @genome_length, 'max_density')
 	end
 
 	def test_fitness
-		fit, hm, ht = GATOC::fitness(@fasta_array, @snp_data, @genome_length) # TODO test with a known fitness score?
+		fit, hm, ht = GATOC::fitness(@fasta_array, @snp_data, @genome_length, 'snp_distance')
 		assert_kind_of(Float, fit)
 		assert_kind_of(Array, hm)
 		assert_kind_of(Array, ht)

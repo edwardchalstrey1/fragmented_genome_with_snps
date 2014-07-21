@@ -9,15 +9,18 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 0: A permutation array of Bio::FastaFormat entries (contig arrangement)
 	# Input 1: Array of all the outputs from ReformRatio.get_snp_data method
 	# Input 2: Length of the genome
+	# Input 3: String indicating fitness method to use from FitnessScore class
 	# Output 0: Fitness score for the permutation
 	# Output 1: List of homozygous SNPs for the permutation
 	# Output 2: Heterozygous list
-	def self.fitness(fasta, snp_data, genome_length)
+	def self.fitness(fasta, snp_data, genome_length, method) # TODO add count_ratio
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
-		# score = snp_distance(hom_snps)
-		# score = max_density(hom_snps)
-		# score = max_ratio(hom_snps, het_snps)
-		score = FitnessScore.max_hyp(hom_snps, het_snps, 100, genome_length)
+		case method
+		when 'snp_distance' then score = FitnessScore.snp_distance(hom_snps)
+		when 'max_density' then score = FitnessScore.max_density(hom_snps)
+		when 'max_ratio' then score = FitnessScore.max_ratio(hom_snps, het_snps)
+		when 'max_hyp' then score = FitnessScore.max_hyp(hom_snps, het_snps, 100, genome_length)
+		end
 		return score.to_f, hom_snps, het_snps
 	end
 
@@ -36,14 +39,15 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 1: Array of all the outputs from get_snp_data method
 	# Input 2: Integer of the desired number of permutations to be selected for the next generation
 	# Input 3: Length of the genome
+	# Input 4: String indicating fitness method to use from FitnessScore class
 	# Output 0: Array of fittest selection of Input 0 population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)
 	# Output 1: Integer of leftover permutations, to be taken from the multiplied selected population
 	# Output 2: Pre-selected version of output 0
 	# Output 3: Array of strings, each string represents the method used to create a permutation followed by fitness score, and the array is ordered the same as output 2
-	def self.select(pop, snp_data, num, genome_length)
+	def self.select(pop, snp_data, num, genome_length, fitness_method)
 		fits = {}
 		pop.each do |fasta_array, type|
-			fitn = fitness(fasta_array, snp_data, genome_length)[0]
+			fitn = fitness(fasta_array, snp_data, genome_length, fitness_method)[0]
 			fits[fasta_array] = [fitn, type] # maybe some have exact same fitness, perhaps we can make fitness the value, then sort by value
 		end
 		if fits.size < pop.size # to compensate for duplicates, we add extra swap mutants
@@ -51,7 +55,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			x = 0
 			diff.times do
 				extra_swap = PMeth.swap_mutate(pop[rand(pop[0].length)][0].dup)
-				fitn = fitness(extra_swap, snp_data, genome_length)[0]
+				fitn = fitness(extra_swap, snp_data, genome_length, fitness_method)[0]
 				fits[extra_swap] = [fitn, 'extra_swap']
 				x+=1
 			end
@@ -167,6 +171,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
 	def self.evolve(fasta_file, vcf_file, parameters)
 		opts = {
+			:fitness_method => 'max_density',
 			:gen => 10000000000,
 			:pop_size => 100,
 			:select_num => 50,
@@ -202,7 +207,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				gen+=1
 			end
 
-			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length)
+			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length, fitness_method)
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types)
@@ -217,7 +222,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 				
-			fit, hm, ht = fitness(pop_fits[-1][1], snp_data, genome_length)
+			# fit, hm, ht = fitness(pop_fits[-1][1], snp_data, genome_length, fitness_method)
+			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data)
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
