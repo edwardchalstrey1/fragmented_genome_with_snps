@@ -1,56 +1,10 @@
 #encoding: utf-8
 class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'fitness_score'
-	require_relative 'snp_dist'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
 	require 'pmeth'
 	require 'rinruby'
-
-### Methods for calculating fitness score of permutations
-
-	# Input: Array of homozygous snp positions
-	# Output: Integer of the total distance in bases, between adjacent SNPs
-	def self.snp_distance(hm)
-		score = 0
-		hm.each_cons(2).map { |a,b| score+=(b-a) }
-		return score
-	end
-
-	# Input: Array of homozygous snp positions
-	# Output: Float of the maximum kernel density value of the homozygous SNP distribution
-	def self.max_density(hm)
-		myr = RinRuby.new(echo=false)
-		myr.hm = hm
-		myr.eval 'score <- max(density(hm)$y)'
-		score = myr.pull 'score'
-		myr.quit
-		return score
-	end
-
-	# Input 0: Array of homozygous snp positions
-	# Input 1: Array of heterozygous snp positions
-	# Output: Float of the maximum ratio of homozygous to heterozygous kernel density
-	def self.max_ratio(hm, ht)
-		myr = RinRuby.new(echo=false)
-		myr.hm, myr.ht = hm, ht
-		myr.eval 'score <- max(density(hm)$y/density(ht)$y)'
-		score = myr.pull 'score'
-		myr.quit
-		return score
-	end
-
-	# Input 0: Array of homozygous snp positions
-	# Input 1: Array of heterozygous snp positions
-	# Input 2: Number of divisions of genome at which to calculate ratios
-	# Input 3: Length of genome
-	# Output: Float of the maximum kernel density value of the 'hypothetical snps' ratio vector
-	def self.max_hyp(hm, ht, div, genome_length)
-		ratios = FitnessScore.ratio(hm, ht, div, genome_length)
-		hyp = SNPdist.hyp_snps(ratios, genome_length)
-		return max_density(hyp)
-	end
-###
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (contig arrangement)
 	# Input 1: Array of all the outputs from ReformRatio.get_snp_data method
@@ -63,7 +17,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		# score = snp_distance(hom_snps)
 		# score = max_density(hom_snps)
 		# score = max_ratio(hom_snps, het_snps)
-		score = max_hyp(hom_snps, het_snps, 100, genome_length)
+		score = FitnessScore.max_hyp(hom_snps, het_snps, 100, genome_length)
 		return score.to_f, hom_snps, het_snps
 	end
 

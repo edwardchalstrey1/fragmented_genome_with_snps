@@ -13,29 +13,6 @@ class TestGATOC < Test::Unit::TestCase
 		@genome_length = ReformRatio::genome_length('arabidopsis_datasets/small_dataset2/frags.fasta')
 		@pop = GATOC::initial_population(@fasta_array, 10)
 		@selected = GATOC::select(@pop, @snp_data, 5, @genome_length)
-
-		@snps1 = [1,5,6,8,12]
-		@snps2 = [1,11,21,31,41,51]
-	end
-
-	def test_snp_distance
-		score = GATOC.snp_distance(@snps1)
-		assert_equal(11, score)
-	end
-
-	def test_max_density
-		score = GATOC.max_density(@snps2)
-		assert_equal(0.01654088, ('%.8f' % score).to_f)
-	end
-
-	def test_max_ratio
-		score = GATOC.max_ratio(@snps1, @snps2)
-		assert_equal(15.37267, ('%.5f' % score).to_f)
-	end
-
-	def test_max_hyp
-		score = GATOC.max_hyp(@snps1, @snps2, 6, 51)
-		assert_kind_of(Float, score)
 	end
 
 	def test_fitness
