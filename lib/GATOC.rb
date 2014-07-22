@@ -77,7 +77,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 		else 
 			leftover = 0
 		end
-		return pop_fits, leftover, initial_pf, types.reverse
+		return pop_fits, leftover, initial_pf, types
 	end
 
 	# Input 0: Array of fittest selection of previous population: each sub array has two elements, the fitness and the permutation (which is itself an array of fragments)

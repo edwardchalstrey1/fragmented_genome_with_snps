@@ -76,6 +76,8 @@ restart = ARGV[11] # Tells the algorithm to continue from the most recent genera
 ### If using the count_ratio fitness method, an array of expected ratios is needed. Whilst testing the algorithm,
 ### I use the ratios calculated from the known correct permuation of contigs (the ordered model genome)
 if fitness_method == 'count_ratio'
+	snp_data = ReformRatio.get_snp_data(vcf_file)
+	ht, hm = ReformRatio.perm_pos(fasta, snp_data)
 	genome_length = ReformRatio::genome_length(fasta_file)
 	expected_ratios = FitnessScore.ratio(hm, ht, div, genome_length) # Array of expected ratios (floats) of homozygous to heterozygous SNPs for each division of the genome
 else
