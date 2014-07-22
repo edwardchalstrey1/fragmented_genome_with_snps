@@ -10,18 +10,15 @@ class FitnessScore
 		# Input 2: The length of the genome
 		# Output: Array of number of SNPs in each genome division
 		def self.count(snp_pos, div, genome_length)
-			puts "#{snp_pos.length}!!"
-			puts "#{div}!!!"
-			puts "#{genome_length}!!!!"
 			myr = RinRuby.new(echo = false)
 			myr.assign 'snp_pos', snp_pos
-			myr.assign 'div', div
+			myr.assign 'div', div.to_i
 			myr.assign 'l', genome_length
 			myr.eval 'breaks <- c(0)
 			for(i in 1:div){
 			  breaks <- c(breaks,(l/div)*i)
-			}
-			counts <- hist(snp_pos, breaks=breaks, plot=FALSE)$counts'
+			}'
+			myr.eval 'counts <- hist(snp_pos, breaks=breaks, plot=FALSE)$counts'
 			counts = myr.pull 'counts'
 			myr.quit
 			return counts
