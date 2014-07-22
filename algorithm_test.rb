@@ -5,7 +5,6 @@ require_relative 'lib/write_it'
 require_relative 'lib/example_perms'
 require_relative 'lib/fitness_score'
 
-
 ### Required command line parameters #####################################################
 dataset = ARGV[0] # Name of dataset directory in 'fragmented_genome_with_snps/arabidopsis_datasets'
 run = ARGV[1] # Name of sub directory to create for this run of the algorithm, and to store output files in

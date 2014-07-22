@@ -13,7 +13,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 0: Fitness score for the permutation
 	# Output 1: List of homozygous SNPs for the permutation
 	# Output 2: Heterozygous list
-	def self.fitness(fasta, snp_data, genome_length, method) # TODO sort out snp_distance (reversed fitness order), and count_ratio not working
+	def self.fitness(fasta, snp_data, genome_length, method) # TODO sort out snp_distance (reversed fitness order)
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
 		case method
 		when 'count_ratio' then score = FitnessScore.count_ratio(hom_snps, het_snps, @div, genome_length, @expected_ratios)
@@ -70,7 +70,13 @@ class GATOC # Genetic Algorithm To Order Contigs
 		pop_fits = []
 		fits.each {|i| pop_fits << i.reverse} # swapping the permutation/fitness score around
 		initial_pf = pop_fits # the input permutations ordered by fitness, not yet selcted
-		sliced = pop_fits.reverse.each_slice(num).to_a # sliced the population ordered by fitness into chunks of size num, choosing the chunk with the highest fitness scores (reversing and choosing chunk 0)
+		if fitness_method == 'snp_distance'
+			sliced = pop_fits.each_slice(num).to_a
+			initial_pf.reverse!
+			types.reverse!
+		else
+			sliced = pop_fits.reverse.each_slice(num).to_a # sliced the population ordered by fitness into chunks of size num, choosing the chunk with the highest fitness scores (reversing and choosing chunk 0)
+		end
 		pop_fits = sliced[0].reverse # creating the selected population, and reversing them to ascending fitness order
 		if sliced[-1].length != sliced[0].length # if there is a remainder slice
 			leftover = sliced[-1].length
@@ -214,7 +220,6 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 				
-			# fit, hm, ht = fitness(pop_fits[-1][1], snp_data, genome_length, fitness_method) TODO delete
 			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data)
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
@@ -234,9 +239,16 @@ class GATOC # Genetic Algorithm To Order Contigs
 			if last_best.length == opts[:auc_gen]
 				last_auc = auc
 				auc = quit(last_best)
-				if last_auc != nil && (auc - last_auc) <= (last_auc/(100.0/opts[:auc].to_f))
-					puts 'auc break'
-					gen = opts[:gen]
+				if opts[:fitness_method] == 'snp_distance' # snp_distance is a decreasing score (with improvement)
+					if last_auc != nil && (last_auc - auc) <= (last_auc/(100.0/opts[:auc].to_f))
+						puts 'auc break'
+						gen = opts[:gen]
+					end
+				else # all other fitness methods are increasing with improvement
+					if last_auc != nil && (auc - last_auc) <= (last_auc/(100.0/opts[:auc].to_f))
+						puts 'auc break'
+						gen = opts[:gen]
+					end
 				end
 				last_best = []
 			end
