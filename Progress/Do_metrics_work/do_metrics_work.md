@@ -55,6 +55,8 @@ Alternate fitness method ideas
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2c/adjacent_swaps_Fitness_2000pop_10size_swap1_max_hyp.png?raw=true)
 
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2c/adjacent_swaps_Fitness_10000pop_10size_swap1_max_hyp.png?raw=true)
+
 How useful are distance metrics
 --------
 
