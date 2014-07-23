@@ -52,4 +52,9 @@ class TestFitnessScore < Test::Unit::TestCase
 		score = FitnessScore.max_hyp(@snps1, @snps2, 6, 51)
 		assert_kind_of(Float, score)
 	end
+
+	def test_hyp_distance
+		score = FitnessScore.hyp_distance(@snps1, @snps2, 6, 51)
+		assert_kind_of(Float, score)
+	end
 end

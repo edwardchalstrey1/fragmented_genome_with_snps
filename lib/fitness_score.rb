@@ -101,4 +101,15 @@ class FitnessScore
 		hyp = SNPdist.hyp_snps(ratios, genome_length)
 		return max_density(hyp)
 	end
+
+	# Input 0: Array of homozygous snp positions
+	# Input 1: Array of heterozygous snp positions
+	# Input 2: Number of divisions of genome at which to calculate ratios
+	# Input 3: Length of genome
+	# Output: Integer of the total distance in bases, between adjacent SNPs from hypothetical ratio distribution (see SNPdist.hyp_snps)
+	def self.hyp_distance(hm, ht, div, genome_length)
+		ratios = FitnessScore.ratio(hm, ht, div, genome_length)
+		hyp = SNPdist.hyp_snps(ratios, genome_length)
+		return snp_distance(hyp)
+	end
 end
