@@ -177,7 +177,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets', # Location to save output files to
 			:dataset => ARGV[0], # The sub folder containing fasta and vcf files
 			:run => ARGV[1], # The name you'd like to assign this run of the algorithm
-			:start_pop => nil, # Population array of permutations (arrays of FASTA format fragments)
+			:start_pop => nil, # Population array of permutations (arrays of FASTA format fragments) to start from - THIS IS USEFUL WHILST TESTING ALGORITHM
 			:start_gen => 0, # Generation that the algorithm ist starting from
 			:auc => 5, # Quit algorithm if area under curve of fitness improvement is < auc% better for this auc_gen generations than previous auc_gen
 			:auc_gen => 5, # See above
@@ -191,54 +191,44 @@ class GATOC # Genetic Algorithm To Order Contigs
 		fasta = ReformRatio::fasta_array(fasta_file) # array of fasta format fragments
 		genome_length = ReformRatio::genome_length(fasta_file)
 
-		prev_best_fit = nil
 		if opts[:start_pop] == nil
-			pop = initial_population(fasta, opts[:pop_size])
+			pop = initial_population(fasta, opts[:pop_size]) # create initial population
 		else
-			pop = opts[:start_pop]
+			pop = opts[:start_pop] # use a pre-made starting population
 		end
 
 		gen, last_best, auc = opts[:start_gen], [], nil
 		opts[:gen].times do
 
-			if opts[:start_gen] == 0 && opts[:restart_zero] != nil && gen == 0
+			if opts[:start_gen] == 0 && opts[:restart_zero] != nil && gen == 0 # Enables restart of algorithm, where only generation 0 is already complete
 				gen+=1
 			end
 
-			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length, opts[:fitness_method])
+			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length, opts[:fitness_method]) # select fittest permutations in population
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
-				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types)
+				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types) # save the permutations from this generation, with fitness scores
 			end
 
-			puts "Gen#{gen}\n Fitness Score = #{pop_fits[-1][0]}"
-			if prev_best_fit != nil
-				if pop_fits[-1][0] <= prev_best_fit
-					puts "No fitness improvement\n \n"
-				else
-					puts "FITNESS IMPROVEMENT!\n \n"
-				end
-			end
+			puts "Gen#{gen}\n Fitness Score = #{pop_fits[-1][0]}" # print output to show improvement of best permutation over generations as algorithm runs
 				
-			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data)
+			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data) # get the SNP distributions for the best permutation in the generation
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
 				Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists")) do
-					WriteIt::write_txt("gen_#{gen}_hm", hm)
+					WriteIt::write_txt("gen_#{gen}_hm", hm) # save the SNP distributions for the best permutation in the generation
 					WriteIt::write_txt("gen_#{gen}_ht", ht)
 				end
 			end
-
-			prev_best_fit = pop_fits[-1][0]
+			
 			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 			gen+=1
-
-			# Decide whether algorithm improvement is negligible enough to quit 
-			last_best << prev_best_fit
-			if last_best.length == opts[:auc_gen]
+ 
+			last_best << pop_fits[-1][0]
+			if last_best.length == opts[:auc_gen] 
 				last_auc = auc
-				auc = quit(last_best)
+				auc = quit(last_best) # Decide whether algorithm improvement is negligible enough to quit
 				if opts[:fitness_method] == 'snp_distance' # snp_distance is a decreasing score (with improvement)
 					if last_auc != nil && (last_auc - auc) <= (last_auc/(100.0/opts[:auc].to_f))
 						puts 'auc break'
@@ -253,7 +243,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 				last_best = []
 			end
 			
-			if gen >= opts[:gen]
+			if gen >= opts[:gen] # Quit the algorithm after the specified number of generations is up
 				then break
 			end
 			Signal.trap("PIPE", "EXIT")
