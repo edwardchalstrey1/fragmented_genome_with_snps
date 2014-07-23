@@ -86,11 +86,11 @@ Results
 
 Below are the results of running many replicates of my algorithm with different fitness methods.
 
-[Results for count_ratio fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results1/results.md)
+[Results for count_ratio fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results1_count_ratio/results.md)
 
-[Results for snp_distance fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results2_snp_distance_fitness/results.md)
+[Results for snp_distance fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results2_snp_distance/results.md)
 
-[Results for max_density fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results3_max_density_fitness/results.md)
+[Results for max_density fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results3_max_density/results.md)
 
 [Results for max_ratio fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results4_max_ratio/results.md)
 
