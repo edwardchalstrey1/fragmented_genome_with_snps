@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-<title>How useful are the fitness method I am using in my genetic algorithm, and the distance metrics I am using to evaluate it&#39;s performance</title>
+<title>How useful are the fitness method I am using in my genetic algorithm, and the distance metrics I am using to evaluate it&#39;s performance?</title>
 
 <style type="text/css">
 body, td {
@@ -178,7 +178,7 @@ hljs.initHighlightingOnLoad();
 </head>
 
 <body>
-<h2>How useful are the fitness method I am using in my genetic algorithm, and the distance metrics I am using to evaluate it&#39;s performance</h2>
+<h2>How useful are the fitness method I am using in my genetic algorithm, and the distance metrics I am using to evaluate it&#39;s performance?</h2>
 
 <p>Below are the results of the following experiment: I am plotting how my fitness score, and each distance metric, changes as we move away from the optimum contig order in the search space. I am taking neighbours in the search space as permutations one adjacent swap away from eachother.</p>
 
@@ -186,7 +186,9 @@ hljs.initHighlightingOnLoad();
 
 <p>In each plot, the red shaded area shows the standard deviation around the mean for each population, and the green shaded area shows the standard deviation around the mean of a population of randomly ordered permutations.</p>
 
-<h2>How useful is the fitness method</h2>
+<h2>How useful are the fitness methods?</h2>
+
+<h3>Count ratio</h3>
 
 <p>The plot below shows how the fitness score I use in my genetic algorithm, changes as the number of adjacent swaps from being correct a permutation is. The genome being used to generate all the plots in this document is from <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/arabidopsis_datasets/small_dataset2a">small_dataset2a</a>, a model genome with the following parameters:</p>
 
@@ -202,8 +204,6 @@ hljs.initHighlightingOnLoad();
 <p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_Fitness_2000pop_10size_0.1Kdiv_swap1.png?raw=true" alt="Image"/></p>
 
 <p>What the plot above shows, is that my fitness method does consistently attribute lower scores, to permutations that are a greater number of adjacent swaps away from the correctly ordered permutation. Therefore, in my genetic algorithm, permutations being attributed with high fitness scores should be approaching the correct order. The plot shows that at 2000 adjacent swaps from the correct order, the permutations are approaching fitness scores close to that of randomly ordered permutations, but are not there yet, and the rate of decrease appears to be slowing.</p>
-
-<h2>Alternate fitness method ideas</h2>
 
 <h3>SNP distance</h3>
 
