@@ -180,27 +180,82 @@ hljs.initHighlightingOnLoad();
 <body>
 <h1>Fitness Methods</h1>
 
-<h2>Count ratio</h2>
+<h2>Count Ratio</h2>
 
-<pre><code class="r">correct_count_ratio &lt;- c(1, 2, 3, 4, 5, 4, 3, 2, 1) # examples
-permutation_count_ratio &lt;- c(1, 3, 2, 4, 4, 5, 3, 2, 1)
-abs(cor(correct_count_ratio, permutation_count_ratio))
+<p>This method counts the numbers of each type of SNP, in equally sized divisions of the genome (the R code below is repeated for homozygous and heterozygous SNPs).</p>
+
+<pre><code class="r">snp_pos &lt;- c(1,4,5,6,9) # Example SNP positions
+l &lt;- 10 # Example genome length
+div &lt;- 2 # Example number of divisions/breaks
+breaks &lt;- c(0)
+for(i in 1:div){
+  breaks &lt;- c(breaks,(l/div)*i)
+  }
+counts &lt;- hist(snp_pos, breaks=breaks, plot=FALSE)$counts
+counts
+</code></pre>
+
+<pre><code>## [1] 3 2
+</code></pre>
+
+<p>The ratio of the homozygous/heterozygous count is then calculated for each of these divisions. A compromise is made when calculating the ratio, by adding 1 to each count. This avoids dividing by zero (or dividing zero), but results in ratios that are not accurate. The idea here is that peaks in the homozygous/heterozygous SNP density ratio, should be pronounced enough to be recognisable even when calculating the ratio in this way.</p>
+
+<pre><code class="ruby">x = 0
+ratios = []
+div.times do
+  count_ratio = ((hm_count[x] + 1).to_f / (ht_count[x] + 1).to_f) # the measure of ratio
+  ratios &lt;&lt; count_ratio
+  x+=1
+end
+ratios
+</code></pre>
+
+<p>&ldquo;Count ratio&rdquo; vectors for permutations can then be plotted against an expected count ratio vector (whilst testing the algorithm, I use the count ratio vector for the correct arrangement of contigs). Taking the absolute Pearson&#39;s correlation coefficient will give us an indication of how similar the count ratios are, and is our fitness score for this method</p>
+
+<pre><code class="r">expected_ratio &lt;- c(1, 2, 3, 4, 5, 4, 3, 2, 1) # examples
+permutation_ratio &lt;- c(1, 3, 2, 4, 4, 5, 3, 2, 1)
+score &lt;- abs(cor(expected_ratio, permutation_ratio))
+score
 </code></pre>
 
 <pre><code>## [1] 0.8714
 </code></pre>
 
-<h2>SNP distance</h2>
+<h2>SNP Distance</h2>
+
+<p>The fitness <code>score</code> for this method, is the sum of distances between adjacent homozygous SNPs. The idea here is that the correct permutation has the lowest total distance, because the SNPs are clustered together around the causative mutation.</p>
 
 <pre><code class="ruby">homozygous_snps = [1,4,5,6,9]
 score = 0
 homozygous_snps.each_cons(2).map { |a,b| score+=(b-a) }
-puts score
+score
 </code></pre>
 
-<p>The sum of the distances between the homozygous SNPs. The idea here is that the correct permutation has the lowest total distance, because the SNPs are clustered together around the causative mutation.</p>
+<p>In practice, this idea is unlikely to be of use. This is because we are searching for a peak in the ratio of homozygous to heterozygous SNP density, rather than just the homozygous SNP density.</p>
 
-<h2>Max density</h2>
+<h2>Hyp distance</h2>
+
+<p>A &ldquo;Hypothetical SNP distribution&rdquo; is created that represents the ratio of homozygous to heterozygous SNPs. This is achieved by randomly assigning &ldquo;SNP positions&rdquo; within divisions of the genome. SNP ratios are calculated across the genome, as in the Count Ratio fitness method (see above). The number of SNPs randomly positioned within each division/break, is 10 times the calculated ratio value for that division. The idea here is that the peak in the ratio of homozygous to heterozygous SNP density, will be largest around the causative mutation, therefore the correct permutation should have the lowest total &ldquo;hypothetical snp&rdquo; distance.</p>
+
+<pre><code class="ruby">breaks = []
+(1..ratios.length).to_a.each do |i|
+    breaks &lt;&lt; (genome_length/ratios.length.to_f)*i
+end
+hyp, x = [], 0
+ratios.each do |ratio| 
+    (ratio*10).to_i.times do
+        hyp &lt;&lt; rand(genome_length/ratios.length.to_f) + breaks[x] # random value from within the range that the freq has been taken
+    end
+    x+=1
+end
+hyp # These don&#39;t need to be unique or integers like the real SNPs, since they are just representing a distribution
+</code></pre>
+
+<p>Calling the &ldquo;SNP Distance&rdquo; method on the <code>hyp</code> array, should give a low score for well ordered permutations.</p>
+
+<h2>Max Density</h2>
+
+<p>The maximum density value, of a kernel density estimation for homozygous SNPs is taken as fitness score. This assumes the SNPs are clustered together around the causative mutation.</p>
 
 <pre><code class="r">homozygous_snps &lt;- c(1,4,5,6,9) # Example
 max(density(homozygous_snps)$y) # Fitness score
@@ -209,7 +264,11 @@ max(density(homozygous_snps)$y) # Fitness score
 <pre><code>## [1] 0.1788
 </code></pre>
 
+<p>In practice, this idea is unlikely to be of use. This is because we are searching for a peak in the ratio of homozygous to heterozygous SNP density, rather than just the homozygous SNP density.</p>
+
 <h2>Max Ratio</h2>
+
+<p>The maximum value of a ratio of homozygous (kernel) density to heterozygous density, is taken as fitness score. This assumes there is a peak in the ratio of homozygous to heterozygous kernel density, when there is a peak in the actual ratio of homozygous to heterozgous SNP density.</p>
 
 <pre><code class="r">hm &lt;- c(1,4,5,6,9) # Example of homozygous SNPs
 ht &lt;- c(1,3,5,7,9) # Example of homozygous SNPs
@@ -218,6 +277,10 @@ max(density(hm)$y/density(ht)$y) # Fitness score
 
 <pre><code>## [1] 3.893
 </code></pre>
+
+<h2>Max Hyp</h2>
+
+<p>This method creates the &ldquo;hypothetical SNP positions&rdquo; (as in Hyp Distance above), then calls the &ldquo;Max Density&rdquo; method on <code>hyp</code> instead of on the <code>homozygous_snps</code>.</p>
 
 </body>
 
