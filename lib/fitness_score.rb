@@ -34,7 +34,7 @@ class FitnessScore
 			ht_count = FitnessScore::count(ht, div, genome_length)
 			x = 0
 			ratios = []
-			hm_count.length.times do # the number of divisions of the genome (div)
+			div.times do
 				count_ratio = ((hm_count[x] + 1).to_f / (ht_count[x] + 1).to_f) # a measure of ratio
 				ratios << count_ratio
 				x+=1
