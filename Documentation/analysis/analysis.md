@@ -54,5 +54,5 @@ We can create a circos plot that shows how well the best permutation in each gen
 
 Script: circos_links.rb
 
-Running ``ruby circos_links.rb dataset run s i g`` will generate a config file. ``dataset`` and ``run`` are the same as above``. ``s`` is the first generation to be shown in the figure (does not work for generation 0). ``i`` is the number of generations to increment by, and ``g`` is the number of generations in the plot.
+Running ``ruby circos_links.rb dataset run s i g`` will generate a config file. ``dataset`` and ``run`` are the same as above. ``s`` is the first generation to be shown in the figure (does not work for generation 0). ``i`` is the number of generations to increment by, and ``g`` is the number of generations in the plot.
 Navigating to ``fragmented_genome_with_snps/circos`` then running ``circos -conf config_file`` (where ``config_file`` is the one you just created), will generate the figure. The figure will be called 'circos.png' and will also be found in ``fragmented_genome_with_snps/circos``.
