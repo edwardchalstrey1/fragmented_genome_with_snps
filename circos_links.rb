@@ -1,5 +1,4 @@
 #encoding: utf-8
-require_relative 'lib/score_plots/score_plots.rb'
 require_relative 'circos/create_links'
 
 ### Make Circos config files ###

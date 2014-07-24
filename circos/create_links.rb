@@ -1,4 +1,5 @@
-require '~/fragmented_genome_with_snps/lib/write_it'
+require_relative '../lib/write_it'
+require_relative '../lib/reform_ratio'
 
 class CircosLinks
 
