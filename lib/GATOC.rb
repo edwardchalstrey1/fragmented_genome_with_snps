@@ -13,7 +13,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 0: Fitness score for the permutation
 	# Output 1: List of homozygous SNPs for the permutation
 	# Output 2: Heterozygous list
-	def self.fitness(fasta, snp_data, genome_length, method) # TODO sort out snp_distance (reversed fitness order)
+	def self.fitness(fasta, snp_data, genome_length, method)
 		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
 		case method
 		when 'count_ratio' then score = FitnessScore.count_ratio(hom_snps, het_snps, @div, genome_length, @expected_ratios)
