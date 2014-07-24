@@ -2,19 +2,19 @@
 require_relative 'lib/score_plots/umbrella_plot'
 
 dataset = ARGV[0]
-method = ARGV[1]
+data_plot = ARGV[1]
 
 title = 'Replicate runs of a genetic algorithm, that rearranges unordered contigs from a model of a
 backcrossed EMS mutagenized Arabidopsis chromosome (4). A fitness score is attributed to each permutation
 of the contig order.'
 
-unless method == nil
+unless data_plot == nil
 
-	if method == 'csv' || method == 'both'
+	if data_plot == 'csv' || data_plot == 'both'
 		UPlot.fits_save(dataset)
 	end
 
-	if method == 'plot' || method == 'both'
+	if data_plot == 'plot' || data_plot == 'both'
 		shorts = 'fits_total'
 		y_axis = 'Permutation fitness score'
 		filename = "umbrella_plot_#{shorts}"
