@@ -158,6 +158,14 @@ hr {
 
 <p>Navigate to the run directory <code>fragmented_genome_with_snps/arabidopsis_datasets/dataset/run</code> and run <code>bash ../../../magick.sh</code>. This generates gif animations for how the homozygous and &ldquo;hypothetical&rdquo; SNP distributions of the best permutations in each generation change as the algorithm progresses.</p>
 
+<h2>Do distance metrics and fitness methods work?</h2>
+
+<p>See <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Do_metrics_work/do_metrics_work.md">Progress/do_metrics_work</a> for results and details.</p>
+
+<p>Script: <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/do_metrics_work.rb">do_metrics_work.rb</a></p>
+
+<p>Running <code>ruby do_metrics_work.rb dataset size pop_num data_plot metric swap_num div</code> will generate a plot of the change in the metric, as the distance from the correct permutations increases (by adjacent swaps of contigs). <code>dataset</code> is the same as above. <code>size</code> is the number of permutations to include in each population. <code>pop_num</code> is the number of populations to create. <code>data_plot</code> should be either &#39;csv&#39;, &#39;plot&#39;, or both. <code>metric</code> should be the name of the distance metric to test (from <a href="https://github.com/edwardchalstrey1/pdist">PDist</a>), or the fitness method to test (from <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb">FitnessScore</a>), but should be camel-cased without underscores/spaces, e.g. &#39;kendalls_tau&#39; metric is used when <code>metric</code> = &#39;KendallsTau&#39;. <code>swap_num</code> is the number of swap mutations to be carried out on permutations between consecutive populations (I have always set this to 1). <code>div</code> is the number of divisions of the genome at which to calculate the ratio when testing the &#39;count_ratio&#39;, &#39;max_hyp&#39; and &#39;hyp_distance&#39; fitness methods. <code>div</code> can be left blank for all other methods.</p>
+
 </body>
 
 </html>
