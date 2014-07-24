@@ -16,10 +16,22 @@ class MetricWork
 		4. Create a plot to represent this
 =end
 
-	def self.score(fasta, perm, snp_data, genome_length, metric)
+	def self.fitness(fasta, snp_data, genome_length, method, params)
+		opts = {:div => nil, :expected_ratios => nil}.merge!(params)
+		het_snps, hom_snps = ReformRatio.perm_pos(fasta, snp_data)
+		case method
+		when 'count_ratio' then score = FitnessScore.count_ratio(hom_snps, het_snps, opts[:div], genome_length, opts[:expected_ratios])
+		when 'snp_distance' then score = FitnessScore.snp_distance(hom_snps)
+		when 'max_density' then score = FitnessScore.max_density(hom_snps)
+		when 'max_ratio' then score = FitnessScore.max_ratio(hom_snps, het_snps)
+		when 'max_hyp' then score = FitnessScore.max_hyp(hom_snps, het_snps, opts[:div], genome_length)
+		when 'hyp_distance' then score = FitnessScore.hyp_distance(hom_snps, het_snps, opts[:div], genome_length)
+		end
+		return score.to_f
+	end
+
+	def self.score(fasta, perm, snp_data, genome_length, metric, params)
 		case metric
-		when 'Fitness'
-			score = GATOC.fitness(perm, snp_data, genome_length)[0]
 		when 'DeviationDistance'
 			score = PDist.deviation(fasta, perm)
 		when 'SquareDeviationDistance'
@@ -32,11 +44,13 @@ class MetricWork
 			score = PDist.lcs(fasta, perm)
 		when 'KendallsTau'
 			score = PDist.kendalls_tau(fasta, perm)
+		else
+			score = fitness(perm, snp_data, genome_length, metric.gsub(/(?<=[a-z])(?=[A-Z])/, ' ').downcase.tr(' ', '_'), params) # fitness method
 		end
 		return score
 	end
 
-	def self.adjacent_swaps_csv(dataset, size, pop_num, metric, filename, swap_num)
+	def self.adjacent_swaps_csv(dataset, size, pop_num, metric, filename, swap_num, params)
 		# 1
 		fasta = ReformRatio::fasta_array("arabidopsis_datasets/#{dataset}/frags.fasta") # correct permutation
 		###
@@ -54,7 +68,7 @@ class MetricWork
 
 		shuf_scores = []
 		size.times do
-			shuf_scores << MetricWork.score(fasta, fasta.shuffle, snp_data, genome_length, metric)
+			shuf_scores << score(fasta, fasta.shuffle, snp_data, genome_length, metric, params)
 		end
 
 		WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "population,#{metric},shuffled")
@@ -68,7 +82,7 @@ class MetricWork
 				end
 				puts "adjacent_swaps: another #{swap_num} for pop: #{x}"
 				adj_pop << new_perm # need this population to be the next starting population
-				score = MetricWork.score(fasta, perm, snp_data, genome_length, metric)
+				score = MetricWork.score(fasta, perm, snp_data, genome_length, metric, params)
 				if y <= size
 					WriteIt.add_to("arabidopsis_datasets/#{dataset}/#{filename}.csv", "#{x*swap_num},#{score},#{shuf_scores[y-1]}")
 				else
@@ -98,4 +112,6 @@ class MetricWork
 		myr.quit
 		puts 'made a plot'
 	end
+
+	
 end
