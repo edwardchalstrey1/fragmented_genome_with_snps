@@ -166,6 +166,36 @@ hr {
 
 <p>Running <code>ruby do_metrics_work.rb dataset size pop_num data_plot metric swap_num div</code> will generate a plot of the change in the metric, as the distance from the correct permutations increases (by adjacent swaps of contigs). <code>dataset</code> is the same as above. <code>size</code> is the number of permutations to include in each population. <code>pop_num</code> is the number of populations to create. <code>data_plot</code> should be either &#39;csv&#39;, &#39;plot&#39;, or both. <code>metric</code> should be the name of the distance metric to test (from <a href="https://github.com/edwardchalstrey1/pdist">PDist</a>), or the fitness method to test (from <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/fitness_score.rb">FitnessScore</a>), but should be camel-cased without underscores/spaces, e.g. &#39;kendalls_tau&#39; metric is used when <code>metric</code> = &#39;KendallsTau&#39;. <code>swap_num</code> is the number of swap mutations to be carried out on permutations between consecutive populations (I have always set this to 1). <code>div</code> is the number of divisions of the genome at which to calculate the ratio when testing the &#39;count_ratio&#39;, &#39;max_hyp&#39; and &#39;hyp_distance&#39; fitness methods. <code>div</code> can be left blank for all other methods.</p>
 
+<h2>Algorithm performance</h2>
+
+<p>See <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results1_count_ratio/results.md">Progress/results</a> for examples of the figures produced. This analysis is specific to the multiple/replicate runs of my algorithm I have tested in the TSL HPC.</p>
+
+<p>Scripts:</p>
+
+<ol>
+<li><p><a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/multiple_runs_performance.rb">multiple_runs_perormance.rb</a> (Fitness scores and distance metrics analysis for permutations)</p></li>
+<li><p><a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/multiple_runs_fitness.rb">multiple_runs_fitness.rb</a> (Fitness scores only)</p></li>
+</ol>
+
+<p>Running <code>ruby script dataset data_plot</code> will generate the performance figures. <code>script</code> is either of the scripts above. <code>dataset</code> is the same as above. <code>data_plot</code> is the same as above.</p>
+
+<h2>Viewing permutation data in the command line</h2>
+
+<p>The fitness scores and &#39;types&#39; of permutations can be easily viewed for a given generation of a run of the genetic algorithm. The &#39;type&#39; refers to whether each permutation is saved from the previous generation (saved), is a mutant (chunk_mutant or swap_mutant, see <a href="https://github.com/edwardchalstrey1/pmeth">PMeth</a>), or is a random permutation.</p>
+
+<p>Script: <a href="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/view_table_data.rb">view_table_data.rb</a></p>
+
+<p>Run <code>view_table_data.rb dataset run generation</code> to view the generation of choice. <code>dataset</code> and <code>run</code> are the same as above. <code>generation</code> should be an integer of the generation you wish to view.</p>
+
+<h2>Creating Circos plots of contig arrangement, for best permutations in each generation of the genetic algorithm</h2>
+
+<p>We can create a circos plot that shows how well the best permutation in each generation of the algorithm, has put the contigs back into the correct order, for my model test genome. <a href="http://circos.ca/">Circos</a> must be instsalled.</p>
+
+<p>Script: circos_links.rb</p>
+
+<p>Running <code>ruby circos_links.rb dataset run s i g</code> will generate a config file. <code>dataset</code> and <code>run</code> are the same as above<code>.</code>s<code>is the first generation to be shown in the figure (does not work for generation 0).</code>i<code>is the number of generations to increment by, and</code>g<code>is the number of generations in the plot.
+Navigating to</code>fragmented_genome_with_snps/circos<code>then running</code>circos -conf config_file<code>(where</code>config_file<code>is the one you just created), will generate the figure. The figure will be called &#39;circos.png&#39; and will also be found in</code>fragmented_genome_with_snps/circos.</p>
+
 </body>
 
 </html>
