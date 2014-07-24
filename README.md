@@ -81,6 +81,10 @@ Assesing the Genetic Algorithm's performance
 
 My experiment relies on the premise that the fitness of a permutation, as I have calculated it, is related to how close that permutation is to the correct arrangement of contigs. To test this, I use a number of distance metrics, which compare the order of permutations and provide a similarity score. I have made a ruby gem called [PDist](https://github.com/edwardchalstrey1/pdist) that contains the methods for calculating these scores. Descriptions of how they work can be found in the repository.
 
+### Testing the algorithms fitness methods, and the distance metrics from PDist
+
+I have carried out an experiment to determine which of the fitness methods I have come up with are most worth pursuing, and which distance metrics (from  [PDist](https://github.com/edwardchalstrey1/pdist)) are most useful for analysing my results. For my findings, see [Progress/Do_metrics_work](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Do_metrics_work/do_metrics_work.md).
+
 ### Data analysis
 
 For information on how I analysed the output from my algorithm see [Documentation/analysis](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/analysis/analysis.md)
