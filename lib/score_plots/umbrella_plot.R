@@ -6,7 +6,7 @@ av_sd <- function(df, metric){
   return(df)
 }
 
-uplot <- function(df, title, y_axis, metric){
+uplot <- function(df, title, y_axis, metric, correct_fitness){
 	df$param_types = factor(df$param_types, levels=c('p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12'))
 	df$replicates<- as.numeric(sub("p_run","",df[,2]))
 	library(ggplot2)
@@ -17,10 +17,11 @@ uplot <- function(df, title, y_axis, metric){
 		scale_x_continuous() +
 		geom_line(aes(y = Average), size=0.5) +
 		geom_line(aes(y = Average-x), size=0.1, linetype="solid") +
-		geom_line(aes(y = Average+x), size=0.1, linetype="solid") +
-		# geom_line(aes(y = 7116055, colour='C'), size=1.0, linetype="solid") + # for snp_distance fitness method only
-    	# geom_ribbon(aes(y = Average, ymin = (Average-x), ymax = (Average+x), fill = replicates, alpha = 0.0)) +
-    	facet_wrap(~param_types, ncol=2) +
+		geom_line(aes(y = Average+x), size=0.1, linetype="solid") 
+	if (correct_fitness != 'no_correct'){
+		p <- p + geom_line(aes(y = correct_fitness, colour='C'), size=1.0, linetype="solid")
+	}
+	p <- p + facet_wrap(~param_types, ncol=2) +
 	    theme_bw() +
 	    theme(title = element_text(size = rel(0.5))) +
 		guides(col = guide_legend(keywidth = 0.25, keyheight = 0.25, ncol = 4, byrow = TRUE, title.theme = element_text(size=8, angle = 0),
