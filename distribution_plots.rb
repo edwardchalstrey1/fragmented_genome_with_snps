@@ -4,66 +4,46 @@ require_relative 'lib/write_it'
 require_relative 'lib/snp_dist'
 require_relative 'lib/fitness_score'
 
-=begin
-	
-ARGV's: 0 = dataset
-		1 = run
-		2 = generation (number)
-		3 = div
-=end
 dataset = ARGV[0]
 run = ARGV[1]
 gen = ARGV[2]
-div = ARGV[3].to_f
+div = ARGV[3].to_i
 
 genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{dataset}/frags.fasta")
 
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}/#{run}/Gencorrect_lists")) # make the directory to put correct permutation files into
-
-ylim_hm, ylim_ht, ylim_hyp, ylim_ratio = [],[],[],[]
+hm, ht, hyp, ylim_hm, ylim_ht, ylim_hyp = [],[],[],[],[],[]
 
 Dir.chdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}")) do
 	
-	hm = WriteIt.file_to_ints_array("hm_snps.txt")
-	ylim_hm << SNPdist.get_ylim(hm, genome_length, 'density')
+	hom_snps = WriteIt.file_to_ints_array("hm_snps.txt")
+	hm << hom_snps
+	ylim_hm << SNPdist.get_ylim(hom_snps, genome_length, 'density')
 
-	ht = WriteIt.file_to_ints_array("ht_snps.txt")
-	ylim_ht << SNPdist.get_ylim(ht, genome_length, 'density')
+	het_snps = WriteIt.file_to_ints_array("ht_snps.txt")
+	ht << het_snps
+	ylim_ht << SNPdist.get_ylim(het_snps, genome_length, 'density')
 
-	comparable_ratio = FitnessScore::ratio(hm, ht, div, genome_length)
-	ylim_ratio << SNPdist.get_ylim(comparable_ratio, genome_length, 'ratio')
+	expected_ratio = FitnessScore::ratio(hom_snps, het_snps, div, genome_length)
+	hyp_snps = SNPdist.hyp_snps(expected_ratio, genome_length)
+	hyp << hyp_snps
+	ylim_hyp << SNPdist.get_ylim(hyp_snps, genome_length, 'density')
 
-	SNPdist.plot_ratio(comparable_ratio, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, ylim_ratio[0])
-
-	hyp = SNPdist.hyp_snps(comparable_ratio, genome_length)
-	ylim_hyp << SNPdist.get_ylim(hyp, genome_length, 'density')
-
-	SNPdist.plot_snps(hyp, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "hyp_#{div/1000}Kdiv", 
-		'Approximated ratio of homozygous to heterozygous SNP density', ylim_hyp[0])
-
-	SNPdist.plot_snps(hm, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "hm_#{div/1000}Kdiv",
-		'Homozygous SNP density', ylim_hm[0])
-
-	SNPdist.plot_snps(ht, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", 'correct', genome_length, "ht_#{div/1000}Kdiv",
-		'Heterozygous SNP density', ylim_ht[0])
 end
 
 Array(0..gen.to_i).each do |i|
 	Dir.chdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}/#{run}/Gen#{i}_lists")) do
 
-		hm = WriteIt.file_to_ints_array("gen_#{i}_hm.txt")
-		SNPdist.plot_snps(hm, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'hm',
+		perm_hm = WriteIt.file_to_ints_array("gen_#{i}_hm.txt")
+		SNPdist.plot_snps(perm_hm, hm[0], "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'hm',
 			'Homozygous SNP density', ylim_hm[0])
 
-		ht = WriteIt.file_to_ints_array("gen_#{i}_ht.txt")
-		SNPdist.plot_snps(ht, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'ht',
+		perm_ht = WriteIt.file_to_ints_array("gen_#{i}_ht.txt")
+		SNPdist.plot_snps(perm_ht, ht[0], "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'ht',
 			'Heterozygous SNP density', ylim_ht[0])
 
-		ratios = FitnessScore::ratio(hm, ht, div, genome_length)
-		SNPdist.plot_ratio(ratios, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, ylim_ratio[0])
-
-		hyp = SNPdist.hyp_snps(ratios, genome_length)
-		SNPdist.plot_snps(hyp, "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'hyp', 
+		ratios = FitnessScore::ratio(perm_hm, perm_ht, div, genome_length)
+		perm_hyp = SNPdist.hyp_snps(ratios, genome_length)
+		SNPdist.plot_snps(perm_hyp, hyp[0], "fragmented_genome_with_snps/arabidopsis_datasets", "#{dataset}/#{run}", i, genome_length, 'hyp', 
 			'Approximated ratio of homozygous to heterozygous SNP density', ylim_hyp[0])
 	end
 end
