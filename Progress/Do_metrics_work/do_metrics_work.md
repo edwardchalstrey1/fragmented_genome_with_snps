@@ -54,6 +54,10 @@ What the plot above shows, is that my fitness method does consistently attribute
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2c/adjacent_swaps_Fitness_10000pop_10size_swap1_max_hyp.png?raw=true)
 
+### Hyp distance
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2c/adjacent_swaps_HypDistance_2000pop_10size_swap1.png)
+
 How useful are distance metrics
 --------
 
