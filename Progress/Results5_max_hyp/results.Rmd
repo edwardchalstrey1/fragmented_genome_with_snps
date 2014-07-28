@@ -1,4 +1,8 @@
-Results
+Results: Max Hyp fitness method
 ========================================================
 
+Small Dataset
+----
 
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_hyp/images_hyp.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_hyp/images_hm.gif?raw=true)

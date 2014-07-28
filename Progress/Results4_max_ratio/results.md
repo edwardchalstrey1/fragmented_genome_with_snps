@@ -1,4 +1,8 @@
-Results
+Results: Max ratio fitness method
 ========================================================
 
+Small Dataset
+----
 
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_ratio/images_hyp.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_ratio/images_hm.gif?raw=true)

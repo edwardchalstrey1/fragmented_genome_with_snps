@@ -28,6 +28,9 @@ border:1px solid black;
 
 </table>
 
+Fitness
+------
+
 The figure below shows the results of 40 replicates of the genetic algorithm with the parameter groupings in the table above.
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_fits_total.png?raw=true)
@@ -35,3 +38,20 @@ The figure below shows the results of 40 replicates of the genetic algorithm wit
 The figure below shows the same results as the one above, but with the addition of the correct permutation's fitness. This is shown on the line created from "replicate C".
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_fits_total_with_correct.png?raw=true)
+
+Permutation Distance Metrics
+-------
+
+
+
+Looking closer at the changes in SNP distribution for p_run16 replicate
+------
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/p_run16/images_hyp.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/p_run16/images_hm.gif?raw=true)
+
+Small Dataset
+----------
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_density/images_hyp.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_density/images_hm.gif?raw=true)
