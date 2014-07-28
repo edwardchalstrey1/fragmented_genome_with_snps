@@ -27,7 +27,7 @@ location = 'fragmented_genome_with_snps/arabidopsis_datasets'
 
 
 ### Optional command line parameters ######################################################
-div = ARGV[10] # Number of breaks (divisions) in the genome to count the number of SNPs in. ### max_hyp and count_ratio require this ###
+div = ARGV[10].to_i # Number of breaks (divisions) in the genome to count the number of SNPs in. ### max_hyp and count_ratio require this ###
 restart = ARGV[11] # Tells the algorithm to continue from the most recent generation if it has stopped
 ############################################################################################
 
