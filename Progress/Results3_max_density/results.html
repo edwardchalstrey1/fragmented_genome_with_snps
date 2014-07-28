@@ -143,6 +143,43 @@ hr {
 <body>
 <h1>Results: Genetic algorithm run with max density fitness method</h1>
 
+<p>Each facet/panel in the plots below contain a group of replicates with the same parameters:</p>
+
+<ul>
+<li>Population size: number of permutations in each population (a new population for every generation)</li>
+<li>Select number: number of permutations from each population to create a new population from</li>
+<li>Chunk mutants: number of chunk mutants (<a href="https://github.com/edwardchalstrey1/pmeth">PMeth gem</a>) created from randomly chosen permutations, from the fittest selection of the previous generation</li>
+<li>Swap mutants: number of swap mutants (<a href="https://github.com/edwardchalstrey1/pmeth">PMeth gem</a>) created from the best permutation from the fittest selection of the previous generation</li>
+<li>Save: number of the fittest permutations to carry over from each generation to the next unaltered</li>
+<li>Random: number randomly ordered permutations in each generation</li>
+</ul>
+
+<style>
+table,th,td
+{
+border:1px solid black;
+}
+</style>
+
+<table>
+
+  <tr><th>Param</th><th>Population size</th><th>Select number</th><th>Chunk mutants</th><th>Swap mutants</th><th>Save</th><th>Random</th></tr>
+  
+  <tr> <td>p1</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> </tr>
+  <tr> <td>p2</td> <td>20</td> <td>10</td> <td>7</td> <td>7</td> <td>5</td> <td>1</td> </tr>
+  <tr> <td>p3</td> <td>50</td> <td>25</td> <td>20</td> <td>20</td> <td>6</td> <td>4</td> </tr>
+  <tr> <td>p4</td> <td>20</td> <td>4</td> <td>9</td> <td>9</td> <td>1</td> <td>1</td> </tr>
+
+</table>
+
+<p>The figure below shows the results of 40 replicates of the genetic algorithm with the parameter groupings in the table above.</p>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_fits_total.png?raw=true" alt="Image"/></p>
+
+<p>The figure below shows the same results as the one above, but with the addition of the correct permutation&#39;s fitness. This is shown on the line created from &ldquo;replicate C&rdquo;.</p>
+
+<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_fits_total_with_correct.png?raw=true" alt="Image"/></p>
+
 </body>
 
 </html>
