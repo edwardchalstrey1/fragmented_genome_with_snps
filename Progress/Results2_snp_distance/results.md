@@ -52,14 +52,8 @@ Permutation Distance Metrics
 Looking closer at the changes in SNP distribution for p_run39 replicate
 ------
 
-The homozygous SNP distribution for fittest permutations in each generation:
-
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/images_hm.gif?raw=true)
-
-
-The ratio of homozygous to heterozygous SNPs for fittest permutations in each generation:
-
-![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/max_density/arabidopsis_datasets/10K_dataset4a/p_run39/images_hyp.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4a/p_run39/images_hyp.gif?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4a/p_run39/images_hm.gif?raw=true)
 
 Small Dataset
 ----------
