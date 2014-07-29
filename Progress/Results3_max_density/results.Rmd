@@ -42,13 +42,22 @@ The figure below shows the same results as the one above, but with the addition 
 Permutation Distance Metrics
 -------
 
-
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_%5B%22dev%22%5D.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_%5B%22square%22%5D.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_%5B%22ham%22%5D.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_%5B%22r_dist%22%5D.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_%5B%22lcs%22%5D.png?raw=true)
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/umbrella_plot_%5B%22kt%22%5D.png?raw=true)
 
 Looking closer at the changes in SNP distribution for p_run16 replicate
 ------
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/p_run16/images_hyp.gif?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/p_run16/images_hm.gif?raw=true)
+
+The figure below is a representation of how the contig order changes for the best (fittest) permutations in generations of the algorithm.
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/circos_p_run16.png?raw=true)
 
 Small Dataset
 ----------

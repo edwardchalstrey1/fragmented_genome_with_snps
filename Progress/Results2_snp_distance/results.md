@@ -55,6 +55,10 @@ Looking closer at the changes in SNP distribution for p_run39 replicate
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4a/p_run39/images_hyp.gif?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4a/p_run39/images_hm.gif?raw=true)
 
+The figure below is a representation of how the contig order changes for the best (fittest) permutations in generations of the algorithm.
+
+![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4a/circos_p_run39.png?raw=true)
+
 Small Dataset
 ----------
 
