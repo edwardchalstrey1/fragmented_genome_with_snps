@@ -108,8 +108,6 @@ Below are the results of running many replicates of my algorithm with different 
 
 [Results for max_hyp fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results5_max_hyp/results.md)
 
-[Results for hyp_distance fitness method](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Results6_hyp_distance/results.md)
-
 Project dependencies
 ------------
 
