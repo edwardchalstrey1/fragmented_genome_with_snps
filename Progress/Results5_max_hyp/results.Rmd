@@ -6,3 +6,10 @@ Small Dataset
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_hyp/images_hyp.gif?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_hyp/images_hm.gif?raw=true)
+
+### Location of causal mutation
+
+Positions of the homozygous SNP, at the centre of the peak in homozygous to heterozygous SNP ratio:
+
+- Location of causal mutation in correctly ordered 2Kb sequence: 1016
+- Candidate SNP position in best permutation from this run:      946

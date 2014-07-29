@@ -59,8 +59,22 @@ The figure below is a representation of how the contig order changes for the bes
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/10K_dataset4b/circos_p_run16.png?raw=true)
 
+### Location of causal mutation
+
+Positions of the homozygous SNP, at the centre of the peak in homozygous to heterozygous SNP ratio:
+
+- Location of causal mutation in correctly ordered genome: 10156487
+- Candidate SNP position in best permutation from p_run16: 4923782
+
 Small Dataset
 ----------
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_density/images_hyp.gif?raw=true)
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_density/images_hm.gif?raw=true)
+
+### Location of causal mutation
+
+Positions of the homozygous SNP, at the centre of the peak in homozygous to heterozygous SNP ratio:
+
+- Location of causal mutation in correctly ordered 2Kb sequence: 1016
+- Candidate SNP position in best permutation from this run:      1106

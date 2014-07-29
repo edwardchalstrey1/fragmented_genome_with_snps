@@ -4,7 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-<title>Results: Max Hyp fitness method</title>
+<title>Locating the causal mutation, whilst testing my algorithm on my model genome</title>
 
 <style type="text/css">
 body, td {
@@ -141,21 +141,9 @@ hr {
 </head>
 
 <body>
-<h1>Results: Max Hyp fitness method</h1>
+<h1>Locating the causal mutation, whilst testing my algorithm on my model genome</h1>
 
-<h2>Small Dataset</h2>
-
-<p><img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_hyp/images_hyp.gif?raw=true" alt="Image"/>
-<img src="https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/arabidopsis_datasets/small_dataset2final/max_hyp/images_hm.gif?raw=true" alt="Image"/></p>
-
-<h3>Location of causal mutation</h3>
-
-<p>Positions of the homozygous SNP, at the centre of the peak in homozygous to heterozygous SNP ratio:</p>
-
-<ul>
-<li>Location of causal mutation in correctly ordered 2Kb sequence: 1016</li>
-<li>Candidate SNP position in best permutation from this run:      946</li>
-</ul>
+<p>Running <code>ruby find_causal_mutation.rb dataset run last_generation</code> will print out the position of the homozygous SNP, at the centre of the peak in homozygous to heterozygous SNP ratio, for both the ordered genome and the fittest permutation outputted from the genetic algorithm. <code>dataset</code> is the directory within <code>fragmented_genome_with_snps/arabidopsis_datasets</code> that contains the input data (FASTA and VCF files) for the algorithm. <code>run</code> is the directory within <code>dataset</code> that contains the output from one run of the algorithm. <code>last_generation</code> should be an integer of the final generation in the run.</p>
 
 </body>
 
