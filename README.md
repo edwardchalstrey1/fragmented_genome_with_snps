@@ -89,6 +89,10 @@ I have carried out an experiment to determine which of the fitness methods I hav
 
 For information on how I analysed the output from my algorithm see [Documentation/analysis](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/analysis/analysis.md)
 
+### Candidates for the causative SNP mutation
+
+For information on how I worked out candidates for the causative SNP mutation, see [Documentation/causal_mutation](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/causal_mutation/causal_mutation.md)
+
 Results
 -----
 
