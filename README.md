@@ -1,8 +1,6 @@
 GATOC (Genetic Algorithm To Order Contigs)
 ===========================
 
-<!-- [![Build Status](https://drone.io/github.com/edwardchalstrey1/fragmented_genome_with_snps/status.png)](https://drone.io/github.com/edwardchalstrey1/fragmented_genome_with_snps/latest) -->
-
 Background Information
 ------------
 
@@ -32,6 +30,10 @@ In other words, the remaining linked homozygous SNPs will be distributed around 
 Running: ``ruby create_model_genome.rb dataset_name`` will generate a new model genome of that name based on Arabidopsis chromosome 4 and the experiment detailed above, in ``fragmented_genome_with_snps/arabidopsis_datasets/dataset_name``. This includes a FASTA file with the sequences of each fragment, and a VCF file with the SNPs on each fragment. In the INFO field of the VCF, each SNP has been given an allele frequency (AF). Heterozygous SNPs will generally have AF = ~0.5, and homozygous AF = ~1.0, but this will vary with pooled data. In the model, each SNP has been given an allele frequency of exactly 0.5 or 1.0. The ``dataset_name`` argument specifies the name of the directory to create and store the files in. In [create_model_genome.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/create_model_genome.rb), this currently places that directory: ``"~/fragmented_genome_with_snps/arabidopsis_datasets/dataset_name"`` (but this can of course be altered).
 
 By editing [create_model_genome.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/create_model_genome.rb), the features of the model genome created by it can be altered. The variables ``hm_r`` and ``ht_r`` contain the R code needed to create the model homozygous and heterozygous SNP distributions respectively. The variable ``contig_size`` provides the minimum size for contigs, where the maximum size is double this value, and each contig's size is randomly chosen within this range. The ``fasta_file`` variable points to a FASTA format file with one chromosome, which in this case is *Arabidopsis thaliana* chromosome 4. This chromosome forms the basis of my model genome. Fragments (contigs) of the input FASTA file are created, and the SNPs are applied to them. A new FASTA file is created with the contigs randomly ordered, and a VCF file is created. These serve as the starting files for my algorithm. I have also included a number of other useful output files: the FASTA file with the contigs ordered correctly, txt files that list the homozygous and heterozygous SNPs, and another txt file (info.txt) that records the values of ``hm_r``, ``ht_r`` and ``contig_size``.
+
+All the datasets I have created with [create_model_genome.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/create_model_genome.rb) are called ``10K_dataset...``,  see [arabidopsis_datasets](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/arabidopsis_datasets).
+
+I have another script [small_test_genome.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/small_test_genome.rb) that can be used to make model genomes of length 2Kb, for quick testing of algorithm ideas. The datasets I have created with this, I have named ``small_dataset...``,  see [arabidopsis_datasets](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/tree/master/arabidopsis_datasets).
 
 Why not use real data straight away?
  - With model data, I know the location of the causative mutation and the correct order of the fragments. This means I can tell whether or not my algorithm works.
