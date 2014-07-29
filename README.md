@@ -67,7 +67,7 @@ For a detailed look at how the fitness methods work, see [Documentation/fitness]
 
 A genetic algorithm needs a way of knowing when to stop. Ideally, you want it to continue until a correct solution has been reached, but in reality this may be impossible. I have implemented a [quit condition](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Progress/Quit_condition/quit_condition.md) that terminates my genetic algorithm, when improvement (in fitness) is judged to be negligible.
 
-How my genetic algorithm works
+How my genetic algorithm works and how to run it
 ----------
 
 The ``evolve`` method in the [GATOC class](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb) is a wrapper method that forms the bulk of my genetic algorithm. A script is required to call ``GATOC.evolve``, and whilst testing the algorithm I have been using [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_test.rb).
