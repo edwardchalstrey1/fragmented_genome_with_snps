@@ -76,7 +76,7 @@ To run [algorithm_test.rb](https://github.com/edwardchalstrey1/fragmented_genome
 
 When running the algorithm with real data, a new ruby script will be needed to call ``GATOC.evolve``
 
-For a detailed look at how the algorithm works see [Documentation/evolve](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/evolve.md)
+For a detailed look at how the algorithm works see [Documentation/evolve](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/evolve/evolve.md)
 
 Assesing the Genetic Algorithm's performance
 ---------------------------------------

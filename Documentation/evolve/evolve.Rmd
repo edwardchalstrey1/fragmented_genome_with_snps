@@ -11,6 +11,6 @@ Put simply, my genetic algorithm works as follows:
 
 It is used like this: ``GATOC.evolve(fasta_file, vcf_file, parameters)``. ``parameters`` is a hash of symbol keys that point to values used in the sub-methods of GATOC. Each parameter has a default value, shown in the ``opts`` hash. The parameters are described in the annotation of [GATOC.evolve](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/lib/GATOC.rb).
 
-The flow chart below shows the key inputs and outputs for GATOC.evolve. For more detail on some of the sub methods see [new_population](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/new_population.md) and [select](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/select.md).
+The flow chart below shows the key inputs and outputs for GATOC.evolve. For more detail on some of the sub methods see [new_population](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/new_population/new_population.md) and [select](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/Documentation/select/select.md).
 
 ![Image](https://github.com/edwardchalstrey1/fragmented_genome_with_snps/blob/master/algorithm_flowcharts/evolve.png?raw=true)
