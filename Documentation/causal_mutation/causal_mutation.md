@@ -20,3 +20,13 @@ causal_mutation = LocateMutation.closest_snp(peak, hm)
 ``hm`` is the distribution of homozgous SNPs across the genome/permutation, that was used with the heterozygous distribution to create ``hyp``.
 
 The ``causal_mutation`` therefore, is the homozgous SNP that lies closest to the highest peak in the ratio of homozgous to heterozgous SNP density.
+
+An alternative peak finding idea
+=========
+
+A new method could be created in ``LocateMutation`` which uses the ``findpeaks()`` method in the R package "pracma" to find peaks in time series data. The data could be taken from the kernel density estimate:
+
+```{r}
+vector <- density(snps)$y
+findpeaks(vector)
+```
